@@ -130,6 +130,10 @@ public class CustomDomain {
         return Objects.equals(key, "127.0.0.1") && Objects.equals(value, this.name);
     }
 
+    private CustomDomain readDomainXML() {
+        
+    }
+
     @Override
     public String toString() {
         return this.name;
