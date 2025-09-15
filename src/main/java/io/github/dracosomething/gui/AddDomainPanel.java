@@ -142,21 +142,24 @@ public class AddDomainPanel extends JPanel {
         confirm.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                boolean shouldSkip = false;
                 if (name.getSelectedText().isEmpty()) {
                     String text = nameText.getText();
                     text += "<html><font color='red'>This field has to have a value.</font></html>";
                     nameText.setText(text);
-                    return;
+                    shouldSkip = true;
                 }
-                if (target.) {
-                    String text = nameText.getText();
+                if (panel.target == null) {
+                    String text = target.getText();
                     text += "<html><font color='red'>This field has to have a value.</font></html>";
-                    nameText.setText(text);
-                    return;
+                    target.setText(text);
+                    shouldSkip = true;
                 }
+                if (shouldSkip)
+                    return;
                 panel.name = name.getSelectedText();
                 panel.serverAlias = new ArrayList<>(Arrays.stream(alias.getSelectedText().split(",")).toList());
-                panel.serverAdmin = alias.getSelectedText();
+                panel.serverAdmin = admin.getSelectedText();
                 CustomDomainData data = null;
                 if (panel.serverAlias != null || panel.errorLog != null || panel.customLog != null) {
                     data = new CustomDomainData(panel.serverAlias, panel.errorLog, panel.customLog);
