@@ -14,10 +14,10 @@ public class Main {
         frame.pack();
         frame.setSize(800, 850);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setExtendedState(Frame.MAXIMIZED_BOTH);
+//        frame.setExtendedState(Frame.MAXIMIZED_BOTH);
         frame.setVisible(true);
 
-        MainGuiPanel panel = new MainGuiPanel();
+        MainGuiPanel panel = new MainGuiPanel(frame);
 
         frame.setContentPane(panel);
     }

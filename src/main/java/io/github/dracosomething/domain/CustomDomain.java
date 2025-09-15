@@ -1,43 +1,37 @@
 package io.github.dracosomething.domain;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.MalformedURLException;
+import io.github.dracosomething.Pair;
+import io.github.dracosomething.Util;
+
+import java.io.*;
 import java.net.URI;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.Scanner;
+import java.util.*;
 
 public class CustomDomain {
     public static final ArrayList<CustomDomain> DOMAINS = new ArrayList<>();
-    private static final URI test = URI.create("file:/Windows/System32/drivers/etc/hosts");
-    private static final File HOSTS =  new File(test);
+    public static final CustomDomain EMPTY = new CustomDomain();
+    private static final File HOSTS =  new File(URI.create("file:/Windows/System32/drivers/etc/hosts"));
     private static final File CONFIG = new File(URI.create("file:/xampp/apache/conf/extra/httpd-vhosts.conf"));
 
-    private String serverAlias;
+    private String serverAdmin;
     private String name;
     private File target;
     private CustomDomainData domainData = null;
 
+    private CustomDomain() {}
 
     public CustomDomain(String url, String serverAlias, File path) {
         this.name = url;
-        this.serverAlias = serverAlias;
+        this.serverAdmin = serverAlias;
         this.target = path;
-        DOMAINS.add(this);
         this.registerDomain();
     }
 
     public CustomDomain(String url, String serverAlias, File path, CustomDomainData domainData) {
         this.name = url;
-        this.serverAlias = serverAlias;
+        this.serverAdmin = serverAlias;
         this.target = path;
         this.domainData = domainData;
-        DOMAINS.add(this);
         this.registerDomain();
     }
 
@@ -73,11 +67,14 @@ public class CustomDomain {
             FileWriter writer = new FileWriter(CONFIG, true);
             writer.append("\n").append("<VirtualHost 127.0.0.1:80>\n");
             writer.append("\tServerName ").append(this.name).append("\n");
-            writer.append("\tServerAlias ").append(this.serverAlias).append("\n");
+            writer.append("\tServerAdmin ").append(this.serverAdmin).append("\n");
             writer.append("\tDocumentRoot \"").append(String.valueOf(this.target)).append("\"\n");
             if (domainData != null) {
-                if (domainData.serverAdmin() != null)
-                    writer.append("\tServerAdmin ").append(domainData.serverAdmin()).append("\n");
+                if (domainData.serverAlias() != null) {
+                    for (String alias : domainData.serverAlias()) {
+                        writer.append("\tServerAlias ").append(alias).append("\n");
+                    }
+                }
                 if (domainData.errorLog() != null)
                     writer.append("\tErrorLog \"").append(String.valueOf(domainData.errorLog())).append("\"\n");
                 if (domainData.customLog() != null)
@@ -90,10 +87,12 @@ public class CustomDomain {
         }
     }
 
-    private boolean shouldSkip(String data) {
+    private static boolean shouldSkip(String data) {
         if (data.startsWith("#"))
             return true;
         if (data.startsWith("<") && data.endsWith(">"))
+            return true;
+        if (data.isBlank() || data.isEmpty())
             return true;
         if (data.startsWith(" ") ) {
             for (int i = 0; i < data.length(); i++) {
@@ -101,6 +100,8 @@ public class CustomDomain {
                     continue;
                 if (data.charAt(i) == '#')
                     return true;
+                else
+                    break;
             }
         }
         return false;
@@ -115,7 +116,7 @@ public class CustomDomain {
         boolean retVal = false;
         switch (key) {
             case "ServerName" -> retVal = Objects.equals(value, this.name);
-            case "ServerAlias" -> retVal = Objects.equals(value, this.serverAlias);
+            case "ServerAdmin" -> retVal = Objects.equals(value, this.serverAdmin);
             case "DocumentRoot" -> retVal = Objects.equals(value, this.target.getPath());
         }
         return retVal;
@@ -130,8 +131,125 @@ public class CustomDomain {
         return Objects.equals(key, "127.0.0.1") && Objects.equals(value, this.name);
     }
 
-    private CustomDomain readDomainXML() {
-        
+    private static void readDomainXML() {
+        if (!CONFIG.exists()) return;
+        try {
+            Scanner reader = new Scanner(CONFIG);
+            CustomDomain[] arr = new CustomDomain[1];
+            int index = 0;
+            while (reader.hasNextLine()) {
+                String data = reader.nextLine();
+                if ((data.startsWith("<") && !data.startsWith("</")) && data.endsWith(">")) {
+                    arr[index] = new CustomDomain();
+                }
+                if (shouldSkip(data))
+                    continue;
+                CustomDomain domain = getConfData(reader, data, arr[index]);
+                arr[index] = domain;
+                index++;
+                arr = Arrays.copyOf(arr, index+1);
+            }
+
+            for (CustomDomain domain : arr) {
+                if (domain == null || domain.isEmpty())
+                    continue;
+                DOMAINS.add(domain);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static CustomDomain getConfData(Scanner reader, String currentLine, CustomDomain fillIn) {
+        ArrayList<String> serverAlias = new ArrayList<>();
+        String name = null;
+        File target = null;
+        String serverAdmin = null;
+        File errorLog = null;
+        File customLog = null;
+        Pair<String, String> value = getValue(currentLine);
+        switch (value.getKey()) {
+            case "ServerName" -> name = value.getValue();
+            case "ServerAlias" -> serverAlias.add(value.getValue());
+            case "ServerAdmin" -> serverAdmin = value.getValue();
+            case "DocumentRoot" -> {
+                if (!Util.isProperPath(value.getValue()))
+                    throw new RuntimeException("string is not a proper file path");
+                target = new File(value.getValue());
+            }
+            case "ErrorLog" -> {
+                if (!Util.isProperPath(value.getValue()))
+                    throw new RuntimeException("string is not a proper file path");
+                errorLog = new File(value.getValue());
+            }
+            case "CustomLog" -> {
+                if (!Util.isProperPath(value.getValue()))
+                    throw new RuntimeException("string is not a proper file path");
+                customLog = new File(value.getValue());
+            }
+        }
+
+        while(reader.hasNextLine()) {
+            String data = reader.nextLine();
+            if (data.startsWith("</") && data.endsWith(">"))
+                break;
+            value = getValue(data);
+            switch (value.getKey()) {
+                case "ServerName" -> name = value.getValue();
+                case "ServerAlias" -> serverAlias.add(value.getValue());
+                case "ServerAdmin" -> serverAdmin = value.getValue();
+                case "DocumentRoot" -> {
+                    if (!Util.isProperPath(value.getValue()))
+                        throw new RuntimeException("string is not a proper file path");
+                    target = new File(value.getValue());
+                }
+                case "ErrorLog" -> {
+                    if (!Util.isProperPath(value.getValue()))
+                        throw new RuntimeException("string is not a proper file path");
+                    errorLog = new File(value.getValue());
+                }
+                case "CustomLog" -> {
+                    if (!Util.isProperPath(value.getValue()))
+                        throw new RuntimeException("string is not a proper file path");
+                    customLog = new File(value.getValue());
+                }
+            }
+        }
+        if (name == null || serverAdmin == null || target == null)
+            throw new RuntimeException("One of required field isn't null.");
+
+        fillIn.name = name;
+        fillIn.serverAdmin = serverAdmin;
+        fillIn.target = target;
+
+        if (!serverAlias.isEmpty() || errorLog != null || customLog != null) {
+            fillIn.domainData = new CustomDomainData(serverAlias, errorLog, customLog);
+        }
+
+        return fillIn;
+    }
+
+    private static Pair<String, String> getValue(String data) {
+        Pair<String, String> retVal = new Pair<>("", "");
+        String[] pair = data.split(" ", 2);
+        if (pair.length <= 1)
+            return retVal;
+        String key = pair[0].replace("\t", "");
+        retVal = new Pair<>(key, "");
+        String value = pair[1];
+        switch (key) {
+            case "ServerName", "ServerAlias", "ServerAdmin" -> retVal.setValue(value);
+            case "DocumentRoot", "ErrorLog", "CustomLog" -> {
+                value = value.replace("\"", "");
+                retVal.setValue(value.replace("\\", "/"));
+            }
+        }
+
+        return retVal;
+    }
+
+    public boolean isEmpty() {
+        return this.name == null && this.target == null && this.serverAdmin == null;
     }
 
     @Override
@@ -140,7 +258,8 @@ public class CustomDomain {
     }
 
     static {
-        new CustomDomain("test.domain.dummy", "domain.dummy", new File("C:\\Users\\alias\\Documents\\school\\Schooljaar2024-2025\\Module 2\\opdracht 5"));
-        new CustomDomain("example.d.cedd", "d.cedd", new File("C:\\Users\\alias\\Documents\\school\\Schooljaar2024-2025\\Module 2\\opdracht 5"));
+        new CustomDomain("test.domain.dummy", "webmaster@test.domain.dummy", new File("C:\\Users\\alias\\Documents\\school\\Schooljaar2024-2025\\Module 2\\opdracht 5"));
+        new CustomDomain("example.d.cedd", "webmaster@example.d.cedd", new File("C:\\Users\\alias\\Documents\\school\\Schooljaar2024-2025\\Module 2\\opdracht 5"));
+        readDomainXML();
     }
 }
