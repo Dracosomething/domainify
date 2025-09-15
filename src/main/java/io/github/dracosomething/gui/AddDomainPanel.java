@@ -142,6 +142,18 @@ public class AddDomainPanel extends JPanel {
         confirm.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (name.getSelectedText().isEmpty()) {
+                    String text = nameText.getText();
+                    text += "<html><font color='red'>This field has to have a value.</font></html>";
+                    nameText.setText(text);
+                    return;
+                }
+                if (target.) {
+                    String text = nameText.getText();
+                    text += "<html><font color='red'>This field has to have a value.</font></html>";
+                    nameText.setText(text);
+                    return;
+                }
                 panel.name = name.getSelectedText();
                 panel.serverAlias = new ArrayList<>(Arrays.stream(alias.getSelectedText().split(",")).toList());
                 panel.serverAdmin = alias.getSelectedText();

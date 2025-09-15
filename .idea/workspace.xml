@@ -5,15 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d7ab1385-168d-4e32-98b0-5e9c3c72e3a0" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/Pair.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/Util.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/gui/AddDomainPanel.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/gui/FileChooser.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/domain/CustomDomain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/domain/CustomDomain.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/domain/CustomDomainData.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/domain/CustomDomainData.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/gui/MainGuiPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/gui/MainGuiPanel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/gui/AddDomainPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/gui/AddDomainPanel.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,18 +30,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "Dracosomething"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Dracosomething&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/Dracosomething/domainify.git",
-    "accountId": "df7b27cb-b791-4d94-885d-42c760465cb7"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Dracosomething/domainify.git&quot;,
+    &quot;accountId&quot;: &quot;df7b27cb-b791-4d94-885d-42c760465cb7&quot;
   }
-}]]></component>
+}</component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 8
 }</component>
@@ -64,6 +57,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "master",
     "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/Gebruiker/Documents/GitHub/domainify",
     "onboarding.tips.debug.path": "C:/Users/alias/Documents/school/schooljaar2025-2026/periode1/XPerience/profielen/fullstack/domainify/src/main/java/io/github/dracosomething/Main.java"
   }
 }]]></component>
