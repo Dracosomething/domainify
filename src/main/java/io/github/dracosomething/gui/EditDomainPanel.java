@@ -2,10 +2,12 @@ package io.github.dracosomething.gui;
 
 import io.github.dracosomething.domain.CustomDomain;
 import io.github.dracosomething.domain.CustomDomainData;
+import io.github.dracosomething.domain.DummyCustomDomain;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.filechooser.FileSystemView;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,22 +15,18 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class AddDomainPanel extends JPanel {
-    private String name;
-    private ArrayList<String> serverAlias;
-    private File target;
-    private String serverAdmin;
-    private File errorLog;
-    private File customLog;
+public class EditDomainPanel extends JPanel {
+    private DummyCustomDomain domain;
 
-    public AddDomainPanel(JFrame frame) {
+    public EditDomainPanel(JFrame frame, CustomDomain domain) {
+        this.domain = new DummyCustomDomain(domain);
         this.setSize(1000, 1500);
         this.setVisible(true);
         this.setLayout(new GridBagLayout());
         this.setBorder(new EmptyBorder(10, 10, 10, 10));
         this.setBackground(new Color(255, 255, 255));
 
-        AddDomainPanel panel = this;
+        EditDomainPanel panel = this;
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.anchor = GridBagConstraints.LINE_START;
@@ -37,19 +35,35 @@ public class AddDomainPanel extends JPanel {
         gbc.gridy = 1;
 
         JLabel nameText = new JLabel("<html>Enter server url</html>");
-        JTextField name = new JTextField(50);
+        JTextField name = new JTextField(this.domain.getName(), 50);
+        name.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                panel.domain.setName(name.getText());
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                panel.domain.setName(name.getText());
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                panel.domain.setName(name.getText());
+            }
+        });
         this.add(nameText, gbc);
         gbc.gridy = 2;
         this.add(name, gbc);
 
         JButton target = new JButton("<html>Choose target directory</html>");
-        JTextField filePath = new JTextField(50);
+        JTextField filePath = new JTextField(this.domain.getTarget().getPath(), 50);
         target.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 FileChooser chooser = new FileChooser(FileChooser.CURRENT_DIRECTORY);
                 chooser.setOnConfirm(file -> {
-                    panel.target = file;
+                    panel.domain.setTarget(file);
                     filePath.setText(file.getPath());
                 });
             }
@@ -62,19 +76,53 @@ public class AddDomainPanel extends JPanel {
 
         //===========================
         JLabel text = new JLabel("Input server admin address");
-        JTextField admin = new JTextField(50);
+        JTextField admin = new JTextField(this.domain.getServerAdmin(), 50);
+        admin.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                panel.domain.setServerAdmin(admin.getText());
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                panel.domain.setServerAdmin(admin.getText());
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                panel.domain.setServerAdmin(admin.getText());
+            }
+        });
 
         JLabel aliasText = new JLabel("<html>Input Server Alias.<br>Separate alias' with a comma</html>");
-        JTextField alias = new JTextField(50);
+        JTextField alias = new JTextField(this.domain.getServerAliasFormatted(), 50);
+        alias.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                panel.domain.setServerAlias(new ArrayList<>(Arrays.stream(alias.getText().split(",")).toList()));
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                panel.domain.setServerAlias(new ArrayList<>(Arrays.stream(alias.getText().split(",")).toList()));
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                panel.domain.setServerAlias(new ArrayList<>(Arrays.stream(alias.getText().split(",")).toList()));
+            }
+        });
 
         JButton logCustom = new JButton("Choose custom log directory");
         JTextField pathLogCustom = new JTextField(50);
+        if (this.domain.getCustomLog() != null)
+            pathLogCustom.setText(this.domain.getCustomLog().getPath());
         logCustom.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 FileChooser chooser = new FileChooser(FileChooser.CURRENT_DIRECTORY);
                 chooser.setOnConfirm(file -> {
-                    panel.customLog = file;
+                    panel.domain.setCustomLog(file);
                     pathLogCustom.setText(file.getPath());
                 });
             }
@@ -82,12 +130,14 @@ public class AddDomainPanel extends JPanel {
 
         JButton logError = new JButton("Choose error log directory");
         JTextField pathLogError = new JTextField(50);
+        if (this.domain.getErrorLog() != null)
+            pathLogCustom.setText(this.domain.getErrorLog().getPath());
         logError.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 FileChooser chooser = new FileChooser(FileChooser.CURRENT_DIRECTORY);
                 chooser.setOnConfirm(file -> {
-                    panel.errorLog = file;
+                    panel.domain.setCustomLog(file);
                     pathLogError.setText(file.getPath());
                 });
             }
@@ -141,7 +191,7 @@ public class AddDomainPanel extends JPanel {
         gbc.gridy = 8;
         this.add(advanced, gbc);
 
-        JButton confirm = new JButton("<html>create domain</html>");
+        JButton confirm = new JButton("<html>update domain</html>");
         confirm.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -154,8 +204,13 @@ public class AddDomainPanel extends JPanel {
                         text += " <font color='red'>This field has to have a value.</font></html>";
                     nameText.setText(text);
                     shouldSkip = true;
+                } else {
+                    String text = nameText.getText();
+                    if (text.contains("This field has to have a value."))
+                        text.replace(" <font color='red'>This field has to have a value.</font>", "");
+                    nameText.setText(text);
                 }
-                if (panel.target == null) {
+                if (panel.domain.getTarget() == null) {
                     String text = target.getText();
                     if (text.endsWith("</html>"))
                         text = text.replace("</html>", "");
@@ -163,28 +218,18 @@ public class AddDomainPanel extends JPanel {
                         text += " <font color='red'>This field has to have a value.</font></html>";
                     target.setText(text);
                     shouldSkip = true;
+                } else {
+                    String text = target.getText();
+                    if (text.contains("This field has to have a value."))
+                        text.replace(" <font color='red'>This field has to have a value.</font>", "");
+                    target.setText(text);
                 }
                 if (shouldSkip) {
                     frame.pack();
                     return;
                 }
-                panel.name = name.getText();
-                if (!alias.getText().isEmpty())
-                    panel.serverAlias = new ArrayList<>(Arrays.stream(alias.getText().split(",")).toList());
-                if (!admin.getText().isEmpty())
-                    panel.serverAdmin = admin.getText();
-                else
-                    panel.serverAdmin = "webmaster@" + panel.name;
 
-                CustomDomainData data = null;
-                if (panel.serverAlias != null || panel.errorLog != null || panel.customLog != null) {
-                    data = new CustomDomainData(panel.serverAlias, panel.errorLog, panel.customLog);
-                }
-                if (data == null) {
-                    CustomDomain domain = new CustomDomain(panel.name, panel.serverAdmin, panel.target, data);
-                } else {
-                    CustomDomain domain = new CustomDomain(panel.name, panel.serverAdmin, panel.target);
-                }
+                domain.updateDomain(panel.domain);
                 frame.setContentPane(new MainGuiPanel(frame));
                 frame.pack();
             }

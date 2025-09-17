@@ -17,8 +17,12 @@ public class Main {
 //        frame.setExtendedState(Frame.MAXIMIZED_BOTH);
         frame.setVisible(true);
 
+        Font font  = frame.getFont();
+        frame.setFont(font.deriveFont(50F));
+
         MainGuiPanel panel = new MainGuiPanel(frame);
 
         frame.setContentPane(panel);
+        frame.pack();
     }
 }

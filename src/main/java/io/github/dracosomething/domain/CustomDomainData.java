@@ -8,4 +8,13 @@ public record CustomDomainData(
         File errorLog,
         File customLog
 ) {
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder("{");
+        builder.append("server alias': ").append(serverAlias.toString()).append(", ");
+        builder.append("error log: ").append(errorLog.getPath()).append(", ");
+        builder.append("custom log: ").append(customLog.getPath());
+        builder.append("}");
+        return builder.toString();
+    }
 }

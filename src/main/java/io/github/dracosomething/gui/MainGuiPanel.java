@@ -1,7 +1,6 @@
 package io.github.dracosomething.gui;
 
 import io.github.dracosomething.domain.CustomDomain;
-import io.github.dracosomething.domain.DomainListModel;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -14,12 +13,10 @@ import java.awt.event.InputMethodEvent;
 import java.awt.event.InputMethodListener;
 
 public class MainGuiPanel extends JPanel {
-    private JFrame frame;
 
     public MainGuiPanel(JFrame frame) {
-        this.frame = frame;
+        CustomDomain.readDomainXML();
         this.setSize(1000, 1500);
-        this.setLayout(null);
         this.setVisible(true);
         this.setLayout(new GridBagLayout());
         this.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -27,17 +24,12 @@ public class MainGuiPanel extends JPanel {
         MainGuiPanel panel = this;
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.anchor = GridBagConstraints.LINE_START;
-        gbc.gridheight = 100;
-        gbc.gridwidth = 100;
-        gbc.gridx = 1;
-        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.FIRST_LINE_END;
+        gbc.insets = new Insets(0, 10 ,10 ,10);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
 
-        JList<CustomDomain> domainList = new JList<>(new DomainListModel());
-
-        this.add(domainList, gbc);
-
-        gbc.gridx = 2;
+        DomainTable domainList = new DomainTable(frame);
 
         JButton add = new JButton("new domain");
         add.addActionListener(new ActionListener() {
@@ -47,6 +39,8 @@ public class MainGuiPanel extends JPanel {
                 frame.pack();
             }
         });
-        this.add(add);
+        this.add(domainList, gbc);
+        gbc.gridx = 1;
+        this.add(add, gbc);
     }
 }

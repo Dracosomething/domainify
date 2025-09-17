@@ -6,6 +6,7 @@ import io.github.dracosomething.Util;
 import java.io.*;
 import java.net.URI;
 import java.util.*;
+import java.util.stream.Stream;
 
 public class CustomDomain {
     public static final ArrayList<CustomDomain> DOMAINS = new ArrayList<>();
@@ -65,20 +66,20 @@ public class CustomDomain {
             }
 
             FileWriter writer = new FileWriter(CONFIG, true);
-            writer.append("\n").append("<VirtualHost 127.0.0.1:80>\n");
-            writer.append("\tServerName ").append(this.name).append("\n");
-            writer.append("\tServerAdmin ").append(this.serverAdmin).append("\n");
-            writer.append("\tDocumentRoot \"").append(String.valueOf(this.target)).append("\"\n");
+            writer.append(System.lineSeparator()).append("<VirtualHost 127.0.0.1:80>").append(System.lineSeparator());
+            writer.append("\tServerName ").append(this.name).append(System.lineSeparator());
+            writer.append("\tServerAdmin ").append(this.serverAdmin).append(System.lineSeparator());
+            writer.append("\tDocumentRoot \"").append(String.valueOf(this.target)).append("\"").append(System.lineSeparator());
             if (domainData != null) {
                 if (domainData.serverAlias() != null) {
                     for (String alias : domainData.serverAlias()) {
-                        writer.append("\tServerAlias ").append(alias).append("\n");
+                        writer.append("\tServerAlias ").append(alias).append(System.lineSeparator());
                     }
                 }
                 if (domainData.errorLog() != null)
-                    writer.append("\tErrorLog \"").append(String.valueOf(domainData.errorLog())).append("\"\n");
+                    writer.append("\tErrorLog \"").append(String.valueOf(domainData.errorLog())).append("\"").append(System.lineSeparator());
                 if (domainData.customLog() != null)
-                    writer.append("\tCustomLog \"").append(String.valueOf(domainData.customLog())).append("\"\n");
+                    writer.append("\tCustomLog \"").append(String.valueOf(domainData.customLog())).append("\"").append(System.lineSeparator());
             }
             writer.append("</VirtualHost>");
             writer.close();
@@ -88,9 +89,13 @@ public class CustomDomain {
     }
 
     private static boolean shouldSkip(String data) {
+        return shouldSkip(data, true);
+    }
+
+    private static boolean shouldSkip(String data, boolean header) {
         if (data.startsWith("#"))
             return true;
-        if (data.startsWith("<") && data.endsWith(">"))
+        if ((data.startsWith("<") && data.endsWith(">")) && header)
             return true;
         if (data.isBlank() || data.isEmpty())
             return true;
@@ -131,7 +136,7 @@ public class CustomDomain {
         return Objects.equals(key, "127.0.0.1") && Objects.equals(value, this.name);
     }
 
-    private static void readDomainXML() {
+    public static void readDomainXML() {
         if (!CONFIG.exists()) return;
         try {
             Scanner reader = new Scanner(CONFIG);
@@ -150,6 +155,7 @@ public class CustomDomain {
                 arr = Arrays.copyOf(arr, index+1);
             }
 
+            DOMAINS.clear();
             for (CustomDomain domain : arr) {
                 if (domain == null || domain.isEmpty())
                     continue;
@@ -252,14 +258,162 @@ public class CustomDomain {
         return this.name == null && this.target == null && this.serverAdmin == null;
     }
 
-    @Override
-    public String toString() {
-        return this.name;
+    public CustomDomainData getDomainData() {
+        return domainData;
     }
 
-    static {
-        new CustomDomain("test.domain.dummy", "webmaster@test.domain.dummy", new File("C:\\Users\\alias\\Documents\\school\\Schooljaar2024-2025\\Module 2\\opdracht 5"));
-        new CustomDomain("example.d.cedd", "webmaster@example.d.cedd", new File("C:\\Users\\alias\\Documents\\school\\Schooljaar2024-2025\\Module 2\\opdracht 5"));
-        readDomainXML();
+    public String getName() {
+        return name;
+    }
+
+    public File getTarget() {
+        return target;
+    }
+
+    public String getServerAdmin() {
+        return serverAdmin;
+    }
+
+    public String[] toArray() {
+        String[] arr = new String[6];
+        arr[0] = this.name;
+        arr[1] = this.serverAdmin;
+        arr[2] = this.target.getPath();
+        if (this.domainData == null)
+            return arr;
+        if (this.domainData.serverAlias() != null)
+            arr[3] = this.domainData.serverAlias().toString();
+        if (this.domainData.customLog() != null)
+            arr[4] = this.domainData.customLog().getPath();
+        if (this.domainData.errorLog() != null)
+            arr[5] = this.domainData.errorLog().getPath();
+        return arr;
+    }
+
+    public void updateDomain(DummyCustomDomain updated) {
+        if (!HOSTS.exists()) return;
+        if (!CONFIG.exists()) return;
+        try {
+            Scanner scanner = new Scanner(HOSTS);
+            StringBuilder fileData = new StringBuilder();
+            while (scanner.hasNextLine()) {
+                String data = scanner.nextLine();
+                if (data.equals("127.0.0.1 " + this.name)) {
+                    fileData.append("127.0.0.1 ").append(updated.getName()).append(System.lineSeparator());
+                    continue;
+                }
+                fileData.append(data).append(System.lineSeparator());
+            }
+
+            FileWriter writer = new FileWriter(HOSTS);
+            writer.append(fileData);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            Scanner scanner = new Scanner(CONFIG);
+            StringBuilder fileData = new StringBuilder();
+            int i = 0;
+            int iCache = -1;
+            while (scanner.hasNextLine()) {
+                String data = scanner.nextLine();
+                i++;
+                if (iCache >= i)
+                    continue;
+                if ((data.startsWith("<") && !data.startsWith("</")) && data.endsWith(">")) {
+                    Pair<String, Integer> pair = gatherData(i);
+                    String gathered = pair.getKey();
+                    if (stringEquals(gathered)) {
+                        fileData.append(modifyXMLFormat(data, gathered, updated));
+                        iCache = i + pair.getValue();
+                        continue;
+                    }
+                }
+                fileData.append(data).append(System.lineSeparator());
+            }
+
+            FileWriter writer = new FileWriter(CONFIG);
+            writer.append(fileData);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Pair<String, Integer> gatherData(int index) {
+        StringBuilder builder = new StringBuilder();
+        int newLines = 1;
+        try {
+            Scanner scanner = new Scanner(CONFIG);
+            for (int i = 0; i < index; i++) {
+                scanner.nextLine();
+            }
+            while (scanner.hasNextLine()) {
+                String data = scanner.nextLine();
+                if (data.startsWith("ServerAlias"))
+                    continue;
+                if (data.startsWith("</") && data.endsWith(">"))
+                    break;
+                builder.append(data).append(System.lineSeparator());
+                newLines++;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new Pair<>(builder.toString(), newLines);
+    }
+
+    private String modifyXMLFormat(String header, String str, DummyCustomDomain updated) {
+        Stream<String> stringStream = Arrays.stream(str.split(System.lineSeparator()));
+        Iterator<String> itr = stringStream.iterator();
+        StringBuilder retVal = new StringBuilder(header).append(System.lineSeparator());
+        itr.forEachRemaining(data -> {
+            Pair<String, String> pair = getValue(data);
+            retVal.append("\t").append(pair.getKey()).append(" ");
+            switch (pair.getKey()) {
+                case "ServerName" -> retVal.append(updated.getName());
+                case "ServerAdmin" -> retVal.append(updated.getServerAdmin());
+                case "DocumentRoot" -> {
+                    retVal.append("\"").append(updated.getTarget().getPath()).append("\"");
+                }
+                case "ErrorLog" -> {
+                    retVal.append("\"").append(updated.getErrorLog().getPath()).append("\"");
+                }
+                case "CustomLog" -> {
+                    retVal.append("\"").append(updated.getCustomLog().getPath()).append("\"");
+                }
+            }
+            retVal.append(System.lineSeparator());
+        });
+        if (updated.getServerAlias() != null) {
+            for (String alias : updated.getServerAlias()) {
+                retVal.append("\t").append("ServerAlias ").append(alias).append(System.lineSeparator());
+            }
+        }
+        retVal.append("</VirtualHost>").append(System.lineSeparator());
+        return retVal.toString();
+    }
+
+    private boolean stringEquals(String str) {
+        Stream<String> stream = Arrays.stream(str.split(System.lineSeparator()));
+        boolean retVal = false;
+        for (String string : stream.toList()) {
+            if (string.endsWith("ServerName " + this.name)) {
+                retVal = true;
+                break;
+            }
+        }
+        return retVal;
+    }
+
+    @Override
+    public String toString() {
+        return "{" + "name: " + this.name + ", " +
+                "target: " + this.target.getPath() + ", " +
+                "server admin: " + this.serverAdmin + ", " +
+                "domain data: " + this.domainData +
+                "}";
     }
 }
