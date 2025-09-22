@@ -34,6 +34,18 @@ public class AddDomainPanel extends JPanel {
         gbc.anchor = GridBagConstraints.LINE_START;
         gbc.insets = new Insets(0, 10 ,10 ,10);
         gbc.gridx = 0;
+        gbc.gridy = 0;
+
+        JButton return_ = new JButton("<html>return</html>");
+        return_.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.setContentPane(new MainGuiPanel(frame));
+                frame.pack();
+            }
+        });
+        this.add(return_, gbc);
+
         gbc.gridy = 1;
 
         JLabel nameText = new JLabel("<html>Enter server url</html>");
@@ -180,7 +192,7 @@ public class AddDomainPanel extends JPanel {
                 if (panel.serverAlias != null || panel.errorLog != null || panel.customLog != null) {
                     data = new CustomDomainData(panel.serverAlias, panel.errorLog, panel.customLog);
                 }
-                if (data == null) {
+                if (data != null) {
                     CustomDomain domain = new CustomDomain(panel.name, panel.serverAdmin, panel.target, data);
                 } else {
                     CustomDomain domain = new CustomDomain(panel.name, panel.serverAdmin, panel.target);
@@ -192,5 +204,9 @@ public class AddDomainPanel extends JPanel {
         gbc.gridy = 6;
         gbc.anchor = GridBagConstraints.CENTER;
         this.add(confirm, gbc);
+        gbc.anchor = GridBagConstraints.LINE_START;
+        gbc.insets = new Insets(0, 10 ,10 ,10);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
     }
 }

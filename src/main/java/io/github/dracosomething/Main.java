@@ -11,10 +11,7 @@ import java.awt.event.ActionListener;
 public class Main {
     public static void main(String[] args) {
         JFrame frame = new JFrame("domainify");
-        frame.pack();
-        frame.setSize(800, 850);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        frame.setExtendedState(Frame.MAXIMIZED_BOTH);
         frame.setVisible(true);
 
         Font font  = frame.getFont();
@@ -24,5 +21,6 @@ public class Main {
 
         frame.setContentPane(panel);
         frame.pack();
+        frame.setSize(frame.getWidth(), 800);
     }
 }

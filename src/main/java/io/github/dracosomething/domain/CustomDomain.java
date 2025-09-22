@@ -10,7 +10,6 @@ import java.util.stream.Stream;
 
 public class CustomDomain {
     public static final ArrayList<CustomDomain> DOMAINS = new ArrayList<>();
-    public static final CustomDomain EMPTY = new CustomDomain();
     private static final File HOSTS =  new File(URI.create("file:/Windows/System32/drivers/etc/hosts"));
     private static final File CONFIG = new File(URI.create("file:/xampp/apache/conf/extra/httpd-vhosts.conf"));
 
@@ -275,18 +274,30 @@ public class CustomDomain {
     }
 
     public String[] toArray() {
+        int i = 0;
         String[] arr = new String[6];
-        arr[0] = this.name;
-        arr[1] = this.serverAdmin;
-        arr[2] = this.target.getPath();
+        arr[i++] = this.name;
+        arr[i++] = this.serverAdmin;
+        arr[i++] = this.target.getPath();
         if (this.domainData == null)
             return arr;
-        if (this.domainData.serverAlias() != null)
-            arr[3] = this.domainData.serverAlias().toString();
+        if (this.domainData.serverAlias() != null) {
+            StringBuilder builder = new StringBuilder();
+            Iterator<String> itr = this.domainData.serverAlias().iterator();
+            while(itr.hasNext()) {
+                String str = itr.next();
+                builder.append(str);
+                if (itr.hasNext()) {
+                    builder.append(", ");
+                }
+            }
+            arr[i++] = builder.toString();
+        }
+
         if (this.domainData.customLog() != null)
-            arr[4] = this.domainData.customLog().getPath();
+            arr[i++] = this.domainData.customLog().getPath();
         if (this.domainData.errorLog() != null)
-            arr[5] = this.domainData.errorLog().getPath();
+            arr[i++] = this.domainData.errorLog().getPath();
         return arr;
     }
 
@@ -364,6 +375,57 @@ public class CustomDomain {
         }
         return new Pair<>(builder.toString(), newLines);
     }
+
+    public void removeDomain() {
+        if (!HOSTS.exists()) return;
+        if (!CONFIG.exists()) return;
+        try {
+            Scanner scanner = new Scanner(HOSTS);
+            StringBuilder fileData = new StringBuilder();
+            while (scanner.hasNextLine()) {
+                String data = scanner.nextLine();
+                if (data.equals("127.0.0.1 " + this.name)) {
+                    continue;
+                }
+                fileData.append(data).append(System.lineSeparator());
+            }
+
+            FileWriter writer = new FileWriter(HOSTS);
+            writer.append(fileData);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            Scanner scanner = new Scanner(CONFIG);
+            StringBuilder fileData = new StringBuilder();
+            int i = 0;
+            int iCache = -1;
+            while (scanner.hasNextLine()) {
+                String data = scanner.nextLine();
+                i++;
+                if (iCache >= i)
+                    continue;
+                if ((data.startsWith("<") && !data.startsWith("</")) && data.endsWith(">")) {
+                    Pair<String, Integer> pair = gatherData(i);
+                    String gathered = pair.getKey();
+                    if (stringEquals(gathered)) {
+                        iCache = i + pair.getValue();
+                        continue;
+                    }
+                }
+                fileData.append(data).append(System.lineSeparator());
+            }
+
+            FileWriter writer = new FileWriter(CONFIG);
+            writer.append(fileData);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private String modifyXMLFormat(String header, String str, DummyCustomDomain updated) {
         Stream<String> stringStream = Arrays.stream(str.split(System.lineSeparator()));

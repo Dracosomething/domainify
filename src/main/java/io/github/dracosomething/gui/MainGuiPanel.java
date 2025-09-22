@@ -20,17 +20,15 @@ public class MainGuiPanel extends JPanel {
         this.setVisible(true);
         this.setLayout(new GridBagLayout());
         this.setBorder(new EmptyBorder(10, 10, 10, 10));
-        this.setBackground(new Color(50, 50, 50));
+        this.setBackground(new Color(255, 255, 255));
         MainGuiPanel panel = this;
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.anchor = GridBagConstraints.FIRST_LINE_END;
+        gbc.anchor = GridBagConstraints.LINE_START;
         gbc.insets = new Insets(0, 10 ,10 ,10);
         gbc.gridx = 0;
         gbc.gridy = 0;
-
         DomainTable domainList = new DomainTable(frame);
-
         JButton add = new JButton("new domain");
         add.addActionListener(new ActionListener() {
             @Override
@@ -39,8 +37,14 @@ public class MainGuiPanel extends JPanel {
                 frame.pack();
             }
         });
-        this.add(domainList, gbc);
+        JScrollPane scrollPane = new JScrollPane(domainList, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setBorder(null);
+        scrollPane.setColumnHeader(null);
+        scrollPane.setPreferredSize(new Dimension(800, 700));
+        this.add(scrollPane, gbc);
+
         gbc.gridx = 1;
+        gbc.anchor = GridBagConstraints.PAGE_START;
         this.add(add, gbc);
     }
 }

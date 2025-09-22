@@ -32,6 +32,18 @@ public class EditDomainPanel extends JPanel {
         gbc.anchor = GridBagConstraints.LINE_START;
         gbc.insets = new Insets(0, 10 ,10 ,10);
         gbc.gridx = 0;
+        gbc.gridy = 0;
+
+        JButton return_ = new JButton("<html>return</html>");
+        return_.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.setContentPane(new MainGuiPanel(frame));
+                frame.pack();
+            }
+        });
+        this.add(return_, gbc);
+
         gbc.gridy = 1;
 
         JLabel nameText = new JLabel("<html>Enter server url</html>");
@@ -235,7 +247,23 @@ public class EditDomainPanel extends JPanel {
             }
         });
         gbc.gridy = 6;
-        gbc.anchor = GridBagConstraints.CENTER;
         this.add(confirm, gbc);
+
+        JButton remove = new JButton("<html>Remove Domain</html>");
+        remove.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                domain.removeDomain();
+                frame.setContentPane(new MainGuiPanel(frame));
+                frame.pack();
+            }
+        });
+
+        gbc.gridx = 1;
+        this.add(remove, gbc);
+        gbc.anchor = GridBagConstraints.LINE_START;
+        gbc.insets = new Insets(0, 10 ,10 ,10);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
     }
 }
