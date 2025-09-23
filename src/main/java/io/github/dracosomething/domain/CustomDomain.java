@@ -14,7 +14,7 @@ public class CustomDomain {
     private static final File HOSTS =  new File(URI.create("file:/Windows/System32/drivers/etc/hosts"));
     private static final File CONFIG_XAMPP = new File(URI.create("file:/xampp/apache/conf/extra/httpd-vhosts.conf"));
     private static final File WAMP = new File(URI.create("file:/wamp/bin/apache"));
-    private static final File[] CONFIG_WAMP;
+    private static final List<File> CONFIG_WAMP;
 
     private String serverAdmin;
     private String name;
@@ -483,15 +483,17 @@ public class CustomDomain {
     }
 
     static {
+        CONFIG_WAMP = new ArrayList<>();
         if (WAMP.exists() && WAMP.isDirectory()) {
             File[] arr = WAMP.listFiles(new WampApacheFilter());
             if (arr != null) {
-                for (File file : arr) {
-                    
+                for (File dir : arr) {
+                    File file = new File(dir, "conf/extra/httpd-vhosts.conf");
+                    if (file.exists()) {
+                        CONFIG_WAMP.add(file);
+                    }
                 }
             }
-        } else {
-            CONFIG_WAMP = new File[0];
         }
     }
 }
