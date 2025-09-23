@@ -6,12 +6,15 @@ import io.github.dracosomething.Util;
 import java.io.*;
 import java.net.URI;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 public class CustomDomain {
     public static final ArrayList<CustomDomain> DOMAINS = new ArrayList<>();
     private static final File HOSTS =  new File(URI.create("file:/Windows/System32/drivers/etc/hosts"));
-    private static final File CONFIG = new File(URI.create("file:/xampp/apache/conf/extra/httpd-vhosts.conf"));
+    private static final File CONFIG_XAMPP = new File(URI.create("file:/xampp/apache/conf/extra/httpd-vhosts.conf"));
+    private static final File WAMP = new File(URI.create("file:/wamp/bin/apache"));
+    private static final File[] CONFIG_WAMP;
 
     private String serverAdmin;
     private String name;
@@ -37,7 +40,7 @@ public class CustomDomain {
 
     private void registerDomain() {
         if (!HOSTS.exists()) return;
-        if (!CONFIG.exists()) return;
+        if (!CONFIG_XAMPP.exists()) return;
         try {
             Scanner reader = new Scanner(HOSTS);
             while (reader.hasNextLine()) {
@@ -55,7 +58,7 @@ public class CustomDomain {
         }
 
         try {
-            Scanner reader = new Scanner(CONFIG);
+            Scanner reader = new Scanner(CONFIG_XAMPP);
             while (reader.hasNextLine()) {
                 String data = reader.nextLine();
                 if (shouldSkip(data))
@@ -64,7 +67,7 @@ public class CustomDomain {
                     return;
             }
 
-            FileWriter writer = new FileWriter(CONFIG, true);
+            FileWriter writer = new FileWriter(CONFIG_XAMPP, true);
             writer.append(System.lineSeparator()).append("<VirtualHost 127.0.0.1:80>").append(System.lineSeparator());
             writer.append("\tServerName ").append(this.name).append(System.lineSeparator());
             writer.append("\tServerAdmin ").append(this.serverAdmin).append(System.lineSeparator());
@@ -136,9 +139,9 @@ public class CustomDomain {
     }
 
     public static void readDomainXML() {
-        if (!CONFIG.exists()) return;
+        if (!CONFIG_XAMPP.exists()) return;
         try {
-            Scanner reader = new Scanner(CONFIG);
+            Scanner reader = new Scanner(CONFIG_XAMPP);
             CustomDomain[] arr = new CustomDomain[1];
             int index = 0;
             while (reader.hasNextLine()) {
@@ -303,7 +306,7 @@ public class CustomDomain {
 
     public void updateDomain(DummyCustomDomain updated) {
         if (!HOSTS.exists()) return;
-        if (!CONFIG.exists()) return;
+        if (!CONFIG_XAMPP.exists()) return;
         try {
             Scanner scanner = new Scanner(HOSTS);
             StringBuilder fileData = new StringBuilder();
@@ -324,7 +327,7 @@ public class CustomDomain {
         }
 
         try {
-            Scanner scanner = new Scanner(CONFIG);
+            Scanner scanner = new Scanner(CONFIG_XAMPP);
             StringBuilder fileData = new StringBuilder();
             int i = 0;
             int iCache = -1;
@@ -345,7 +348,7 @@ public class CustomDomain {
                 fileData.append(data).append(System.lineSeparator());
             }
 
-            FileWriter writer = new FileWriter(CONFIG);
+            FileWriter writer = new FileWriter(CONFIG_XAMPP);
             writer.append(fileData);
             writer.close();
         } catch (IOException e) {
@@ -357,7 +360,7 @@ public class CustomDomain {
         StringBuilder builder = new StringBuilder();
         int newLines = 1;
         try {
-            Scanner scanner = new Scanner(CONFIG);
+            Scanner scanner = new Scanner(CONFIG_XAMPP);
             for (int i = 0; i < index; i++) {
                 scanner.nextLine();
             }
@@ -378,7 +381,7 @@ public class CustomDomain {
 
     public void removeDomain() {
         if (!HOSTS.exists()) return;
-        if (!CONFIG.exists()) return;
+        if (!CONFIG_XAMPP.exists()) return;
         try {
             Scanner scanner = new Scanner(HOSTS);
             StringBuilder fileData = new StringBuilder();
@@ -398,7 +401,7 @@ public class CustomDomain {
         }
 
         try {
-            Scanner scanner = new Scanner(CONFIG);
+            Scanner scanner = new Scanner(CONFIG_XAMPP);
             StringBuilder fileData = new StringBuilder();
             int i = 0;
             int iCache = -1;
@@ -418,7 +421,7 @@ public class CustomDomain {
                 fileData.append(data).append(System.lineSeparator());
             }
 
-            FileWriter writer = new FileWriter(CONFIG);
+            FileWriter writer = new FileWriter(CONFIG_XAMPP);
             writer.append(fileData);
             writer.close();
         } catch (IOException e) {
@@ -477,5 +480,18 @@ public class CustomDomain {
                 "server admin: " + this.serverAdmin + ", " +
                 "domain data: " + this.domainData +
                 "}";
+    }
+
+    static {
+        if (WAMP.exists() && WAMP.isDirectory()) {
+            File[] arr = WAMP.listFiles(new WampApacheFilter());
+            if (arr != null) {
+                for (File file : arr) {
+                    
+                }
+            }
+        } else {
+            CONFIG_WAMP = new File[0];
+        }
     }
 }
