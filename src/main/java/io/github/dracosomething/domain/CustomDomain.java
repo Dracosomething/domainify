@@ -1,12 +1,11 @@
 package io.github.dracosomething.domain;
 
-import io.github.dracosomething.Pair;
-import io.github.dracosomething.Util;
+import io.github.dracosomething.util.Pair;
+import io.github.dracosomething.util.Util;
 
 import java.io.*;
 import java.net.URI;
 import java.util.*;
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 public class CustomDomain {
@@ -14,7 +13,7 @@ public class CustomDomain {
     private static final File HOSTS =  new File(URI.create("file:/Windows/System32/drivers/etc/hosts"));
     private static final File CONFIG_XAMPP = new File(URI.create("file:/xampp/apache/conf/extra/httpd-vhosts.conf"));
     private static final File WAMP = new File(URI.create("file:/wamp/bin/apache"));
-    private static final List<File> CONFIG_WAMP;
+    private static final File CONFIG_WAMP;
 
     private String serverAdmin;
     private String name;
@@ -40,7 +39,6 @@ public class CustomDomain {
 
     private void registerDomain() {
         if (!HOSTS.exists()) return;
-        if (!CONFIG_XAMPP.exists()) return;
         try {
             Scanner reader = new Scanner(HOSTS);
             while (reader.hasNextLine()) {
@@ -56,9 +54,14 @@ public class CustomDomain {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        registerConfig(CONFIG_XAMPP);
+        registerConfig(CONFIG_WAMP);
+    }
 
+    private void registerConfig(final File const_) {
+        if (!const_.exists()) return;
         try {
-            Scanner reader = new Scanner(CONFIG_XAMPP);
+            Scanner reader = new Scanner(const_);
             while (reader.hasNextLine()) {
                 String data = reader.nextLine();
                 if (shouldSkip(data))
@@ -67,7 +70,7 @@ public class CustomDomain {
                     return;
             }
 
-            FileWriter writer = new FileWriter(CONFIG_XAMPP, true);
+            FileWriter writer = new FileWriter(const_, true);
             writer.append(System.lineSeparator()).append("<VirtualHost 127.0.0.1:80>").append(System.lineSeparator());
             writer.append("\tServerName ").append(this.name).append(System.lineSeparator());
             writer.append("\tServerAdmin ").append(this.serverAdmin).append(System.lineSeparator());
@@ -138,10 +141,10 @@ public class CustomDomain {
         return Objects.equals(key, "127.0.0.1") && Objects.equals(value, this.name);
     }
 
-    public static void readDomainXML() {
-        if (!CONFIG_XAMPP.exists()) return;
+    public static void readDomainXML(final File const_) {
+        if (!const_.exists()) return;
         try {
-            Scanner reader = new Scanner(CONFIG_XAMPP);
+            Scanner reader = new Scanner(const_);
             CustomDomain[] arr = new CustomDomain[1];
             int index = 0;
             while (reader.hasNextLine()) {
@@ -306,7 +309,6 @@ public class CustomDomain {
 
     public void updateDomain(DummyCustomDomain updated) {
         if (!HOSTS.exists()) return;
-        if (!CONFIG_XAMPP.exists()) return;
         try {
             Scanner scanner = new Scanner(HOSTS);
             StringBuilder fileData = new StringBuilder();
@@ -325,9 +327,14 @@ public class CustomDomain {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        updateConfig(CONFIG_XAMPP, updated);
+        updateConfig(CONFIG_WAMP, updated);
+    }
 
+    private void updateConfig(final File const_, DummyCustomDomain updated) {
+        if (!const_.exists()) return;
         try {
-            Scanner scanner = new Scanner(CONFIG_XAMPP);
+            Scanner scanner = new Scanner(const_);
             StringBuilder fileData = new StringBuilder();
             int i = 0;
             int iCache = -1;
@@ -337,7 +344,7 @@ public class CustomDomain {
                 if (iCache >= i)
                     continue;
                 if ((data.startsWith("<") && !data.startsWith("</")) && data.endsWith(">")) {
-                    Pair<String, Integer> pair = gatherData(i);
+                    Pair<String, Integer> pair = gatherData(i, const_);
                     String gathered = pair.getKey();
                     if (stringEquals(gathered)) {
                         fileData.append(modifyXMLFormat(data, gathered, updated));
@@ -348,7 +355,7 @@ public class CustomDomain {
                 fileData.append(data).append(System.lineSeparator());
             }
 
-            FileWriter writer = new FileWriter(CONFIG_XAMPP);
+            FileWriter writer = new FileWriter(const_);
             writer.append(fileData);
             writer.close();
         } catch (IOException e) {
@@ -356,11 +363,11 @@ public class CustomDomain {
         }
     }
 
-    private Pair<String, Integer> gatherData(int index) {
+    private Pair<String, Integer> gatherData(int index, final File const_) {
         StringBuilder builder = new StringBuilder();
         int newLines = 1;
         try {
-            Scanner scanner = new Scanner(CONFIG_XAMPP);
+            Scanner scanner = new Scanner(const_);
             for (int i = 0; i < index; i++) {
                 scanner.nextLine();
             }
@@ -381,7 +388,6 @@ public class CustomDomain {
 
     public void removeDomain() {
         if (!HOSTS.exists()) return;
-        if (!CONFIG_XAMPP.exists()) return;
         try {
             Scanner scanner = new Scanner(HOSTS);
             StringBuilder fileData = new StringBuilder();
@@ -399,9 +405,14 @@ public class CustomDomain {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        removeConfig(CONFIG_XAMPP);
+        removeConfig(CONFIG_WAMP);
+    }
 
+    private void removeConfig(final File const_) {
+        if (!const_.exists()) return;
         try {
-            Scanner scanner = new Scanner(CONFIG_XAMPP);
+            Scanner scanner = new Scanner(const_);
             StringBuilder fileData = new StringBuilder();
             int i = 0;
             int iCache = -1;
@@ -411,7 +422,7 @@ public class CustomDomain {
                 if (iCache >= i)
                     continue;
                 if ((data.startsWith("<") && !data.startsWith("</")) && data.endsWith(">")) {
-                    Pair<String, Integer> pair = gatherData(i);
+                    Pair<String, Integer> pair = gatherData(i, const_);
                     String gathered = pair.getKey();
                     if (stringEquals(gathered)) {
                         iCache = i + pair.getValue();
@@ -421,7 +432,7 @@ public class CustomDomain {
                 fileData.append(data).append(System.lineSeparator());
             }
 
-            FileWriter writer = new FileWriter(CONFIG_XAMPP);
+            FileWriter writer = new FileWriter(const_);
             writer.append(fileData);
             writer.close();
         } catch (IOException e) {
@@ -482,18 +493,32 @@ public class CustomDomain {
                 "}";
     }
 
+    public static File getConfigWamp() {
+        return CONFIG_WAMP;
+    }
+
+    public static File getConfigXampp() {
+        return CONFIG_XAMPP;
+    }
+
     static {
-        CONFIG_WAMP = new ArrayList<>();
         if (WAMP.exists() && WAMP.isDirectory()) {
             File[] arr = WAMP.listFiles(new WampApacheFilter());
             if (arr != null) {
-                for (File dir : arr) {
-                    File file = new File(dir, "conf/extra/httpd-vhosts.conf");
-                    if (file.exists()) {
-                        CONFIG_WAMP.add(file);
-                    }
+                List<File> list = new ArrayList<>(Arrays.stream(arr).toList());
+                list.sort(ReverseFileOrder.REVERSE_FILE_ORDER);
+                File dir = list.getFirst();
+                File file = new File(dir, "/conf/extra/httpd-vhosts.conf");
+                if (file.exists()) {
+                    CONFIG_WAMP = file;
+                } else {
+                    CONFIG_WAMP = new File("wamp_nonexistent");
                 }
+            } else {
+                CONFIG_WAMP = new File("wamp_nonexistent");
             }
+        } else {
+            CONFIG_WAMP = new File("wamp_nonexistent");
         }
     }
 }

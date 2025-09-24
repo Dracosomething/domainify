@@ -15,7 +15,8 @@ import java.awt.event.InputMethodListener;
 public class MainGuiPanel extends JPanel {
 
     public MainGuiPanel(JFrame frame) {
-        CustomDomain.readDomainXML();
+        CustomDomain.readDomainXML(CustomDomain.getConfigWamp());
+        CustomDomain.readDomainXML(CustomDomain.getConfigXampp());
         this.setSize(1000, 1500);
         this.setVisible(true);
         this.setLayout(new GridBagLayout());

@@ -1,4 +1,4 @@
-package io.github.dracosomething;
+package io.github.dracosomething.util;
 
 public class Pair<K, V> {
     private K key;
