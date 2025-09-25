@@ -105,6 +105,11 @@ public class FileUtils {
         // extension = Win32-vs17-x64.zip
         // name = php
         // filter on highest
+        // required new params: String name, String fileExtension, boolean shouldFilter
+        // need new method downloadFileFromWeb with param URL url
+        // downloads a file and returns it
+        // need new method downloadFile with params URL url, String name, String fileExtension, boolean shouldFilter
+        // calls getFileFromWeb and then downloadFileFromWeb and returns the file downloaded.
 
         // server (https://dev.mysql.com/downloads/installer) (mysql-installer-community-8.0.43.0.msi)
 
