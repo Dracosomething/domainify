@@ -25,14 +25,16 @@ public class FileUtils {
         Util.PROJECT.mkdir();
     }
 
-    public static URL getFileFromWeb(URL url) throws IOException {
-        BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+    public static BufferedReader getUrlReader(URL url) throws IOException {
+        return new BufferedReader(new InputStreamReader(url.openStream()));
+    }
+
+    public static URL getFileFromWeb(URL url, String fileExtension) throws IOException {
+        BufferedReader in = getUrlReader(url);
         StringBuilder builder = new StringBuilder();
         String str;
         while ((str = in.readLine()) != null) {
-            if (!str.endsWith("HTTP Server project")) continue;
-            if (!str.contains("[TGZ]")) continue;
-            if (str.contains(".bz2")) continue;
+            if (!str.endsWith(fileExtension)) continue;
             builder.append(str).append(System.lineSeparator());
         }
         in.close();
@@ -87,7 +89,7 @@ public class FileUtils {
         // apache download
         uri = URI.create("https://dlcdn.apache.org/httpd");
         url = uri.toURL();
-        url = getFileFromWeb(url);
+        url = getFileFromWeb(url, ".tar.gz");
         channel = Channels.newChannel(url.openStream());
         File apacheZipped = new File(apacheDir, "/apache.tar.gz");
         outputStream = new FileOutputStream(apacheZipped);
@@ -100,7 +102,9 @@ public class FileUtils {
         File http = unTar(apacheTar, apacheDir);
 
         // php download (https://www.php.net/downloads) VS17 x64 Thread Safe
-
+        // extension = Win32-vs17-x64.zip
+        // name = php
+        // filter on highest
 
         // server (https://dev.mysql.com/downloads/installer) (mysql-installer-community-8.0.43.0.msi)
 
