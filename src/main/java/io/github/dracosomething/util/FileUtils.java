@@ -117,6 +117,7 @@ public class FileUtils {
         // follow download instructions (https://httpd.apache.org/docs/2.4/platform/win_compiling.html)
         // run command line stuff (https://stackoverflow.com/questions/15464111/run-cmd-commands-through-java)
         // code HTMLObject class with String type, Map<String, String> properties, List<HTMLObject> subObjects
+        // add os check so that i can decide how to run commands.
         
         // unpack
         File apacheTar = unGzip(apacheZipped, apacheDir);
