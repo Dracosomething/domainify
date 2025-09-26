@@ -13,8 +13,11 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 
 public class FileUtils {
@@ -29,13 +32,27 @@ public class FileUtils {
         return new BufferedReader(new InputStreamReader(url.openStream()));
     }
 
-    public static URL getFileFromWeb(URL url, String fileExtension) throws IOException {
+    public static URL getFileFromWeb(URL url, String name, String fileExtension,
+                                     boolean shouldFilter) throws IOException {
+        return getFileFromWeb(url, name, fileExtension, null, shouldFilter);
+    }
+
+    public static URL getFileFromWeb(URL url, String name, String fileExtension,
+                                     Pattern extraData, boolean shouldFilter) throws IOException {
         BufferedReader in = getUrlReader(url);
         StringBuilder builder = new StringBuilder();
+        List<String> list = new ArrayList<>();
         String str;
+        System.out.println(fileExtension);
+        System.out.println(extraData);
         while ((str = in.readLine()) != null) {
-            if (!str.contains(fileExtension)) continue;
-            builder.append(str).append(System.lineSeparator());
+            if (!str.contains(name)) continue;
+            if (extraData != null && !extraData.matcher(str).hasMatch()) continue;
+            if (str.contains(fileExtension)) {
+                list.add(str);
+                System.out.println(str);
+                builder.append(str).append(System.lineSeparator());
+            }
         }
         in.close();
         String tmp = builder.toString();
@@ -89,7 +106,7 @@ public class FileUtils {
         // apache download
         uri = URI.create("https://dlcdn.apache.org/httpd");
         url = uri.toURL();
-        url = getFileFromWeb(url, ".tar.gz");
+        url = getFileFromWeb(url, "httpd", ".tar.gz", Pattern.compile("[TGZ"), false);
         channel = Channels.newChannel(url.openStream());
         File apacheZipped = new File(apacheDir, "/apache.tar.gz");
         outputStream = new FileOutputStream(apacheZipped);
@@ -102,10 +119,11 @@ public class FileUtils {
         File http = unTar(apacheTar, apacheDir);
 
         // php download (https://www.php.net/downloads) VS17 x64 Thread Safe
-        // extension = Win32-vs17-x64.zip
+        // extension = .zip
+        // extraData = Win32-vs17-x64
         // name = php
         // filter on highest
-        // required new params: String name, String fileExtension, String description, boolean shouldFilter
+        // required new params: String name, String fileExtension, String description, Pattern extraData, boolean shouldFilter
         // need new method downloadFileFromWeb with param URL url
         // downloads a file and returns it
         // need new method downloadFile with params URL url, String name, String fileExtension, String description, boolean shouldFilter
