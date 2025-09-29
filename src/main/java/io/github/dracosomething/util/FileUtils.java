@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 
 public class FileUtils {
@@ -38,54 +37,34 @@ public class FileUtils {
     }
 
     public static URL getFileFromWeb(URL url, String name, String fileExtension,
-                                     Pattern extraData, boolean shouldFilter) throws IOException {
+                                     String[] extraData, boolean shouldFilter) throws IOException {
         BufferedReader in = getUrlReader(url);
-        StringBuilder builder = new StringBuilder();
-        List<String> list = new ArrayList<>();
+        List<HTMLObject> list = new ArrayList<>();
         String str;
-        System.out.println(fileExtension);
-        System.out.println(extraData);
+        String regex = Util.formatArrayToRegex(extraData);
         while ((str = in.readLine()) != null) {
             if (!str.contains(name)) continue;
-            if (extraData != null && !extraData.matcher(str).hasMatch()) continue;
+            if (extraData != null && !str.matches(regex)) continue;
             if (str.contains(fileExtension)) {
-                list.add(str);
-                System.out.println(str);
-                builder.append(str).append(System.lineSeparator());
+                String[] tmpArray = str.split("<(.*) .*?>.*?</\\1>");
+                for (String tmp : tmpArray) {
+                    str = str.replace(tmp, "");
+                }
+                HTMLObject object = HTMLObject.parse(str);
+                list.add(object);
             }
         }
         in.close();
-        String tmp = builder.toString();
-        builder = new StringBuilder();
-        for (char char_ : tmp.toCharArray()) {
-            if (char_ == ' ') continue;
-            builder.append(char_);
-            if (char_ == '>') builder.append(System.lineSeparator());
+        if (shouldFilter) {
+            list.forEach(System.out::println);
+            list = list.stream().sorted(new VersionNameComparator(name, fileExtension)).toList();
+            list.forEach(System.out::println);
         }
-        Iterator<String> lines = builder.toString().lines().iterator();
-        builder = new StringBuilder();
-        while (lines.hasNext()) {
-            String line = lines.next();
-            if (!line.contains("href")) continue;
-            builder.append(line);
-        }
-        tmp = builder.toString();
-        builder = new StringBuilder();
-        char[] arr = tmp.toCharArray();
-        for (int i = 0; i < arr.length; i++) {
-            if (arr[i] == 'h') {
-                i += 5;
-                while (arr[i+1] != '\"') {
-                    char char_ = arr[++i];
-                    builder.append(char_);
-                }
-                break;
-            }
-        }
-        String retVal = url.toString();
-        retVal += "/";
-        retVal += builder.toString();
-        URI uri = URI.create(retVal);
+        HTMLObject object = list.getFirst();
+        String tmp = url.toString();
+        tmp += "/";
+        tmp += object.getProperty("href");
+        URI uri = URI.create(tmp);
         return uri.toURL();
     }
 
@@ -106,7 +85,7 @@ public class FileUtils {
         // apache download
         uri = URI.create("https://dlcdn.apache.org/httpd");
         url = uri.toURL();
-        url = getFileFromWeb(url, "httpd", ".tar.gz", Pattern.compile("[TGZ"), false);
+        url = getFileFromWeb(url, "httpd", ".tar.gz", new String[]{"TGZ"}, false);
         channel = Channels.newChannel(url.openStream());
         File apacheZipped = new File(apacheDir, "/apache.tar.gz");
         outputStream = new FileOutputStream(apacheZipped);
@@ -122,6 +101,11 @@ public class FileUtils {
         // unpack
         File apacheTar = unGzip(apacheZipped, apacheDir);
         File http = unTar(apacheTar, apacheDir);
+        File targetFile = new File(apacheDir, "/httpd-2.4.65");
+        Console console = new Console();
+        console.directory(http);
+        console.runCommand("nmake /f Makefile.win _apacher");
+        console.runCommand("nmake /f Makefile.win installr INSTDIR=" + apacheDir.getPath());
 
         // php download (https://www.php.net/downloads) VS17 x64 Thread Safe
         // extension = .zip
@@ -144,10 +128,7 @@ public class FileUtils {
         TarArchiveInputStream tarIn = (TarArchiveInputStream) factory.createArchiveInputStream("tar", in);
         TarArchiveEntry entry = null;
         while ((entry = tarIn.getNextEntry()) != null) {
-            if (HTTP_REGEX.matcher(entry.getName()).matches()) {
-                continue;
-            }
-            File outputFile = new File(outDir, entry.getName().replaceAll(HTTP_REGEX.toString(), ""));
+            File outputFile = new File(outDir, entry.getName());
             if (entry.isDirectory()) {
                 if (!outputFile.exists()) {
                     if (!outputFile.mkdirs()) {

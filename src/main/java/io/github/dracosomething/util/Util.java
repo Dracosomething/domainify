@@ -4,10 +4,12 @@ import java.io.File;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Iterator;
 
 public class Util {
     public static final File ROOT = Arrays.stream(File.listRoots()).toList().getFirst();
     public static final File PROJECT = new File(ROOT, "/domainify");
+    public static final boolean IS_WINDOWS = System.getProperty("os.name").toLowerCase().startsWith("windows");
 
     public static boolean isProperPath(String path) {
         try {
@@ -24,5 +26,18 @@ public class Util {
         File apache = new File(PROJECT, "/apache");
         File mySql = new File(PROJECT, "/sql");
         return !PROJECT.exists() || !php.exists() || !apache.exists() || !mySql.exists();
+    }
+
+    public static String formatArrayToRegex(String[] arr) {
+        StringBuilder builder = new StringBuilder(".*\\b");
+        Iterator<String> it = Arrays.stream(arr).iterator();
+        while (it.hasNext()) {
+            String str = it.next();
+            builder.append(str).append("\\b.*");
+            if (it.hasNext()) {
+                builder.append("|.*\\b");
+            }
+        }
+        return builder.toString();
     }
 }
