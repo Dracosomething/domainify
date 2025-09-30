@@ -35,7 +35,7 @@ public class Util {
             String str = it.next();
             builder.append(str).append("\\b.*");
             if (it.hasNext()) {
-                builder.append("|.*\\b");
+                builder.append("\\b");
             }
         }
         return builder.toString();

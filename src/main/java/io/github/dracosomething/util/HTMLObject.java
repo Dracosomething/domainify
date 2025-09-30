@@ -140,4 +140,24 @@ public class HTMLObject {
     public HTMLObject getChildObject(int index) {
         return this.childObjects.get(index);
     }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder("{");
+        builder.append("\n").append("\t");
+        builder.append("type: ").append(this.type).append(", ").append("\n").append("\t");
+        builder.append("contents: ").append(this.contents).append(", ").append("\n").append("\t");
+        builder.append("data: {").append("\n");
+        data.forEach((string, string2) -> {
+            builder.append("\t\t").append(string).append(": ").append(string2).append(", ").append("\n");
+        });
+        builder.append("\t").append("}").append(", ").append("\n");
+        builder.append("childObjects: {").append("\n");
+        childObjects.forEach(htmlObject -> {
+            builder.append("\t\t").append(htmlObject).append(", ").append("\n");
+        });
+        builder.append("\t").append("}");
+        builder.append("\n").append("}");
+        return builder.toString();
+    }
 }

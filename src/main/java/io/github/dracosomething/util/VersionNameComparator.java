@@ -15,6 +15,6 @@ public class VersionNameComparator implements Comparator<HTMLObject> {
     public int compare(HTMLObject o1, HTMLObject o2) {
         String version1 = o1.getContents().replace(fileName, "").replace(fileExtension, "");
         String version2 = o2.getContents().replace(fileName, "").replace(fileExtension, "");
-        return version2.compareTo(version1);
+        return version1.compareTo(version2);
     }
 }
