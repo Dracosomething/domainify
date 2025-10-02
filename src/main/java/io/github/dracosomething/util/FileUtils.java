@@ -8,7 +8,6 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.io.FileExistsException;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.output.FileWriterWithEncoding;
 
 import java.io.*;
 import java.net.URI;
@@ -19,15 +18,18 @@ import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
+import static io.github.dracosomething.util.Util.PATH_SEPARATOR;
+
 public class FileUtils {
-    public static ArchiveStreamFactory factory = new ArchiveStreamFactory();
-    public static final File DATA = new File(Util.PROJECT, "/data.txt");
+    public static final ArchiveStreamFactory factory = new ArchiveStreamFactory();
+    public static final File DATA = new File(Util.PROJECT, PATH_SEPARATOR + "data.txt");
 
     public static void createProjRoot() {
-        if (Util.PROJECT.exists()) return;
+        if (Util.PROJECT.exists()) {
+            return;
+        }
         Util.PROJECT.mkdir();
     }
 
@@ -68,6 +70,7 @@ public class FileUtils {
                     str = str.replace(tmp, "");
                 }
                 HTMLObject object = HTMLObject.parse(str);
+                object = HTMLObject.getAbsoluteLinkChild(object);
                 list.add(object);
             }
         }
@@ -77,6 +80,15 @@ public class FileUtils {
         }
         HTMLObject object = list.getFirst();
         return object.getProperty("href");
+    }
+
+    public static String getFileNameFromJson(URL url, String name, String fileExtension, String[] extraData,
+                                            boolean shouldFilter, boolean replaceExtension) throws IOException {
+        String retVal = getFileNameFromJson(url, name, fileExtension, extraData, shouldFilter);
+        if (replaceExtension) {
+            retVal = retVal.replace(fileExtension, "");
+        }
+        return retVal;
     }
 
     public static String getFileNameFromJson(URL url, String name, String fileExtension,
@@ -159,9 +171,9 @@ public class FileUtils {
     }
 
     public static void downloadRequirements() throws IOException, ArchiveException {
-        final File apacheDir = new File(Util.PROJECT, "/apache/");
-        final File phpDir = new File(Util.PROJECT, "/php/");
-        final File serverDir = new File(Util.PROJECT, "/mysql/");
+        final File apacheDir = new File(Util.PROJECT, PATH_SEPARATOR + "apache" + PATH_SEPARATOR);
+        final File phpDir = new File(Util.PROJECT,  PATH_SEPARATOR + "php" + PATH_SEPARATOR);
+        final File serverDir = new File(Util.PROJECT, PATH_SEPARATOR + "mysql" + PATH_SEPARATOR);
         if (!apacheDir.exists()) {
             apacheDir.mkdir();
         }
@@ -180,6 +192,8 @@ public class FileUtils {
         String APRVer = "";
         String APRUtilVer = "";
         String APRIconvVer = "";
+        String PHPVersion = "";
+        String mySQLVersion = "";
         String str;
         while ((str = reader.readLine()) != null) {
             StringBuilder builder = new StringBuilder();
@@ -194,14 +208,18 @@ public class FileUtils {
                 case "APR version" -> APRVer = value;
                 case "APR-util version" -> APRUtilVer = value;
                 case "APR-iconv version" -> APRIconvVer = value;
+                case "php version" -> PHPVersion = value;
+                case "sql version" -> mySQLVersion = value;
             }
         }
 
-        FileWriter writer = new FileWriter(DATA);
+        BufferedWriter writer = new BufferedWriter(new FileWriter(DATA));
 
         String fileName = getFileNameFromWeb(URI.create("https://dlcdn.apache.org/httpd").toURL(), "httpd",
                 ".tar.gz", new String[]{"TGZ"}, false, true);
-        if (!Objects.equals(apacheVer, fileName) || !new File(apacheDir, "/" + fileName).exists() || apacheDir.listFiles() == null || Objects.requireNonNull(apacheDir.listFiles()).length < 15) {
+        writer.append("apache version=").append(fileName).append(System.lineSeparator());
+        if (!Objects.equals(apacheVer, fileName) || apacheDir.listFiles() == null) {
+            clearDirectory(apacheDir);
             File apacheZipped = downloadFileFromWeb("https://dlcdn.apache.org/httpd", apacheDir, "httpd",
                     ".tar.gz", new String[]{"TGZ"}, false);
             // apache download
@@ -213,73 +231,89 @@ public class FileUtils {
 
             // unpack
             File apacheTar = unGzip(apacheZipped, apacheDir);
-            File httpd = unTar(apacheTar, apacheDir);
+            File httpd = unTar(apacheTar, apacheDir, fileName);
             Console console = new Console();
-            console.directory(new File(httpd, "/" + fileName));
+            console.directory(httpd);
             if (Util.IS_WINDOWS) {
                 File perlInterpreter = new File(Util.PROJECT, "/perl/");
                 if (!perlInterpreter.exists()) {
                     perlInterpreter.mkdir();
                 }
-                if (!new File(perlInterpreter, "/portableshell.bat").exists()) {
+                String perlVersion = getFileNameFromJson(URI.create("https://strawberryperl.com/releases.json").toURL(),
+                        "strawberry-perl", ".zip",
+                        new String[]{"64bit-portable"}, true, true);
+                writer.append("perl version=").append(perlVersion).append(System.lineSeparator());
+                if (!perlVer.equals(perlVersion) || !new File(perlInterpreter, "/portableshell.bat").exists()) {
+                    clearDirectory(perlInterpreter);
                     File perlZip = downloadFileFromWeb("https://strawberryperl.com/releases.json",
-                            perlInterpreter, "strawberry-perl", ".zip", new String[]{"64bit-portable"}, true);
+                            perlInterpreter, "strawberry-perl", ".zip",
+                            new String[]{"64bit-portable"}, true);
                     File perl = unZip(perlZip, perlInterpreter);
                 }
 
-                File httpdAPR = new File(httpd, "/" + fileName + "/srclib/apr");
+                File httpdAPR = new File(httpd, "/srclib/apr");
                 if (!httpdAPR.exists()) {
                     httpdAPR.mkdir();
                 }
                 String APRDir = getFileNameFromWeb(URI.create("https://dlcdn.apache.org/apr").toURL(), "apr",
                         ".tar.gz", new String[]{"TGZ", "apr-(?!util).*", "apr-(?!iconv).*"}, true,
                         true);
-                File APRGZip = downloadFileFromWeb("https://dlcdn.apache.org/apr", httpdAPR, "apr",
-                        ".tar.gz", new String[]{"TGZ", "apr-(?!util).*", "apr-(?!iconv).*"}, true);
-                File APRTar = unGzip(APRGZip, httpdAPR);
-                File APR = unTar(APRTar, httpdAPR, APRDir);
+                writer.append("APR version").append(APRDir).append(System.lineSeparator());
+                if (!APRVer.equals(APRDir)) {
+                    clearDirectory(httpdAPR);
+                    File APRGZip = downloadFileFromWeb("https://dlcdn.apache.org/apr", httpdAPR, "apr",
+                            ".tar.gz", new String[]{"TGZ", "apr-(?!util).*", "apr-(?!iconv).*"}, true);
+                    File APRTar = unGzip(APRGZip, httpdAPR);
+                    File APR = unTar(APRTar, httpdAPR, APRDir);
+                }
 
-
-                File httpdAPRUtil = new File(httpd, "/" + fileName + "/srclib/apr-util");
+                File httpdAPRUtil = new File(httpd, "/srclib/apr-util");
                 if (!httpdAPRUtil.exists()) {
                     httpdAPRUtil.mkdir();
                 }
                 String APRUtilDir = getFileNameFromWeb(URI.create("https://dlcdn.apache.org/apr").toURL(), "apr-util",
                         ".tar.gz", new String[]{"TGZ"}, true,
                         true);
-                File APRUtilGZip = downloadFileFromWeb("https://dlcdn.apache.org/apr", httpdAPRUtil, "apr-util",
-                        ".tar.gz", new String[]{"TGZ"}, true);
-                File APRUtilTar = unGzip(APRUtilGZip, httpdAPRUtil);
-                File APRUtil = unTar(APRUtilTar, httpdAPRUtil, APRUtilDir);
+                writer.append("APR-util version=").append(APRUtilDir).append(System.lineSeparator());
+                if (!APRUtilVer.equals(APRUtilDir)) {
+                    clearDirectory(httpdAPRUtil);
+                    File APRUtilGZip = downloadFileFromWeb("https://dlcdn.apache.org/apr", httpdAPRUtil, "apr-util",
+                            ".tar.gz", new String[]{"TGZ"}, true);
+                    File APRUtilTar = unGzip(APRUtilGZip, httpdAPRUtil);
+                    File APRUtil = unTar(APRUtilTar, httpdAPRUtil, APRUtilDir);
+                }
 
-
-
-                File httpdAPRIconv = new File(httpd, "/" + fileName + "/srclib/apr-iconv");
+                File httpdAPRIconv = new File(httpd, "/srclib/apr-iconv");
                 if (!httpdAPRIconv.exists()) {
                     httpdAPRIconv.mkdir();
                 }
                 String APRIconvDir = getFileNameFromWeb(URI.create("https://dlcdn.apache.org/apr").toURL(), "apr-iconv",
                         ".tar.gz", new String[]{"TGZ"}, true,
                         true);
-                File APRIconvGZip = downloadFileFromWeb("https://dlcdn.apache.org/apr", httpdAPRIconv, "apr-iconv",
-                        ".tar.gz", new String[]{"TGZ"}, true);
-                File APRIconvTar = unGzip(APRIconvGZip, httpdAPRIconv);
-                File APRIconv = unTar(APRIconvTar, httpdAPRIconv, APRIconvDir);
-
-                console.directory(httpdAPRIconv);
-                console.runCommand("msdev aprutil.dsw /MAKE \\\n" +
-                        "  apriconv - Win32 Release\" \\\n" +
-                        "  apr - Win32 Release\" \\\n" +
-                        "  libapr - Win32 Release\" \\\n" +
-                        "  gen_uri_delims - Win32 Release\" \\\n" +
-                        "  xml - Win32 Release\" \\\n" +
-                        "  \"aprutil - Win32 Release\"");
+                writer.append("APR-iconv version=").append(APRIconvDir).append(System.lineSeparator());
+                if (!APRIconvVer.equals(APRIconvDir)) {
+                    clearDirectory(httpdAPRIconv);
+                    File APRIconvGZip = downloadFileFromWeb("https://dlcdn.apache.org/apr", httpdAPRIconv, "apr-iconv",
+                            ".tar.gz", new String[]{"TGZ"}, true);
+                    File APRIconvTar = unGzip(APRIconvGZip, httpdAPRIconv);
+                    File APRIconv = unTar(APRIconvTar, httpdAPRIconv, APRIconvDir);
+                }
 
                 console = new Console(new File(perlInterpreter, "/portableshell.bat"));
-                console.directory(new File(httpd, "/" + fileName));
-                console.runCommand("perl .\\srclib\\apr\\build\\lineends.pl");
-                console.runCommand("dir");
+                console.directory(httpd);
+                console.runCommand("perl .\\srclib\\apr\\build\\fixwin32mak.pl");
+                console.schedule(console1 -> {
+                    console1 = new Console();
+                    console1.directory(httpd);
+                    console1.runCommand("nmake /f Makefile.win _apacher");
+                    console1.runCommand("nmake /f Makefile.win installr INSTDIR=" + httpd);
+                });
+            } else {
+                console.runCommand("./configure --prefix=" + httpd.getPath());
+                console.runCommand("make");
+                console.runCommand("make install");
             }
+            System.out.println("Apache installed.");
         }
 
         // php download (https://www.php.net/downloads) VS17 x64 Thread Safe
@@ -292,9 +326,19 @@ public class FileUtils {
         // downloads a file and returns it
         // need new method downloadFile with params URL url, String name, String fileExtension, String description, boolean shouldFilter
         // calls getFileFromWeb and then downloadFileFromWeb and returns the file downloaded.
+        String phpName = getFileNameFromWeb(URI.create("https://downloads.php.net/~windows/releases/archives").toURL(),
+                "php", ".zip", new String[]{"Win32-vs17-x64"}, true, true);
+        writer.append("php version=").append(phpName).append(System.lineSeparator());
+        if (!Objects.equals(phpName, PHPVersion) || phpDir.listFiles() == null) {
+            clearDirectory(phpDir);
+            File PHPZip = downloadFileFromWeb("https://downloads.php.net/~windows/releases/archives", phpDir,
+                    "php", ".zip", new String[]{"Win32-vs17-x64"}, true);
+            File PHP = unZip(PHPZip, phpDir);
+        }
 
         // server (https://dev.mysql.com/downloads/installer) (mysql-installer-community-8.0.43.0.msi)
 
+        writer.close();
     }
 
     public static File unTar(File infile, File outDir) throws IOException, ArchiveException {
@@ -302,10 +346,12 @@ public class FileUtils {
     }
 
     public static File unTar(File infile, File outDir, String shouldRemove) throws IOException, ArchiveException {
+        System.out.println("Untar " + infile.getPath() + "...");
         InputStream in = new FileInputStream(infile);
         TarArchiveInputStream tarIn = (TarArchiveInputStream) factory.createArchiveInputStream("tar", in);
         TarArchiveEntry entry = null;
         while ((entry = tarIn.getNextEntry()) != null) {
+            System.out.println("Moving file " + entry.getName() + "...");
             File outputFile;
             if (shouldRemove == null) {
                 outputFile = new File(outDir, entry.getName());
@@ -345,11 +391,13 @@ public class FileUtils {
     }
 
     public static File unZip(File infile, File outDir, String shouldRemove) throws IOException, ArchiveException {
+        System.out.println("Unzipping " + infile.getPath() + "...");
         File outFile = new File(outDir, infile.getName().replaceAll("\\.zip", ""));
         InputStream in = new FileInputStream(infile);
         ZipArchiveInputStream zipStream = factory.createArchiveInputStream("zip", in);
         ZipArchiveEntry entry = null;
         while ((entry = zipStream.getNextEntry()) != null) {
+            System.out.println("Moving " + entry.getName() + " to " + outFile.getPath() + "...");
             if (shouldRemove != null && entry.getName().contains(shouldRemove)) {
                 continue;
             }
@@ -374,5 +422,25 @@ public class FileUtils {
         zipStream.close();
         infile.delete();
         return outFile;
+    }
+
+    public static void clearDirectory(File dir) {
+        System.out.println("Clearing " + dir.getPath() + "...");
+        File[] arr = dir.listFiles();
+        if (arr != null) {
+            for (File file : arr) {
+                System.out.println("Deleting file:" + file.getPath() + "...");
+                if (file.isDirectory()) {
+                    System.out.println("File is directory, calling self on file...");
+                    clearDirectory(file);
+                }
+                if (file.delete()) {
+                    System.out.println("Deleted file. Moving on to next file...");
+                }
+            }
+            if (arr.length <= 1) {
+
+            }
+        }
     }
 }

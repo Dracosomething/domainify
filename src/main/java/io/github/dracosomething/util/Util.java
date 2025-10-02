@@ -7,8 +7,9 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 public class Util {
+    public static final String PATH_SEPARATOR = System.getProperty("file.separator");
     public static final File ROOT = Arrays.stream(File.listRoots()).toList().getFirst();
-    public static final File PROJECT = new File(ROOT, "/domainify");
+    public static final File PROJECT = new File(ROOT, PATH_SEPARATOR + "domainify");
     public static final boolean IS_WINDOWS = System.getProperty("os.name").toLowerCase().startsWith("windows");
 
     public static boolean isProperPath(String path) {
@@ -22,9 +23,9 @@ public class Util {
     }
 
     public static boolean firstLaunch() {
-        File php = new File(PROJECT, "/php");
-        File apache = new File(PROJECT, "/apache");
-        File mySql = new File(PROJECT, "/sql");
+        File php = new File(PROJECT, PATH_SEPARATOR + "php");
+        File apache = new File(PROJECT, PATH_SEPARATOR + "apache");
+        File mySql = new File(PROJECT, PATH_SEPARATOR + "sql");
         return !PROJECT.exists() || !php.exists() || !apache.exists() || !mySql.exists();
     }
 

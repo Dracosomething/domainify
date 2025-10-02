@@ -1,7 +1,7 @@
 package io.github.dracosomething.util;
 
-import java.nio.channels.Channels;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 
 public class HTMLObject {
@@ -114,7 +114,8 @@ public class HTMLObject {
             childObjects.add(toAdd);
         }
 
-        return new HTMLObject(type, content, data, childObjects);
+        HTMLObject retVal = new HTMLObject(type, content, data, childObjects);
+        return retVal;
     }
 
     public String getType() {
@@ -139,6 +140,42 @@ public class HTMLObject {
 
     public HTMLObject getChildObject(int index) {
         return this.childObjects.get(index);
+    }
+
+    public boolean hasLinkChildren() {
+        boolean retVal = false;
+        for (HTMLObject object : this.childObjects) {
+            if (Objects.equals(object.getType(), "a")) {
+                retVal = true;
+                break;
+            }
+        }
+        return retVal;
+    }
+
+    public HTMLObject getLinkChild() {
+        HTMLObject retVal = null;
+        for (HTMLObject object : this.childObjects) {
+            if (Objects.equals(object.getType(), "a")) {
+                retVal = object;
+                break;
+            }
+        }
+        return retVal;
+    }
+
+    public static HTMLObject getAbsoluteLinkChild(HTMLObject parent) {
+        final ChildIterator iterator = new ChildIterator(parent);
+        HTMLObject retVal = parent;
+        HTMLObject object;
+        while (iterator.hasNext()) {
+            object = iterator.next();
+            if (Objects.equals(object.getType(), "a")) {
+                retVal = object;
+                break;
+            }
+        }
+        return retVal;
     }
 
     @Override
