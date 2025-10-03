@@ -60,7 +60,10 @@ public class FileUtils {
         BufferedReader in = getUrlReader(url);
         List<HTMLObject> list = new ArrayList<>();
         String str;
-        String regex = Util.formatArrayToRegex(extraData);
+        String regex = null;
+        if (extraData != null) {
+            regex = Util.formatArrayToRegex(extraData);
+        }
         while ((str = in.readLine()) != null) {
             if (!str.contains(name)) continue;
             if (extraData != null && !str.matches(regex)) continue;
@@ -264,7 +267,7 @@ public class FileUtils {
                     clearDirectory(jomDir);
                     File jomZip = downloadFileFromWeb("https://download.qt.io/official_releases/jom",
                             jomDir, "jom", ".zip", null, true);
-                    File jom = unZip(jomZip, jomDir, jomVersion);
+                    File jom = unZip(jomZip, jomDir);
                 }
 
                 File httpdAPR = new File(httpd, "/srclib/apr");
@@ -315,18 +318,18 @@ public class FileUtils {
                     File APRIconv = unTar(APRIconvTar, httpdAPRIconv, APRIconvDir);
                 }
 
-                console.runCommand("winget install ezwinports.make --accept-package-agreements");
-                console.schedule(cmd -> {
-                    cmd = new Console(new File(perlInterpreter, "/portableshell.bat"));
-                    cmd.directory(httpd);
-                    cmd.runCommand("perl .\\srclib\\apr\\build\\fixwin32mak.pl");
-                    cmd.schedule(portableshell -> {
-                        portableshell = new Console();
-                        portableshell.directory(httpd);
-                        portableshell.runCommand("make /f Makefile.win _apacher");
-                        portableshell.runCommand("make /f Makefile.win installr INSTDIR=" + httpd);
-                    });
-                });
+//                console.runCommand("winget install ezwinports.make --accept-package-agreements");
+//                console.schedule(cmd -> {
+//                    cmd = new Console(new File(perlInterpreter, "/portableshell.bat"));
+//                    cmd.directory(httpd);
+//                    cmd.runCommand("perl .\\srclib\\apr\\build\\fixwin32mak.pl");
+//                    cmd.schedule(portableshell -> {
+//                        portableshell = new Console();
+//                        portableshell.directory(httpd);
+//                        portableshell.runCommand("make /f Makefile.win _apacher");
+//                        portableshell.runCommand("make /f Makefile.win installr INSTDIR=" + httpd);
+//                    });
+//                });
             } else {
                 console.runCommand("./configure --prefix=" + httpd.getPath());
                 console.runCommand("make");
