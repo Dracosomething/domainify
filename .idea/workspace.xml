@@ -10,7 +10,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d7ab1385-168d-4e32-98b0-5e9c3c72e3a0" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/FileUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/FileUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/HTMLObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/HTMLObject.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -27,6 +29,7 @@
       <list>
         <option value="Exception" />
         <option value="Record" />
+        <option value="HTML File" />
         <option value="Class" />
       </list>
     </option>
@@ -58,8 +61,10 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Application.run.executor": "Run",
+    "DefaultHtmlFileTemplate": "HTML File",
     "Gradle.Build domainify.executor": "Run",
     "Gradle.HTMLObjectParseTest.HTMLObject_parse_test.executor": "Debug",
+    "Gradle.SourceForgeTest.parse_test.executor": "Run",
     "Gradle.domainify [:HTMLObjectParseTest.main()].executor": "Run",
     "Gradle.domainify [:io.github.dracosomething.Main.main()].executor": "Run",
     "Gradle.regexTest.string_matches_regex_version.executor": "Run",
@@ -81,8 +86,9 @@
       <recent name="io.github.dracosomething.Util" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\alias\Documents\school\schooljaar2025-2026\periode1\XPerience\profielen\fullstack\domainify\src\main\java\org\apache\commons" />
+      <recent name="C:\Users\alias\Documents\school\schooljaar2025-2026\periode1\XPerience\profielen\fullstack\domainify\src\main\resources\files" />
       <recent name="C:\Users\alias\Documents\school\schooljaar2025-2026\periode1\XPerience\profielen\fullstack\domainify\src\main\resources" />
+      <recent name="C:\Users\alias\Documents\school\schooljaar2025-2026\periode1\XPerience\profielen\fullstack\domainify\src\main\java\org\apache\commons" />
       <recent name="C:\Users\alias\Documents\school\schooljaar2025-2026\periode1\XPerience\profielen\fullstack\domainify\src\main\java" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
@@ -129,6 +135,30 @@
       <RunAsTest>true</RunAsTest>
       <method v="2" />
     </configuration>
+    <configuration name="SourceForgeTest.parse_test" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+            <option value="--tests" />
+            <option value="&quot;SourceForgeTest.parse_test&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
+    </configuration>
     <configuration name="regexTest.string_matches_regex_version" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -155,6 +185,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.SourceForgeTest.parse_test" />
         <item itemvalue="Gradle.regexTest.string_matches_regex_version" />
         <item itemvalue="Gradle.HTMLObjectParseTest.HTMLObject_parse_test" />
         <item itemvalue="Application.HTMLObjectParseTest" />

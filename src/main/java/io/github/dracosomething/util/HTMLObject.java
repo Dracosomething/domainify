@@ -1,5 +1,11 @@
 package io.github.dracosomething.util;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
@@ -99,12 +105,12 @@ public class HTMLObject {
         }
 
         String content = contents.toString();
-        String[] tmpArray = content.split(HTML_HEADER_REGEX.pattern());
         String shouldParse = contents.toString();
+        String[] tmpArray = content.split(HTML_HEADER_REGEX.pattern());
         for (String tmp : tmpArray) {
-            shouldParse = shouldParse.replace(tmp, "\n");
+            shouldParse = shouldParse.replace(tmp, "willDeleteDomainify");
         }
-        String[] objectArr = shouldParse.split("\n");
+        String[] objectArr = shouldParse.split("willDeleteDomainify");
         List<HTMLObject> childObjects = new ArrayList<>();
         for (String object : objectArr) {
             if (object.isBlank() || object.isEmpty()) {
@@ -127,7 +133,10 @@ public class HTMLObject {
     }
 
     public String getProperty(String name) {
-        return this.data.get(name);
+        if (hasProperty(name)) {
+            return this.data.get(name);
+        }
+        return "";
     }
 
     public boolean hasProperty(String name) {

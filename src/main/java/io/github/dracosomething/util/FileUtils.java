@@ -9,9 +9,13 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.io.FileExistsException;
 import org.apache.commons.io.IOUtils;
 
+import javax.swing.text.html.HTML;
+import javax.swing.text.html.HTMLDocument;
 import java.io.*;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
@@ -191,11 +195,6 @@ public class FileUtils {
         }
         BufferedReader reader = new BufferedReader(new FileReader(DATA));
         String apacheVer = "";
-        String perlVer = "";
-        String jomVer = "";
-        String APRVer = "";
-        String APRUtilVer = "";
-        String APRIconvVer = "";
         String PHPVersion = "";
         String mySQLVersion = "";
         String str;
@@ -208,11 +207,6 @@ public class FileUtils {
             String value = str.replace(builder.toString()+"=", "");
             switch (builder.toString()) {
                 case "apache version" -> apacheVer = value;
-                case "perl version" -> perlVer = value;
-                case "jom version" -> jomVer = value;
-                case "APR version" -> APRVer = value;
-                case "APR-util version" -> APRUtilVer = value;
-                case "APR-iconv version" -> APRIconvVer = value;
                 case "php version" -> PHPVersion = value;
                 case "sql version" -> mySQLVersion = value;
             }
@@ -240,100 +234,19 @@ public class FileUtils {
             Console console = new Console();
             console.directory(httpd);
             if (Util.IS_WINDOWS) {
-                File perlInterpreter = new File(Util.PROJECT, "/perl/");
-                if (!perlInterpreter.exists()) {
-                    perlInterpreter.mkdir();
+                File bashDir = new File(Util.PROJECT, "/bash/");
+                if (!bashDir.exists()) {
+                    bashDir.mkdir();
                 }
-                String perlVersion = getFileNameFromJson(URI.create("https://strawberryperl.com/releases.json").toURL(),
-                        "strawberry-perl", ".zip",
-                        new String[]{"64bit-portable"}, true, true);
-                writer.append("perl version=").append(perlVersion).append(System.lineSeparator());
-                if (!perlVer.equals(perlVersion) || !new File(perlInterpreter, "/portableshell.bat").exists()) {
-                    clearDirectory(perlInterpreter);
-                    File perlZip = downloadFileFromWeb("https://strawberryperl.com/releases.json",
-                            perlInterpreter, "strawberry-perl", ".zip",
-                            new String[]{"64bit-portable"}, true);
-                    File perl = unZip(perlZip, perlInterpreter);
-                }
-
-                File jomDir = new File(Util.PROJECT, "/jom/");
-                if (!jomDir.exists()) {
-                    jomDir.mkdir();
-                }
-                String jomVersion = getFileNameFromWeb(URI.create("https://download.qt.io/official_releases/jom").toURL(),
-                        "jom", ".zip", null, true, true);
-                writer.append("jom version=").append(jomVersion).append(System.lineSeparator());
-                if (!jomVer.equals(jomVersion) || !new File(jomDir, "/jom.exe").exists()) {
-                    clearDirectory(jomDir);
-                    File jomZip = downloadFileFromWeb("https://download.qt.io/official_releases/jom",
-                            jomDir, "jom", ".zip", null, true);
-                    File jom = unZip(jomZip, jomDir);
-                }
-
-                File httpdAPR = new File(httpd, "/srclib/apr");
-                if (!httpdAPR.exists()) {
-                    httpdAPR.mkdir();
-                }
-                String APRDir = getFileNameFromWeb(URI.create("https://dlcdn.apache.org/apr").toURL(), "apr",
-                        ".tar.gz", new String[]{"TGZ", "apr-(?!util).*", "apr-(?!iconv).*"}, true,
-                        true);
-                writer.append("APR version").append(APRDir).append(System.lineSeparator());
-                if (!APRVer.equals(APRDir)) {
-                    clearDirectory(httpdAPR);
-                    File APRGZip = downloadFileFromWeb("https://dlcdn.apache.org/apr", httpdAPR, "apr",
-                            ".tar.gz", new String[]{"TGZ", "apr-(?!util).*", "apr-(?!iconv).*"}, true);
-                    File APRTar = unGzip(APRGZip, httpdAPR);
-                    File APR = unTar(APRTar, httpdAPR, APRDir);
-                }
-
-                File httpdAPRUtil = new File(httpd, "/srclib/apr-util");
-                if (!httpdAPRUtil.exists()) {
-                    httpdAPRUtil.mkdir();
-                }
-                String APRUtilDir = getFileNameFromWeb(URI.create("https://dlcdn.apache.org/apr").toURL(), "apr-util",
-                        ".tar.gz", new String[]{"TGZ"}, true,
-                        true);
-                writer.append("APR-util version=").append(APRUtilDir).append(System.lineSeparator());
-                if (!APRUtilVer.equals(APRUtilDir)) {
-                    clearDirectory(httpdAPRUtil);
-                    File APRUtilGZip = downloadFileFromWeb("https://dlcdn.apache.org/apr", httpdAPRUtil, "apr-util",
-                            ".tar.gz", new String[]{"TGZ"}, true);
-                    File APRUtilTar = unGzip(APRUtilGZip, httpdAPRUtil);
-                    File APRUtil = unTar(APRUtilTar, httpdAPRUtil, APRUtilDir);
-                }
-
-                File httpdAPRIconv = new File(httpd, "/srclib/apr-iconv");
-                if (!httpdAPRIconv.exists()) {
-                    httpdAPRIconv.mkdir();
-                }
-                String APRIconvDir = getFileNameFromWeb(URI.create("https://dlcdn.apache.org/apr").toURL(), "apr-iconv",
-                        ".tar.gz", new String[]{"TGZ"}, true,
-                        true);
-                writer.append("APR-iconv version=").append(APRIconvDir).append(System.lineSeparator());
-                if (!APRIconvVer.equals(APRIconvDir)) {
-                    clearDirectory(httpdAPRIconv);
-                    File APRIconvGZip = downloadFileFromWeb("https://dlcdn.apache.org/apr", httpdAPRIconv, "apr-iconv",
-                            ".tar.gz", new String[]{"TGZ"}, true);
-                    File APRIconvTar = unGzip(APRIconvGZip, httpdAPRIconv);
-                    File APRIconv = unTar(APRIconvTar, httpdAPRIconv, APRIconvDir);
-                }
-
-//                console.runCommand("winget install ezwinports.make --accept-package-agreements");
-//                console.schedule(cmd -> {
-//                    cmd = new Console(new File(perlInterpreter, "/portableshell.bat"));
-//                    cmd.directory(httpd);
-//                    cmd.runCommand("perl .\\srclib\\apr\\build\\fixwin32mak.pl");
-//                    cmd.schedule(portableshell -> {
-//                        portableshell = new Console();
-//                        portableshell.directory(httpd);
-//                        portableshell.runCommand("make /f Makefile.win _apacher");
-//                        portableshell.runCommand("make /f Makefile.win installr INSTDIR=" + httpd);
-//                    });
-//                });
-            } else {
-                console.runCommand("./configure --prefix=" + httpd.getPath());
-                console.runCommand("make");
-                console.runCommand("make install");
+                URI uri = URI.create("https://sourceforge.net/projects/win-bash/files/shell-complete/latest/shell.w32-ix86.zip/download");
+                URL url = uri.toURL();
+                ReadableByteChannel channel = Channels.newChannel(url.openStream());
+                File bashZipped = new File(bashDir, "/bash.zip");
+                FileOutputStream outputStream = new FileOutputStream(bashZipped);
+                FileChannel fileChannel = outputStream.getChannel();
+                fileChannel.transferFrom(channel, 0, Long.MAX_VALUE);
+                outputStream.close();
+                File bash = unZip(bashZipped, bashDir);
             }
             System.out.println("Apache installed.");
         }
