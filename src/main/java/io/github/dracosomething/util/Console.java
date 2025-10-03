@@ -160,7 +160,9 @@ public class Console extends Thread {
             this.isActive = false;
             this.interrupt();
             if (this.que.isEmpty()) {
-                this.scheduled.accept(this);
+                if (this.scheduled != null) {
+                    this.scheduled.accept(this);
+                }
             } else {
                 String command = que.getLast();
                 que.remove(command);

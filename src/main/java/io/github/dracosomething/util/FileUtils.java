@@ -189,6 +189,7 @@ public class FileUtils {
         BufferedReader reader = new BufferedReader(new FileReader(DATA));
         String apacheVer = "";
         String perlVer = "";
+        String jomVer = "";
         String APRVer = "";
         String APRUtilVer = "";
         String APRIconvVer = "";
@@ -205,6 +206,7 @@ public class FileUtils {
             switch (builder.toString()) {
                 case "apache version" -> apacheVer = value;
                 case "perl version" -> perlVer = value;
+                case "jom version" -> jomVer = value;
                 case "APR version" -> APRVer = value;
                 case "APR-util version" -> APRUtilVer = value;
                 case "APR-iconv version" -> APRIconvVer = value;
@@ -249,6 +251,20 @@ public class FileUtils {
                             perlInterpreter, "strawberry-perl", ".zip",
                             new String[]{"64bit-portable"}, true);
                     File perl = unZip(perlZip, perlInterpreter);
+                }
+
+                File jomDir = new File(Util.PROJECT, "/jom/");
+                if (!jomDir.exists()) {
+                    jomDir.mkdir();
+                }
+                String jomVersion = getFileNameFromWeb(URI.create("https://download.qt.io/official_releases/jom").toURL(),
+                        "jom", ".zip", null, true, true);
+                writer.append("jom version=").append(jomVersion).append(System.lineSeparator());
+                if (!jomVer.equals(jomVersion) || !new File(jomDir, "/jom.exe").exists()) {
+                    clearDirectory(jomDir);
+                    File jomZip = downloadFileFromWeb("https://download.qt.io/official_releases/jom",
+                            jomDir, "jom", ".zip", null, true);
+                    File jom = unZip(jomZip, jomDir, jomVersion);
                 }
 
                 File httpdAPR = new File(httpd, "/srclib/apr");
@@ -299,14 +315,17 @@ public class FileUtils {
                     File APRIconv = unTar(APRIconvTar, httpdAPRIconv, APRIconvDir);
                 }
 
-                console = new Console(new File(perlInterpreter, "/portableshell.bat"));
-                console.directory(httpd);
-                console.runCommand("perl .\\srclib\\apr\\build\\fixwin32mak.pl");
-                console.schedule(console1 -> {
-                    console1 = new Console();
-                    console1.directory(httpd);
-                    console1.runCommand("nmake /f Makefile.win _apacher");
-                    console1.runCommand("nmake /f Makefile.win installr INSTDIR=" + httpd);
+                console.runCommand("winget install ezwinports.make --accept-package-agreements");
+                console.schedule(cmd -> {
+                    cmd = new Console(new File(perlInterpreter, "/portableshell.bat"));
+                    cmd.directory(httpd);
+                    cmd.runCommand("perl .\\srclib\\apr\\build\\fixwin32mak.pl");
+                    cmd.schedule(portableshell -> {
+                        portableshell = new Console();
+                        portableshell.directory(httpd);
+                        portableshell.runCommand("make /f Makefile.win _apacher");
+                        portableshell.runCommand("make /f Makefile.win installr INSTDIR=" + httpd);
+                    });
                 });
             } else {
                 console.runCommand("./configure --prefix=" + httpd.getPath());
