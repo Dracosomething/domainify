@@ -17,8 +17,6 @@ public class Console extends Thread {
     private List<String> command;
     private boolean isActive = false;
     private int exitCode = -1;
-    private boolean isFile = false;
-    private File bat = null;
     private File log = null;
     private Consumer<Console> scheduled = null;
 
@@ -37,14 +35,12 @@ public class Console extends Thread {
         INDEX.getAndIncrement();
     }
 
-    public Console(File bash) {
+    public Console(File exe, String commandMod) {
         this.builder = new ProcessBuilder();
         this.command = new ArrayList<>();
-        this.isFile = true;
-        this.bat = bash;
         this.setDaemon(true);
-        builder.command(bash.getPath(), "/c");
-        this.setName(bash.getPath() + "-" + INDEX.get());
+        builder.command(exe.getPath(), commandMod);
+        this.setName(exe.getPath() + "-" + INDEX.get());
         command = builder.command();
         INDEX.getAndIncrement();
     }
@@ -74,33 +70,6 @@ public class Console extends Thread {
             this.builder.redirectOutput(this.log);
         }
         try {
-            if (this.isFile) {
-                try {
-                    BufferedReader reader = new BufferedReader(new FileReader(this.bat));
-                    StringBuilder strBuilder = new StringBuilder();
-                    String str;
-                    boolean shouldAppend = false;
-                    while ((str = reader.readLine()) != null) {
-                        if (str.equals("cmd /K")) {
-                            str = "cmd /c " + command;
-                        } else {
-                            shouldAppend = true;
-                        }
-                        strBuilder.append(str).append(System.lineSeparator());
-                    }
-                    if (!shouldAppend) {
-                        strBuilder.append("::for domainify console").append(System.lineSeparator());
-                        strBuilder.append("cmd /c ").append(command).append(System.lineSeparator());
-                        strBuilder.append("::CLOSE DOMAINIFY SECTION");
-                    }
-                    reader.close();
-                    FileWriter writer = new FileWriter(this.bat);
-                    writer.write(strBuilder.toString());
-                    writer.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
             currentActive = this.builder.start();
             isActive = true;
             this.start();
@@ -121,28 +90,6 @@ public class Console extends Thread {
         this.currentActive.destroy();
         if (this.isAlive()) {
             this.interrupt();
-        }
-        if (this.isFile) {
-            try {
-                BufferedReader reader = new BufferedReader(new FileReader(this.bat));
-                StringBuilder strBuilder = new StringBuilder();
-                String str;
-                while ((str = reader.readLine()) != null) {
-                    if (str.startsWith("::for domainify console")) {
-                        while (!(str = reader.readLine()).startsWith("::CLOSE DOMAINIFY SECTION")) {
-                            str = "";
-                        }
-                        continue;
-                    }
-                    strBuilder.append(str).append(System.lineSeparator());
-                }
-                reader.close();
-                FileWriter writer = new FileWriter(this.bat);
-                writer.write(strBuilder.toString());
-                writer.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
     }
 

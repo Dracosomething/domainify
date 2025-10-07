@@ -4,25 +4,32 @@ import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
-import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
-import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.io.FileExistsException;
 import org.apache.commons.io.IOUtils;
 
-import javax.swing.text.html.HTML;
-import javax.swing.text.html.HTMLDocument;
+import javax.swing.plaf.synth.Region;
 import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLConnection;
+import java.net.*;
+import java.net.http.HttpClient;
+import java.net.http.HttpHeaders;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import static io.github.dracosomething.util.Util.PATH_SEPARATOR;
 
@@ -177,6 +184,47 @@ public class FileUtils {
         return downloadFileFromWeb(urlString, downloadLocation, fileName, fileExtension, null, false);
     }
 
+    public static File downloadFileFromWeb(String urlString, File downloadLocation, String fileName) throws IOException {
+        URI uri = URI.create(urlString);
+        URL url = uri.toURL();
+        ReadableByteChannel channel = Channels.newChannel(url.openStream());
+        File download = new File(downloadLocation, "/" + fileName);
+        FileOutputStream outputStream = new FileOutputStream(download);
+        FileChannel fileChannel = outputStream.getChannel();
+        fileChannel.transferFrom(channel, 0, Long.MAX_VALUE);
+        outputStream.close();
+        return download;
+    }
+
+    public static String getWindowsApacheDownloadLink(String fileName, int vsVersion, LocalDate lastCheckedDate) {
+        String base = "http://www.apachelounge.com/download/";
+        String afterVSVer = "/binaries/" + fileName + "-";
+        String visualStudioVer = "VS" + vsVersion;
+        String year = "25";
+        String month = "07";
+        String day = "24";
+        String date = year + month + day;
+        String windowsVer = "Win32";
+        if (Util.IS_64_BIT) {
+            windowsVer = "Win64";
+        }
+        String url = base + visualStudioVer + afterVSVer + date + "-" + windowsVer + "-" + visualStudioVer + ".zip";
+        return url;
+    }
+
+    public static boolean isValidUrl(String urlString) {
+        URI uri = URI.create(urlString);
+        try {
+            URL url = uri.toURL();
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("HEAD");
+            int responseCode = con.getResponseCode();
+            return  responseCode > 299;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public static void downloadRequirements() throws IOException, ArchiveException {
         final File apacheDir = new File(Util.PROJECT, PATH_SEPARATOR + "apache" + PATH_SEPARATOR);
         final File phpDir = new File(Util.PROJECT,  PATH_SEPARATOR + "php" + PATH_SEPARATOR);
@@ -197,6 +245,8 @@ public class FileUtils {
         String apacheVer = "";
         String PHPVersion = "";
         String mySQLVersion = "";
+        int vsVersion = 17;
+        LocalDate lastCheckedDate = LocalDate.now();
         String str;
         while ((str = reader.readLine()) != null) {
             StringBuilder builder = new StringBuilder();
@@ -209,44 +259,51 @@ public class FileUtils {
                 case "apache version" -> apacheVer = value;
                 case "php version" -> PHPVersion = value;
                 case "sql version" -> mySQLVersion = value;
+                case "VS" -> vsVersion = Integer.getInteger(value);
+                case "last checked date" -> lastCheckedDate = LocalDate.parse(value);
             }
         }
 
         BufferedWriter writer = new BufferedWriter(new FileWriter(DATA));
 
-        String fileName = getFileNameFromWeb(URI.create("https://dlcdn.apache.org/httpd").toURL(), "httpd",
+        String fileName = getFileNameFromWeb(URI.create("https://dlcdn.apache.org/httpd/").toURL(), "httpd",
                 ".tar.gz", new String[]{"TGZ"}, false, true);
         writer.append("apache version=").append(fileName).append(System.lineSeparator());
         if (!Objects.equals(apacheVer, fileName) || apacheDir.listFiles() == null) {
             clearDirectory(apacheDir);
-            File apacheZipped = downloadFileFromWeb("https://dlcdn.apache.org/httpd", apacheDir, "httpd",
-                    ".tar.gz", new String[]{"TGZ"}, false);
-            // apache download
-            // download apr packages.(https://dlcdn.apache.org/apr/)
-            // follow download instructions (https://httpd.apache.org/docs/2.4/platform/win_compiling.html)
-            // run command line stuff (https://stackoverflow.com/questions/15464111/run-cmd-commands-through-java)
-            // code HTMLObject class with String type, Map<String, String> properties, List<HTMLObject> subObjects
-            // add os check so that I can decide how to run commands.
-
-            // unpack
-            File apacheTar = unGzip(apacheZipped, apacheDir);
-            File httpd = unTar(apacheTar, apacheDir, fileName);
             Console console = new Console();
-            console.directory(httpd);
+            console.directory(apacheDir);
             if (Util.IS_WINDOWS) {
-                File bashDir = new File(Util.PROJECT, "/bash/");
-                if (!bashDir.exists()) {
-                    bashDir.mkdir();
-                }
-                URI uri = URI.create("https://sourceforge.net/projects/win-bash/files/shell-complete/latest/shell.w32-ix86.zip/download");
-                URL url = uri.toURL();
-                ReadableByteChannel channel = Channels.newChannel(url.openStream());
-                File bashZipped = new File(bashDir, "/bash.zip");
-                FileOutputStream outputStream = new FileOutputStream(bashZipped);
-                FileChannel fileChannel = outputStream.getChannel();
-                fileChannel.transferFrom(channel, 0, Long.MAX_VALUE);
-                outputStream.close();
-                File bash = unZip(bashZipped, bashDir);
+                // windows install link www.apachelounge.com/download/VS17/binaries/httpd-2.4.65-250724-Win64-VS17.zip
+                // need to get current visual studio version used for apache
+                // need apache version
+                // id 2.4.62 = 240904
+                // id 2.4.63 = 250207
+                // id 2.4.65 = 250724
+                // format as YYMMDD
+                // save latest
+
+                String url = getWindowsApacheDownloadLink(fileName, vsVersion, lastCheckedDate);
+
+                File apacheZipped = downloadFileFromWeb(url, apacheDir, fileName + ".zip");
+                File apache = unZip(apacheZipped, apacheDir);
+            } else {
+                File apacheZipped = downloadFileFromWeb("https://dlcdn.apache.org/httpd", apacheDir,
+                        "httpd", ".tar.gz", new String[]{"TGZ"}, false);
+                // apache download
+                // download apr packages.(https://dlcdn.apache.org/apr/)
+                // follow download instructions (https://httpd.apache.org/docs/2.4/platform/win_compiling.html)
+                // run command line stuff (https://stackoverflow.com/questions/15464111/run-cmd-commands-through-java)
+                // code HTMLObject class with String type, Map<String, String> properties, List<HTMLObject> subObjects
+                // add os check so that I can decide how to run commands.
+
+                // unpack
+                File apacheTar = unGzip(apacheZipped, apacheDir);
+                File httpd = unTar(apacheTar, apacheDir, fileName);
+
+                console.runCommand("./configure --prefix=apache");
+                console.runCommand("make");
+                console.runCommand("make install");
             }
             System.out.println("Apache installed.");
         }
@@ -328,33 +385,33 @@ public class FileUtils {
     public static File unZip(File infile, File outDir, String shouldRemove) throws IOException, ArchiveException {
         System.out.println("Unzipping " + infile.getPath() + "...");
         File outFile = new File(outDir, infile.getName().replaceAll("\\.zip", ""));
-        InputStream in = new FileInputStream(infile);
-        ZipArchiveInputStream zipStream = factory.createArchiveInputStream("zip", in);
-        ZipArchiveEntry entry = null;
-        while ((entry = zipStream.getNextEntry()) != null) {
-            System.out.println("Moving " + entry.getName() + " to " + outFile.getPath() + "...");
-            if (shouldRemove != null && entry.getName().contains(shouldRemove)) {
-                continue;
-            }
-            File outputFile;
-            if (shouldRemove == null) {
-                outputFile = new File(outDir, entry.getName());
-            } else {
-                outputFile = new File(outDir, entry.getName().replaceAll(shouldRemove, ""));
-            }
+        byte[] buffer = new byte[1024];
+        ZipInputStream in = new ZipInputStream(new FileInputStream(infile));
+        ZipEntry entry;
+        while ((entry = in.getNextEntry()) != null) {
+            System.out.println("Moving " + entry.getName() + " to " + outDir.getPath() + "...");
+            File toMove = getFileFromZipEntry(outDir, entry, shouldRemove);
+            if (toMove == null) continue;
             if (entry.isDirectory()) {
-                if (!outputFile.exists()) {
-                    if (!outputFile.mkdirs()) {
-                        throw new FileExistsException(outputFile);
-                    }
+                if (!toMove.isDirectory() && !toMove.mkdirs()) {
+                    throw new FileExistsException(toMove);
                 }
             } else {
-                OutputStream out = new FileOutputStream(outputFile);
-                IOUtils.copy(zipStream, out);
+                File parent = toMove.getParentFile();
+                if (!parent.isDirectory() && !parent.mkdirs()) {
+                    throw new FileExistsException(toMove);
+                }
+
+                FileOutputStream out = new FileOutputStream(toMove);
+                int len;
+                while ((len = in.read(buffer)) > 0) {
+                    out.write(buffer, 0, len);
+                }
                 out.close();
             }
         }
-        zipStream.close();
+        in.closeEntry();
+        in.close();
         infile.delete();
         return outFile;
     }
@@ -377,5 +434,20 @@ public class FileUtils {
 
             }
         }
+    }
+
+    public static File getFileFromZipEntry(File directory, ZipEntry entry, String shouldRemove) throws IOException {
+        File out = new File(directory, entry.getName());
+        if (shouldRemove != null) {
+            out = new File(directory, entry.getName().replaceFirst(shouldRemove, ""));
+        }
+        String directoryPath = directory.getCanonicalPath();
+        String filePath = out.getCanonicalPath();
+
+        if (!filePath.startsWith(directoryPath + File.separator)) {
+            return null;
+        }
+
+        return out;
     }
 }

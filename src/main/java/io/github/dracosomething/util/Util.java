@@ -5,12 +5,14 @@ import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
 
 public class Util {
     public static final String PATH_SEPARATOR = System.getProperty("file.separator");
     public static final File ROOT = Arrays.stream(File.listRoots()).toList().getFirst();
     public static final File PROJECT = new File(ROOT, PATH_SEPARATOR + "domainify");
     public static final boolean IS_WINDOWS = System.getProperty("os.name").toLowerCase().startsWith("windows");
+    public static final boolean IS_64_BIT;
 
     public static boolean isProperPath(String path) {
         try {
@@ -40,5 +42,18 @@ public class Util {
             }
         }
         return builder.toString();
+    }
+
+    public static void wait(int time, TimeUnit unit) throws InterruptedException {
+        long waitingTime = unit.toMillis(time);
+        Thread.sleep(waitingTime);
+    }
+
+    static {
+        if (IS_WINDOWS) {
+            IS_64_BIT = System.getenv("ProgramFiles(x86)") != null;
+        } else {
+            IS_64_BIT = System.getProperty("os.arch").contains("64");
+        }
     }
 }
