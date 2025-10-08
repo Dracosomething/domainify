@@ -16,6 +16,7 @@ dependencies {
     implementation("org.apache.commons:commons-lang3:3.19.0")
     implementation("commons-io:commons-io:2.20.0")
     implementation("commons-codec:commons-codec:1.19.0")
+    implementation("org.seleniumhq.selenium:selenium-java:4.36.0")
 }
 
 tasks.test {

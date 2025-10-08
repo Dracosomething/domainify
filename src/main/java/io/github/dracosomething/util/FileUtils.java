@@ -8,6 +8,7 @@ import org.apache.commons.io.FileExistsException;
 import org.apache.commons.io.IOUtils;
 
 import javax.swing.plaf.synth.Region;
+import java.awt.*;
 import java.io.*;
 import java.net.*;
 import java.net.http.HttpClient;
@@ -17,12 +18,15 @@ import java.net.http.HttpResponse;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -197,7 +201,7 @@ public class FileUtils {
     }
 
     public static String getWindowsApacheDownloadLink(String fileName, int vsVersion, LocalDate lastCheckedDate) {
-        String base = "http://www.apachelounge.com/download/";
+        String base = "https://www.apachelounge.com/download/";
         String afterVSVer = "/binaries/" + fileName + "-";
         String visualStudioVer = "VS" + vsVersion;
         String year = "25";
@@ -284,8 +288,7 @@ public class FileUtils {
                 // save latest
 
                 String url = getWindowsApacheDownloadLink(fileName, vsVersion, lastCheckedDate);
-
-                File apacheZipped = downloadFileFromWeb(url, apacheDir, fileName + ".zip");
+                File apacheZipped = downloadFileFromWeb(url, apacheDir, fileName + ".txt");
                 File apache = unZip(apacheZipped, apacheDir);
             } else {
                 File apacheZipped = downloadFileFromWeb("https://dlcdn.apache.org/httpd", apacheDir,
