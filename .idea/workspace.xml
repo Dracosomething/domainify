@@ -10,12 +10,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d7ab1385-168d-4e32-98b0-5e9c3c72e3a0" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/artifacts/domainify_jar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/BrowserEmulator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/artifacts/domainify_main_jar.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/FileUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/FileUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/BrowserEmulator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/BrowserEmulator.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -81,28 +77,28 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.run.executor": "Run",
-    "DefaultHtmlFileTemplate": "HTML File",
-    "Gradle.Build domainify.executor": "Run",
-    "Gradle.HTMLObjectParseTest.HTMLObject_parse_test.executor": "Debug",
-    "Gradle.SourceForgeTest.parse_test.executor": "Run",
-    "Gradle.domainify [:HTMLObjectParseTest.main()].executor": "Run",
-    "Gradle.domainify [:io.github.dracosomething.Main.main()].executor": "Run",
-    "Gradle.regexTest.string_matches_regex_version.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "master",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/Gebruiker/Documents/GitHub/domainify",
-    "onboarding.tips.debug.path": "C:/Users/alias/Documents/school/schooljaar2025-2026/periode1/XPerience/profielen/fullstack/domainify/src/main/java/io/github/dracosomething/Main.java",
-    "project.structure.last.edited": "Artifacts",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "preferences.lookFeel"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.run.executor&quot;: &quot;Run&quot;,
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;Gradle.Build domainify.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.HTMLObjectParseTest.HTMLObject_parse_test.executor&quot;: &quot;Debug&quot;,
+    &quot;Gradle.SourceForgeTest.parse_test.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.domainify [:HTMLObjectParseTest.main()].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.domainify [:io.github.dracosomething.Main.main()].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.regexTest.string_matches_regex_version.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Gebruiker/Documents/GitHub/domainify&quot;,
+    &quot;onboarding.tips.debug.path&quot;: &quot;C:/Users/alias/Documents/school/schooljaar2025-2026/periode1/XPerience/profielen/fullstack/domainify/src/main/java/io/github/dracosomething/Main.java&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Artifacts&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveMembersDialog.RECENTS_KEY">
       <recent name="io.github.dracosomething.util.Util" />
@@ -294,15 +290,10 @@
           <line>156</line>
           <option name="timeStamp" value="321" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/FileUtils.java</url>
-          <line>294</line>
-          <option name="timeStamp" value="377" />
-        </line-breakpoint>
         <line-breakpoint enabled="true" type="java-method">
           <url>jar://$USER_HOME$/AppData/Local/Programs/Eclipse Adoptium/jdk-21.0.4.7-hotspot/lib/src.zip!/java.base/java/util/stream/Stream.java</url>
           <line>591</line>
-          <properties class="java.util.stream.Stream" method="sorted">
+          <properties class="java.util.stream.Stream">
             <option name="EMULATED" value="true" />
             <option name="WATCH_EXIT" value="false" />
           </properties>
@@ -311,7 +302,7 @@
         <line-breakpoint enabled="true" type="java-method">
           <url>jar://$USER_HOME$/AppData/Local/Programs/Eclipse Adoptium/jdk-21.0.4.7-hotspot/lib/src.zip!/java.desktop/java/awt/peer/DesktopPeer.java</url>
           <line>115</line>
-          <properties class="java.awt.peer.DesktopPeer" method="browse">
+          <properties class="java.awt.peer.DesktopPeer">
             <option name="EMULATED" value="true" />
             <option name="WATCH_EXIT" value="false" />
           </properties>

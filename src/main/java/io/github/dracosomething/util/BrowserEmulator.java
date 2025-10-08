@@ -1,26 +1,13 @@
 package io.github.dracosomething.util;
 
+import com.gargoylesoftware.htmlunit.BrowserVersion;
+import org.jspecify.annotations.Nullable;
 import org.openqa.selenium.*;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeDriverInfo;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.chromium.ChromiumDriver;
-import org.openqa.selenium.edge.EdgeDriver;
-import org.openqa.selenium.edge.EdgeDriverInfo;
-import org.openqa.selenium.edge.EdgeOptions;
-import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
-import org.openqa.selenium.firefox.GeckoDriverInfo;
-import org.openqa.selenium.ie.InternetExplorerDriver;
-import org.openqa.selenium.ie.InternetExplorerDriverInfo;
-import org.openqa.selenium.ie.InternetExplorerOptions;
+import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.remote.Browser;
-import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.safari.SafariDriver;
-import org.openqa.selenium.safari.SafariDriverInfo;
-import org.openqa.selenium.safari.SafariOptions;
 
-import java.awt.*;
 import java.io.File;
 import java.net.URL;
 import java.util.Map;
@@ -36,39 +23,27 @@ public class BrowserEmulator {
         isActive = false;
     }
 
-    private WebDriver getBrowser() {
-        WebDriverInfo info;
-        info = new GeckoDriverInfo();
-        if (info.isPresent() && info.isAvailable()) {
-            FirefoxOptions options = new FirefoxOptions();
-            options.addArguments("--headless=new");
-            return new FirefoxDriver(options);
+    private WebDriver getBrowser(File downloadPath) {
+        FirefoxOptions options = new FirefoxOptions() {
+            @Override
+            public String getBrowserName() {
+                return Browser.HTMLUNIT.browserName();
+            }
+        };
+        options.setCapability("javascriptEnabled", true);
+        if (downloadPath != null) {
+            FirefoxProfile profile = new FirefoxProfile();
+            profile.setPreference("browser.download.folderList", 2);
+            profile.setPreference("browser.download.manager.showWhenStarting", false);
+            profile.setPreference("browser.download.dir", downloadPath.toString());
+            profile.setPreference("browser.helperApps.neverAsk.saveToDisk", "application/csv, text/csv, text/plain,application/octet-stream doc xls pdf txt");
         }
-        info = new ChromeDriverInfo();
-        if (info.isPresent() && info.isAvailable()) {
-            ChromeOptions options = new ChromeOptions();
-            options.addArguments("--headless=new");
-            return new ChromeDriver();
-        }
-        info = new EdgeDriverInfo();
-        if (info.isPresent() && info.isAvailable()) {
-            EdgeOptions options = new EdgeOptions();
-            options.addArguments("--headless=new");
-            return new EdgeDriver(options);
-        }
-        info = new InternetExplorerDriverInfo();
-        if (info.isPresent() && info.isAvailable()) {
-            InternetExplorerOptions options = new InternetExplorerOptions();
-            options.setCapability("headless", true);
-            return new InternetExplorerDriver(options);
-        }
-        info = new SafariDriverInfo();
-        if (info.isPresent() && info.isAvailable()) {
-            SafariOptions options = new SafariOptions();
-            options.setCapability("headless", true);
-            return new SafariDriver(options);
-        }
+        this.driver = new HtmlUnitDriver(options);
         return null;
+    }
+
+    private WebDriver getBrowser() {
+        return this.getBrowser(null);
     }
 
     public void open(URL url) {
@@ -96,7 +71,7 @@ public class BrowserEmulator {
         return this.isActive;
     }
 
-    public Optional<File> downloadFile() {
+    public Optional<File> downloadFile(File downloadDestination) {
         if (this.url != null) {
 
         }
