@@ -220,8 +220,6 @@ public class FileUtils {
         String apacheVer = "";
         String PHPVersion = "";
         String mySQLVersion = "";
-        int vsVersion = 17;
-        LocalDate lastCheckedDate = LocalDate.now();
         String str;
         while ((str = reader.readLine()) != null) {
             StringBuilder builder = new StringBuilder();
@@ -234,8 +232,6 @@ public class FileUtils {
                 case "apache version" -> apacheVer = value;
                 case "php version" -> PHPVersion = value;
                 case "sql version" -> mySQLVersion = value;
-                case "VS" -> vsVersion = Integer.getInteger(value);
-                case "last checked date" -> lastCheckedDate = LocalDate.parse(value);
             }
         }
 
