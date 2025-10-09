@@ -40,11 +40,13 @@ public class Util {
             if (isRegex) {
                 str = str.replaceFirst("[$]!", "");
             }
+            //append \\b here if not isRegex
             builder.append(str);
             if (!isRegex) {
                 builder.append("\\b");
             }
             builder.append(".*");
+            // bellow can be removed
             if (it.hasNext()) {
                 builder.append("\\b");
             }
