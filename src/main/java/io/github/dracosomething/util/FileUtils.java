@@ -297,17 +297,20 @@ public class FileUtils {
         // need new method downloadFile with params URL url, String name, String fileExtension, String description, boolean shouldFilter
         // calls getFileFromWeb and then downloadFileFromWeb and returns the file downloaded.
         String phpName = getFileNameFromWeb(URI.create("https://downloads.php.net/~windows/releases/archives").toURL(),
-                "php", ".zip", new String[]{"Win32-vs17-x64"}, true, true);
+                "php", ".zip", new String[]{"Win32-", "-x64"}, true, true);
         writer.append("php version=").append(phpName).append(System.lineSeparator());
         if (!Objects.equals(phpName, PHPVersion) || phpDir.listFiles() == null) {
             clearDirectory(phpDir);
             File PHPZip = downloadFileFromWeb("https://downloads.php.net/~windows/releases/archives", phpDir,
-                    "php", ".zip", new String[]{"Win32-vs17-x64"}, true);
+                    "php", ".zip", new String[]{"Win32-", "-x64"}, true);
             File PHP = unZip(PHPZip, phpDir);
+            System.out.println("PHP installed...");
         }
 
         // server (https://dev.mysql.com/downloads/installer) (mysql-installer-community-8.0.43.0.msi)
-
+        String latestVersion = getFileNameFromWeb(URI.create("https://archive.mariadb.org").toURL(),
+                "mariadb-", "/", new String[]{"$!mariadb-(\\.?[0-9]+)+\\/"}, true);
+        System.out.println(latestVersion);
         writer.close();
     }
 

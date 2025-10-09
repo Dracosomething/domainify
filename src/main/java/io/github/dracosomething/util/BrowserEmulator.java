@@ -158,27 +158,31 @@ public class BrowserEmulator {
         if (this.url != null) {
             this.driver = getBrowser(downloadDestination);
             this.connect(url);
+
             String name = url.toString().replaceAll("(https|http)://.*\\..*\\..*/.*/", "");
             File file = new File(downloadDestination, name);
+
             WebWindow window = this.driver.getCurrentWindow().getWebWindow();
             UnexpectedPage page = (UnexpectedPage) window.getEnclosedPage();
+
             ReadableByteChannel channel = Channels.newChannel(page.getInputStream());
             FileOutputStream outputStream = new FileOutputStream(file);
             FileChannel fileChannel = outputStream.getChannel();
             fileChannel.transferFrom(channel, 0, Long.MAX_VALUE);
             outputStream.close();
+
             return Optional.of(file);
         }
         return Optional.empty();
+    }
+
+    public Optional<File> downloadFile(String fileName, String fileExtension, File downloadLocation, String[] extraData) throws IOException {
+        return downloadFile(fileName, fileExtension, downloadLocation, extraData, false);
     }
 
     @Override
     protected void finalize() throws Throwable {
         super.finalize();
         close();
-    }
-
-    public Optional<File> downloadFile(String fileName, String fileExtension, File downloadLocation, String[] extraData) throws IOException {
-        return downloadFile(fileName, fileExtension, downloadLocation, extraData, false);
     }
 }

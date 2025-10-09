@@ -10,17 +10,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d7ab1385-168d-4e32-98b0-5e9c3c72e3a0" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/comparator/VersionComparator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/comparator/VersionNameComparator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/comparator/VersionStringComparator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/comparator/VersionWebElementComparator.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/domain/CustomDomain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/domain/CustomDomain.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/domain/ReverseFileOrder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/comparator/ReverseFileOrder.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/BrowserEmulator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/BrowserEmulator.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/FileUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/FileUtils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/VersionNameComparator.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/VersionStringComparator.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/Util.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/Util.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/comparator/VersionComparator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/comparator/VersionComparator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/comparator/VersionNameComparator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/comparator/VersionNameComparator.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -100,7 +95,7 @@
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "git-widget-placeholder": "master",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/Gebruiker/Documents/GitHub/domainify",
+    "last_opened_file_path": "C:/Users/alias/Documents/school/schooljaar2025-2026/periode1/XPerience/profielen/fullstack/domainify/src/main/resources",
     "onboarding.tips.debug.path": "C:/Users/alias/Documents/school/schooljaar2025-2026/periode1/XPerience/profielen/fullstack/domainify/src/main/java/io/github/dracosomething/Main.java",
     "project.structure.last.edited": "Artifacts",
     "project.structure.proportion": "0.15",
@@ -109,6 +104,9 @@
   }
 }]]></component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\alias\Documents\school\schooljaar2025-2026\periode1\XPerience\profielen\fullstack\domainify\src\main\resources" />
+    </key>
     <key name="MoveMembersDialog.RECENTS_KEY">
       <recent name="io.github.dracosomething.util.Util" />
       <recent name="io.github.dracosomething.Util" />
@@ -213,9 +211,9 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.HTMLObjectParseTest.HTMLObject_parse_test" />
         <item itemvalue="Gradle.SourceForgeTest.parse_test" />
         <item itemvalue="Gradle.regexTest.string_matches_regex_version" />
-        <item itemvalue="Gradle.HTMLObjectParseTest.HTMLObject_parse_test" />
         <item itemvalue="Application.HTMLObjectParseTest" />
       </list>
     </recent_temporary>
@@ -280,11 +278,6 @@
           <option name="timeStamp" value="169" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/test/java/HTMLObjectParseTest.java</url>
-          <line>11</line>
-          <option name="timeStamp" value="246" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/Console.java</url>
           <line>124</line>
           <option name="timeStamp" value="317" />
@@ -298,6 +291,16 @@
           <url>file://$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/Console.java</url>
           <line>156</line>
           <option name="timeStamp" value="321" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/FileUtils.java</url>
+          <line>310</line>
+          <option name="timeStamp" value="504" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/FileUtils.java</url>
+          <line>85</line>
+          <option name="timeStamp" value="517" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-method">
           <url>jar://$USER_HOME$/AppData/Local/Programs/Eclipse Adoptium/jdk-21.0.4.7-hotspot/lib/src.zip!/java.base/java/util/stream/Stream.java</url>

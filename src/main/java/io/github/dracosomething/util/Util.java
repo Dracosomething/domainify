@@ -32,11 +32,19 @@ public class Util {
     }
 
     public static String formatArrayToRegex(String[] arr) {
-        StringBuilder builder = new StringBuilder(".*\\b");
+        StringBuilder builder = new StringBuilder(".*");
         Iterator<String> it = Arrays.stream(arr).iterator();
         while (it.hasNext()) {
             String str = it.next();
-            builder.append(str).append("\\b.*");
+            boolean isRegex = str.startsWith("$!");
+            if (isRegex) {
+                str = str.replaceFirst("[$]!", "");
+            }
+            builder.append(str);
+            if (!isRegex) {
+                builder.append("\\b");
+            }
+            builder.append(".*");
             if (it.hasNext()) {
                 builder.append("\\b");
             }

@@ -17,6 +17,6 @@ public abstract class VersionComparator<T> implements Comparator<T> {
     public int compare(T o1, T o2) {
         String version1 = format(o1).replace(fileName, "").replace(fileExtension, "");
         String version2 = format(o2).replace(fileName, "").replace(fileExtension, "");
-        return version1.compareTo(version2);
+        return version2.compareTo(version1);
     }
 }
