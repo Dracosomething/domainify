@@ -1,4 +1,4 @@
-package io.github.dracosomething.domain;
+package io.github.dracosomething.util.comparator;
 
 import java.io.File;
 import java.io.Serializable;

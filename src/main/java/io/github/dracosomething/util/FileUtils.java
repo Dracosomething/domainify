@@ -1,36 +1,23 @@
 package io.github.dracosomething.util;
 
+import io.github.dracosomething.util.comparator.VersionNameComparator;
+import io.github.dracosomething.util.comparator.VersionStringComparator;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.io.FileExistsException;
 import org.apache.commons.io.IOUtils;
+import org.openqa.selenium.WebElement;
 
-import javax.swing.plaf.synth.Region;
-import java.awt.*;
 import java.io.*;
 import java.net.*;
-import java.net.http.HttpClient;
-import java.net.http.HttpHeaders;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -200,22 +187,6 @@ public class FileUtils {
         return download;
     }
 
-    public static String getWindowsApacheDownloadLink(String fileName, int vsVersion, LocalDate lastCheckedDate) {
-        String base = "https://www.apachelounge.com/download/";
-        String afterVSVer = "/binaries/" + fileName + "-";
-        String visualStudioVer = "VS" + vsVersion;
-        String year = "25";
-        String month = "07";
-        String day = "24";
-        String date = year + month + day;
-        String windowsVer = "Win32";
-        if (Util.IS_64_BIT) {
-            windowsVer = "Win64";
-        }
-        String url = base + visualStudioVer + afterVSVer + date + "-" + windowsVer + "-" + visualStudioVer + ".zip";
-        return url;
-    }
-
     public static boolean isValidUrl(String urlString) {
         URI uri = URI.create(urlString);
         try {
@@ -286,10 +257,18 @@ public class FileUtils {
                 // id 2.4.65 = 250724
                 // format as YYMMDD
                 // save latest
-
-                String url = getWindowsApacheDownloadLink(fileName, vsVersion, lastCheckedDate);
-                File apacheZipped = downloadFileFromWeb(url, apacheDir, fileName + ".txt");
-                File apache = unZip(apacheZipped, apacheDir);
+                BrowserEmulator emulator = new BrowserEmulator();
+                emulator.connect(URI.create("https://www.apachelounge.com/download").toURL());
+                String windowsVer = "win32";
+                if (Util.IS_64_BIT) {
+                    windowsVer = "win64";
+                }
+                Optional<File> optional = emulator.downloadFile("httpd", ".zip", apacheDir,
+                        new String[]{windowsVer});
+                if (optional.isPresent()) {
+                    File apacheZipped = optional.get();
+                    File apache = unZip(apacheZipped, apacheDir, "Apache24");
+                }
             } else {
                 File apacheZipped = downloadFileFromWeb("https://dlcdn.apache.org/httpd", apacheDir,
                         "httpd", ".tar.gz", new String[]{"TGZ"}, false);
