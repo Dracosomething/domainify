@@ -8,6 +8,7 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.io.FileExistsException;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.SystemUtils;
 
 import java.io.*;
 import java.net.*;
@@ -174,10 +175,12 @@ public class FileUtils {
     public static File downloadFileFromWeb(String urlString, File downloadLocation, String fileName,
                                            String fileExtension)
             throws IOException {
-        return downloadFileFromWeb(urlString, downloadLocation, fileName, fileExtension, null, false);
+        return downloadFileFromWeb(urlString, downloadLocation, fileName, fileExtension, null,
+                false);
     }
 
-    public static File downloadFileFromWeb(String urlString, File downloadLocation, String fileName) throws IOException {
+    public static File downloadFileFromWeb(String urlString, File downloadLocation, String fileName)
+            throws IOException {
         URI uri = URI.create(urlString);
         URL url = uri.toURL();
         ReadableByteChannel channel = Channels.newChannel(url.openStream());
@@ -268,7 +271,7 @@ public class FileUtils {
                     File apacheZipped = optional.get();
                     File apache = unZip(apacheZipped, apacheDir, "Apache24");
                 }
-            } else {
+            } else if (SystemUtils.IS_OS_LINUX) {
                 File apacheZipped = downloadFileFromWeb("https://dlcdn.apache.org/httpd", apacheDir,
                         "httpd", ".tar.gz", new String[]{"TGZ"}, false);
 
@@ -283,7 +286,8 @@ public class FileUtils {
         }
 
         String phpName = getFileNameFromWeb(URI.create("https://downloads.php.net/~windows/releases/archives").toURL(),
-                "php", ".zip", new String[]{"$!php-(\\.?[0-9]+)+-Win32-", "-x64"}, true, true);
+                "php", ".zip", new String[]{"$!php-(\\.?[0-9]+)+-Win32-", "-x64"}, true,
+                true);
         writer.append("php version=").append(phpName).append(System.lineSeparator());
         File phpVerDir = new File(phpDir, Util.replaceOther("php-(\\.?[0-9]+)+", "", phpName));
         if (!phpVerDir.exists()) {
@@ -302,13 +306,25 @@ public class FileUtils {
         if (!Objects.equals(mySQLVersion, latestVersion) || serverDir.listFiles() == null) {
             clearDirectory(serverDir);
             URL url = URI.create("https://archive.mariadb.org/" + latestVersion).toURL();
-            String mariadbDownloadLocation = getFileNameFromWeb(url, "win", "/", null,
-                    false);
-            String finalLocation = url.toString() + mariadbDownloadLocation;
-            // do not set shouldFilter to true otherwise it crashes
-            File mariadbZipped = downloadFileFromWeb(finalLocation, serverDir,
-                    latestVersion.replace("/", ""), "64.zip", false);
-            File mariadb = unZip(mariadbZipped, serverDir);
+            if(Util.IS_WINDOWS) {
+                String mariadbDownloadLocation = getFileNameFromWeb(url, "win", "/", null,
+                        false);
+                String finalLocation = url.toString() + mariadbDownloadLocation;
+                // do not set shouldFilter to true otherwise it crashes
+                File mariadbZipped = downloadFileFromWeb(finalLocation, serverDir,
+                        latestVersion.replace("/", ""), "64.zip", false);
+                File mariadb = unZip(mariadbZipped, serverDir);
+            } else if (SystemUtils.IS_OS_LINUX) {
+                String mariadbDownloadLocation = getFileNameFromWeb(url, "bintar-linux-systemd", "/",
+                        null, false);
+                String finalLocation = url.toString() + mariadbDownloadLocation;
+                // do not set shouldFilter to true otherwise it crashes
+                File mariadbGzipped = downloadFileFromWeb(finalLocation, serverDir,
+                        latestVersion.replace("/", ""), ".tar.gz", new String[]{"linux"},
+                        false);
+                File mariadbTar = unGzip(mariadbGzipped, serverDir);
+                File mariadb = unTar(mariadbTar, serverDir);
+            }
             System.out.println("MySQL installed...");
         }
 

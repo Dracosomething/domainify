@@ -1,5 +1,7 @@
 package io.github.dracosomething.util;
 
+import org.apache.commons.lang3.SystemUtils;
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -7,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Util {
     public static final boolean IS_WINDOWS = System.getProperty("os.name").toLowerCase().startsWith("windows");
+    public static final LinuxVersion LINUX_VERSION;
     public static final boolean IS_64_BIT;
 
     public static boolean firstLaunch() {
@@ -38,9 +41,13 @@ public class Util {
         return builder.toString();
     }
 
-    public static void staticWait(int time, TimeUnit unit) throws InterruptedException {
+    public static void staticWait(int time, TimeUnit unit) {
         long waitingTime = unit.toMillis(time);
-        Thread.sleep(waitingTime);
+        try {
+            Thread.sleep(waitingTime);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -63,11 +70,43 @@ public class Util {
         return in;
     }
 
+    public static boolean containsIgnoreCase(String in, String contains) {
+        return in.contains(contains) ||
+                in.toLowerCase().contains(contains.toLowerCase()) ||
+                in.toUpperCase().contains(contains.toUpperCase());
+    }
+
     static {
         if (IS_WINDOWS) {
             IS_64_BIT = System.getenv("ProgramFiles(x86)") != null;
         } else {
             IS_64_BIT = System.getProperty("os.arch").contains("64");
         }
+        if (SystemUtils.IS_OS_LINUX) {
+            String osName = System.getProperty("os.name");
+            if (containsIgnoreCase(osName, "debian"))
+                LINUX_VERSION = LinuxVersion.DEBIAN;
+            else if (containsIgnoreCase(osName, "fedora"))
+                LINUX_VERSION = LinuxVersion.FEDORA;
+            else if (containsIgnoreCase(osName, "redhat"))
+                LINUX_VERSION = LinuxVersion.RED_HAT;
+            else if (containsIgnoreCase(osName, "ubuntu"))
+                LINUX_VERSION = LinuxVersion.UBUNTU;
+            else if (containsIgnoreCase(osName, "linux"))
+                LINUX_VERSION = LinuxVersion.LINUX;
+            else
+                LINUX_VERSION = LinuxVersion.NON;
+        } else {
+            LINUX_VERSION = LinuxVersion.NON;
+        }
+    }
+
+    public enum LinuxVersion {
+        DEBIAN,
+        FEDORA,
+        RED_HAT,
+        UBUNTU,
+        LINUX,
+        NON
     }
 }
