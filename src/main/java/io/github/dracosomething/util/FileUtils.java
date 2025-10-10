@@ -80,10 +80,11 @@ public class FileUtils {
             }
         }
         in.close();
+        HTMLObject object = list.getFirst();
         if (shouldFilter) {
             list = list.stream().sorted(new VersionNameComparator(name, fileExtension)).toList();
+            object = list.getFirst();
         }
-        HTMLObject object = list.getFirst();
         return object.getProperty("href");
     }
 
@@ -200,10 +201,18 @@ public class FileUtils {
         }
     }
 
+    /**
+     * method sets downloads all required files, and it updates them if necessary.
+     *
+     * @throws IOException
+     * @throws ArchiveException
+     */
     public static void downloadRequirements() throws IOException, ArchiveException {
+        // constructs all directory objects.
         final File apacheDir = new File(Util.PROJECT, PATH_SEPARATOR + "apache" + PATH_SEPARATOR);
         final File phpDir = new File(Util.PROJECT,  PATH_SEPARATOR + "php" + PATH_SEPARATOR);
         final File serverDir = new File(Util.PROJECT, PATH_SEPARATOR + "mysql" + PATH_SEPARATOR);
+        // make directory if they don't exist.
         if (!apacheDir.exists()) {
             apacheDir.mkdir();
         }
@@ -213,6 +222,7 @@ public class FileUtils {
         if (!serverDir.exists()) {
             serverDir.mkdir();
         }
+        // construct data file, contains all version data
         if (!DATA.exists()) {
             DATA.createNewFile();
         }
@@ -245,14 +255,6 @@ public class FileUtils {
             Console console = new Console();
             console.directory(apacheDir);
             if (Util.IS_WINDOWS) {
-                // windows install link www.apachelounge.com/download/VS17/binaries/httpd-2.4.65-250724-Win64-VS17.zip
-                // need to get current visual studio version used for apache
-                // need apache version
-                // id 2.4.62 = 240904
-                // id 2.4.63 = 250207
-                // id 2.4.65 = 250724
-                // format as YYMMDD
-                // save latest
                 BrowserEmulator emulator = new BrowserEmulator();
                 emulator.connect(URI.create("https://www.apachelounge.com/download").toURL());
                 String windowsVer = "win32";
@@ -268,14 +270,7 @@ public class FileUtils {
             } else {
                 File apacheZipped = downloadFileFromWeb("https://dlcdn.apache.org/httpd", apacheDir,
                         "httpd", ".tar.gz", new String[]{"TGZ"}, false);
-                // apache download
-                // download apr packages.(https://dlcdn.apache.org/apr/)
-                // follow download instructions (https://httpd.apache.org/docs/2.4/platform/win_compiling.html)
-                // run command line stuff (https://stackoverflow.com/questions/15464111/run-cmd-commands-through-java)
-                // code HTMLObject class with String type, Map<String, String> properties, List<HTMLObject> subObjects
-                // add os check so that I can decide how to run commands.
 
-                // unpack
                 File apacheTar = unGzip(apacheZipped, apacheDir);
                 File httpd = unTar(apacheTar, apacheDir, fileName);
 
@@ -286,32 +281,38 @@ public class FileUtils {
             System.out.println("Apache installed.");
         }
 
-        // php download (https://www.php.net/downloads) VS17 x64 Thread Safe
-        // extension = .zip
-        // extraData = Win32-vs17-x64
-        // name = php
-        // filter on highest
-        // required new params: String name, String fileExtension, String description, Pattern extraData, boolean shouldFilter
-        // need new method downloadFileFromWeb with param URL url
-        // downloads a file and returns it
-        // need new method downloadFile with params URL url, String name, String fileExtension, String description, boolean shouldFilter
-        // calls getFileFromWeb and then downloadFileFromWeb and returns the file downloaded.
         String phpName = getFileNameFromWeb(URI.create("https://downloads.php.net/~windows/releases/archives").toURL(),
-                "php", ".zip", new String[]{"Win32-", "-x64"}, true, true);
+                "php", ".zip", new String[]{"$!php-(\\.?[0-9]+)+-Win32-", "-x64"}, true, true);
         writer.append("php version=").append(phpName).append(System.lineSeparator());
-        if (!Objects.equals(phpName, PHPVersion) || phpDir.listFiles() == null) {
-            clearDirectory(phpDir);
+        File phpVerDir = new File(phpDir, Util.replaceOther("php-(\\.?[0-9]+)+", "", phpName));
+        if (!phpVerDir.exists()) {
+            phpVerDir.mkdir();
+        }
+        if (!Objects.equals(phpName, PHPVersion) || phpVerDir.listFiles() == null) {
             File PHPZip = downloadFileFromWeb("https://downloads.php.net/~windows/releases/archives", phpDir,
-                    "php", ".zip", new String[]{"Win32-", "-x64"}, true);
-            File PHP = unZip(PHPZip, phpDir);
+                    "php", ".zip", new String[]{"$!php-(\\.?[0-9]+)+-Win32-", "-x64"}, true);
+            File PHP = unZip(PHPZip, phpVerDir);
             System.out.println("PHP installed...");
         }
 
-        // server (https://dev.mysql.com/downloads/installer) (mysql-installer-community-8.0.43.0.msi)
         String latestVersion = getFileNameFromWeb(URI.create("https://archive.mariadb.org").toURL(),
-                "mariadb-", "/", new String[]{"$!mariadb-(\\.?[0-9]+)+\\/"}, true);
-        System.out.println(latestVersion);
+                "mariadb", "", new String[]{"$!mariadb-(\\.?[0-9]+)+\\/"}, true);
+        writer.append("sql version=").append(latestVersion);
+        if (!Objects.equals(mySQLVersion, latestVersion) || serverDir.listFiles() == null) {
+            clearDirectory(serverDir);
+            URL url = URI.create("https://archive.mariadb.org/" + latestVersion).toURL();
+            String mariadbDownloadLocation = getFileNameFromWeb(url, "win", "/", null,
+                    false);
+            String finalLocation = url.toString() + mariadbDownloadLocation;
+            // do not set shouldFilter to true otherwise it crashes
+            File mariadbZipped = downloadFileFromWeb(finalLocation, serverDir,
+                    latestVersion.replace("/", ""), "64.zip", false);
+            File mariadb = unZip(mariadbZipped, serverDir);
+            System.out.println("MySQL installed...");
+        }
+
         writer.close();
+        System.out.println("Everything is installed and/or up to date.");
     }
 
     public static File unTar(File infile, File outDir) throws IOException, ArchiveException {

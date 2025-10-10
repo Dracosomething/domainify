@@ -40,16 +40,15 @@ public class Util {
             if (isRegex) {
                 str = str.replaceFirst("[$]!", "");
             }
-            //append \\b here if not isRegex
+            if (!isRegex) {
+                builder.append("\\b");
+            }
             builder.append(str);
             if (!isRegex) {
                 builder.append("\\b");
             }
             builder.append(".*");
-            // bellow can be removed
-            if (it.hasNext()) {
-                builder.append("\\b");
-            }
+
         }
         return builder.toString();
     }
@@ -57,6 +56,26 @@ public class Util {
     public static void wait(int time, TimeUnit unit) throws InterruptedException {
         long waitingTime = unit.toMillis(time);
         Thread.sleep(waitingTime);
+    }
+
+
+    public static Integer[] parseStringArray(String[] array) {
+        Integer[] retVal = new Integer[array.length];
+        for (int i = 0; i < array.length; i++) {
+            String str = array[i];
+            int integer = Integer.parseInt(str);
+            retVal[i] = integer;
+        }
+        return retVal;
+    }
+
+    public static String replaceOther(String regex, String replacement, String in) {
+        String toRemove = in.replaceAll(regex, "toSplitAtHere");
+        String[] remove = toRemove.split("toSplitAtHere");
+        for (String str : remove) {
+            in = in.replaceFirst(str, replacement);
+        }
+        return in;
     }
 
     static {
