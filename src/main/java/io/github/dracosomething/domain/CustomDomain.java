@@ -1,8 +1,8 @@
 package io.github.dracosomething.domain;
 
+import io.github.dracosomething.util.FileUtils;
 import io.github.dracosomething.util.comparator.ReverseFileOrder;
 import io.github.dracosomething.util.Pair;
-import io.github.dracosomething.util.Util;
 
 import java.io.*;
 import java.net.URI;
@@ -185,17 +185,17 @@ public class CustomDomain {
             case "ServerAlias" -> serverAlias.add(value.getValue());
             case "ServerAdmin" -> serverAdmin = value.getValue();
             case "DocumentRoot" -> {
-                if (!Util.isProperPath(value.getValue()))
+                if (!FileUtils.isProperPath(value.getValue()))
                     throw new RuntimeException("string is not a proper file path");
                 target = new File(value.getValue());
             }
             case "ErrorLog" -> {
-                if (!Util.isProperPath(value.getValue()))
+                if (!FileUtils.isProperPath(value.getValue()))
                     throw new RuntimeException("string is not a proper file path");
                 errorLog = new File(value.getValue());
             }
             case "CustomLog" -> {
-                if (!Util.isProperPath(value.getValue()))
+                if (!FileUtils.isProperPath(value.getValue()))
                     throw new RuntimeException("string is not a proper file path");
                 customLog = new File(value.getValue());
             }
@@ -211,17 +211,17 @@ public class CustomDomain {
                 case "ServerAlias" -> serverAlias.add(value.getValue());
                 case "ServerAdmin" -> serverAdmin = value.getValue();
                 case "DocumentRoot" -> {
-                    if (!Util.isProperPath(value.getValue()))
+                    if (!FileUtils.isProperPath(value.getValue()))
                         throw new RuntimeException("string is not a proper file path");
                     target = new File(value.getValue());
                 }
                 case "ErrorLog" -> {
-                    if (!Util.isProperPath(value.getValue()))
+                    if (!FileUtils.isProperPath(value.getValue()))
                         throw new RuntimeException("string is not a proper file path");
                     errorLog = new File(value.getValue());
                 }
                 case "CustomLog" -> {
-                    if (!Util.isProperPath(value.getValue()))
+                    if (!FileUtils.isProperPath(value.getValue()))
                         throw new RuntimeException("string is not a proper file path");
                     customLog = new File(value.getValue());
                 }

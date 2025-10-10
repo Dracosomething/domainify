@@ -8,31 +8,32 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.io.FileExistsException;
 import org.apache.commons.io.IOUtils;
-import org.openqa.selenium.WebElement;
 
 import java.io.*;
 import java.net.*;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
-import java.time.LocalDate;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import static io.github.dracosomething.util.Util.PATH_SEPARATOR;
-
 public class FileUtils {
-    public static final ArchiveStreamFactory factory = new ArchiveStreamFactory();
-    public static final File DATA = new File(Util.PROJECT, PATH_SEPARATOR + "data.txt");
+    public static final ArchiveStreamFactory FACTORY = new ArchiveStreamFactory();
+    public static final String PATH_SEPARATOR = System.getProperty("file.separator");
+    public static final File ROOT = Arrays.stream(File.listRoots()).toList().getFirst();
+    public static final File PROJECT = new File(ROOT, PATH_SEPARATOR + "domainify");
+    public static final File DATA = new File(PROJECT, PATH_SEPARATOR + "data.txt");
 
     public static void createProjRoot() {
-        if (Util.PROJECT.exists()) {
+        if (PROJECT.exists()) {
             return;
         }
-        Util.PROJECT.mkdir();
+        PROJECT.mkdir();
     }
 
     public static BufferedReader getUrlReader(URL url) throws IOException {
@@ -209,9 +210,9 @@ public class FileUtils {
      */
     public static void downloadRequirements() throws IOException, ArchiveException {
         // constructs all directory objects.
-        final File apacheDir = new File(Util.PROJECT, PATH_SEPARATOR + "apache" + PATH_SEPARATOR);
-        final File phpDir = new File(Util.PROJECT,  PATH_SEPARATOR + "php" + PATH_SEPARATOR);
-        final File serverDir = new File(Util.PROJECT, PATH_SEPARATOR + "mysql" + PATH_SEPARATOR);
+        final File apacheDir = new File(PROJECT, PATH_SEPARATOR + "apache" + PATH_SEPARATOR);
+        final File phpDir = new File(PROJECT,  PATH_SEPARATOR + "php" + PATH_SEPARATOR);
+        final File serverDir = new File(PROJECT, PATH_SEPARATOR + "mysql" + PATH_SEPARATOR);
         // make directory if they don't exist.
         if (!apacheDir.exists()) {
             apacheDir.mkdir();
@@ -322,7 +323,7 @@ public class FileUtils {
     public static File unTar(File infile, File outDir, String shouldRemove) throws IOException, ArchiveException {
         System.out.println("Untar " + infile.getPath() + "...");
         InputStream in = new FileInputStream(infile);
-        TarArchiveInputStream tarIn = (TarArchiveInputStream) factory.createArchiveInputStream("tar", in);
+        TarArchiveInputStream tarIn = (TarArchiveInputStream) FACTORY.createArchiveInputStream("tar", in);
         TarArchiveEntry entry = null;
         while ((entry = tarIn.getNextEntry()) != null) {
             System.out.println("Moving file " + entry.getName() + "...");
@@ -431,5 +432,15 @@ public class FileUtils {
         }
 
         return out;
+    }
+
+    public static boolean isProperPath(String path) {
+        try {
+            Paths.get(path);
+        } catch (InvalidPathException | NullPointerException ex) {
+            ex.printStackTrace();
+            return false;
+        }
+        return true;
     }
 }
