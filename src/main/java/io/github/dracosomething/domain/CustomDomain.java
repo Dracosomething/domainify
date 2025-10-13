@@ -1,6 +1,7 @@
 package io.github.dracosomething.domain;
 
 import io.github.dracosomething.util.FileUtils;
+import io.github.dracosomething.util.Util;
 import io.github.dracosomething.util.comparator.ReverseFileOrder;
 import io.github.dracosomething.util.Pair;
 
@@ -12,9 +13,7 @@ import java.util.stream.Stream;
 public class CustomDomain {
     public static final ArrayList<CustomDomain> DOMAINS = new ArrayList<>();
     private static final File HOSTS =  new File(URI.create("file:/Windows/System32/drivers/etc/hosts"));
-    private static final File CONFIG_XAMPP = new File(URI.create("file:/xampp/apache/conf/extra/httpd-vhosts.conf"));
-    private static final File WAMP = new File(URI.create("file:/wamp/bin/apache"));
-    private static final File CONFIG_WAMP;
+    private static final File CONFIG = new File(FileUtils.PROJECT, "/apache/conf/extra/httpd-vhosts.conf");
 
     private String serverAdmin;
     private String name;
@@ -55,8 +54,7 @@ public class CustomDomain {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        registerConfig(CONFIG_XAMPP);
-        registerConfig(CONFIG_WAMP);
+        registerConfig(CONFIG);
     }
 
     private void registerConfig(final File const_) {
@@ -328,8 +326,7 @@ public class CustomDomain {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        updateConfig(CONFIG_XAMPP, updated);
-        updateConfig(CONFIG_WAMP, updated);
+        updateConfig(CONFIG, updated);
     }
 
     private void updateConfig(final File const_, DummyCustomDomain updated) {
@@ -406,8 +403,7 @@ public class CustomDomain {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        removeConfig(CONFIG_XAMPP);
-        removeConfig(CONFIG_WAMP);
+        removeConfig(CONFIG);
     }
 
     private void removeConfig(final File const_) {
@@ -494,32 +490,7 @@ public class CustomDomain {
                 "}";
     }
 
-    public static File getConfigWamp() {
-        return CONFIG_WAMP;
-    }
-
-    public static File getConfigXampp() {
-        return CONFIG_XAMPP;
-    }
-
-    static {
-        if (WAMP.exists() && WAMP.isDirectory()) {
-            File[] arr = WAMP.listFiles(new WampApacheFilter());
-            if (arr != null) {
-                List<File> list = new ArrayList<>(Arrays.stream(arr).toList());
-                list.sort(ReverseFileOrder.REVERSE_FILE_ORDER);
-                File dir = list.getFirst();
-                File file = new File(dir, "/conf/extra/httpd-vhosts.conf");
-                if (file.exists()) {
-                    CONFIG_WAMP = file;
-                } else {
-                    CONFIG_WAMP = new File("wamp_nonexistent");
-                }
-            } else {
-                CONFIG_WAMP = new File("wamp_nonexistent");
-            }
-        } else {
-            CONFIG_WAMP = new File("wamp_nonexistent");
-        }
+    public static File getConfig() {
+        return CONFIG;
     }
 }

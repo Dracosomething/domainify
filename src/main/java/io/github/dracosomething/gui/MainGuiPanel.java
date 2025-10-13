@@ -4,19 +4,14 @@ import io.github.dracosomething.domain.CustomDomain;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.InputMethodEvent;
-import java.awt.event.InputMethodListener;
 
 public class MainGuiPanel extends JPanel {
 
     public MainGuiPanel(JFrame frame) {
-        CustomDomain.readDomainXML(CustomDomain.getConfigWamp());
-        CustomDomain.readDomainXML(CustomDomain.getConfigXampp());
+        CustomDomain.readDomainXML(CustomDomain.getConfig());
         this.setSize(1000, 1500);
         this.setVisible(true);
         this.setLayout(new GridBagLayout());

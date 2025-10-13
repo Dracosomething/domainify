@@ -10,6 +10,7 @@ import org.apache.commons.io.FileExistsException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SystemUtils;
 
+import javax.swing.*;
 import java.io.*;
 import java.net.*;
 import java.nio.channels.Channels;
@@ -205,6 +206,19 @@ public class FileUtils {
         }
     }
 
+    public static void configureApacheHttpd(File conf) throws FileNotFoundException {
+        FileIterator iterator = new FileIterator(conf);
+        iterator.fullySkip('#', FileIterator.SkipType.BEGIN);
+        StringBuilder contents = new StringBuilder();
+        while (iterator.hasNext()) {
+            String line = iterator.next;
+            if (line.startsWith("Define SRVROOT")) {
+                line = "Define SRVROOT \"" + conf.toString() + "\"";
+            }
+            contents.append(line);
+        }
+    }
+
     /**
      * method sets downloads all required files, and it updates them if necessary.
      *
@@ -270,6 +284,8 @@ public class FileUtils {
                 if (optional.isPresent()) {
                     File apacheZipped = optional.get();
                     File apache = unZip(apacheZipped, apacheDir, "Apache24");
+                    File conf = new File(apacheDir, "conf/httpd.conf");
+                    configureApacheHttpd(conf);
                 }
             } else if (SystemUtils.IS_OS_LINUX) {
                 File apacheZipped = downloadFileFromWeb("https://dlcdn.apache.org/httpd", apacheDir,
@@ -281,6 +297,14 @@ public class FileUtils {
                 console.runCommand("./configure --prefix=apache");
                 console.runCommand("make");
                 console.runCommand("make install");
+                console.schedule((console1) -> {
+                    File conf = new File(apacheDir, "conf/httpd.conf");
+                    try {
+                        configureApacheHttpd(conf);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                });
             }
             System.out.println("Apache installed.");
         }
@@ -294,9 +318,30 @@ public class FileUtils {
             phpVerDir.mkdir();
         }
         if (!Objects.equals(phpName, PHPVersion) || phpVerDir.listFiles() == null) {
-            File PHPZip = downloadFileFromWeb("https://downloads.php.net/~windows/releases/archives", phpDir,
-                    "php", ".zip", new String[]{"$!php-(\\.?[0-9]+)+-Win32-", "-x64"}, true);
-            File PHP = unZip(PHPZip, phpVerDir);
+            if (Util.IS_WINDOWS) {
+                File phpZip = downloadFileFromWeb("https://downloads.php.net/~windows/releases/archives", phpDir,
+                        "php", ".zip", new String[]{"$!php-(\\.?[0-9]+)+-Win32-", "-x64"}, true);
+                File php = unZip(phpZip, phpVerDir);
+            } else if (SystemUtils.IS_OS_LINUX) {
+                BrowserEmulator browser = new BrowserEmulator();
+                browser.connect(URI.create(
+                        "https://www.php.net/downloads.php?usage=web&os=linux&osvariant=linux-debian&version=default&source=Y").toURL());
+                Optional<File> optional = browser.downloadFile("php", ".tar.gz",
+                        phpDir, null, true);
+                if (optional.isPresent()) {
+                    File phpGzipped = optional.get();
+                    File phpTar = unGzip(phpGzipped, phpDir);
+                    File php = unTar(phpTar, phpDir);
+
+                    File config = new File(phpDir, "config");
+                    config.mkdir();
+
+                    Console console = new Console();
+                    console.directory(phpDir);
+                    console.runCommand("./configure --with-config-file-path=/config/");
+                    console.runCommand("make");
+                }
+            }
             System.out.println("PHP installed...");
         }
 

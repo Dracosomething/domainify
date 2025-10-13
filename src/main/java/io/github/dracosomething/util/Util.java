@@ -3,8 +3,7 @@ package io.github.dracosomething.util;
 import org.apache.commons.lang3.SystemUtils;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.Iterator;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class Util {
@@ -74,6 +73,32 @@ public class Util {
         return in.contains(contains) ||
                 in.toLowerCase().contains(contains.toLowerCase()) ||
                 in.toUpperCase().contains(contains.toUpperCase());
+    }
+
+    public static boolean stringContainsCharacter(String in, char character) {
+        char[] arr = new char[]{character};
+        String check = new String(arr);
+        return in.contains(check);
+    }
+
+    public static boolean stringStartsWithCharacter(String in, char character) {
+        char[] arr = new char[]{character};
+        String check = new String(arr);
+        return in.startsWith(check);
+    }
+
+    public static boolean stringEndsWithCharacter(String in, char character) {
+        char[] arr = new char[]{character};
+        String check = new String(arr);
+        return in.endsWith(check);
+    }
+
+    public static <K, V> List<Pair<K, V>> mapToPairList(Map<K, V> map) {
+        List<Pair<K, V>> retVal = new ArrayList<>();
+        map.forEach((key, value) -> {
+            retVal.add(new Pair<>(key, value));
+        });
+        return retVal;
     }
 
     static {
