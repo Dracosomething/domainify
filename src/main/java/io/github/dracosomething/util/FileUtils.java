@@ -228,6 +228,7 @@ public class FileUtils {
      * @throws ArchiveException
      */
     public static void downloadRequirements() throws IOException, ArchiveException {
+        createProjRoot();
         // constructs all directory objects.
         final File apacheDir = new File(PROJECT, PATH_SEPARATOR + "apache" + PATH_SEPARATOR);
         final File phpDir = new File(PROJECT,  PATH_SEPARATOR + "php" + PATH_SEPARATOR);
@@ -388,7 +389,7 @@ public class FileUtils {
     public static File unTar(File infile, File outDir, String shouldRemove) throws IOException, ArchiveException {
         System.out.println("Untar " + infile.getPath() + "...");
         InputStream in = new FileInputStream(infile);
-        TarArchiveInputStream tarIn = (TarArchiveInputStream) FACTORY.createArchiveInputStream("tar", in);
+        TarArchiveInputStream tarIn = FACTORY.createArchiveInputStream("tar", in);
         TarArchiveEntry entry = null;
         while ((entry = tarIn.getNextEntry()) != null) {
             System.out.println("Moving file " + entry.getName() + "...");

@@ -12,7 +12,6 @@ import java.io.*;
 public class Main {
     public static void main(String[] args) {
         if (Util.firstLaunch()) {
-            FileUtils.createProjRoot();
             try {
                 FileUtils.downloadRequirements();
             } catch (IOException | ArchiveException e) {
