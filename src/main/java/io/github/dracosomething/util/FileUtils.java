@@ -26,9 +26,10 @@ import java.util.zip.ZipInputStream;
 public class FileUtils {
     public static final ArchiveStreamFactory FACTORY = new ArchiveStreamFactory();
     public static final String PATH_SEPARATOR = System.getProperty("file.separator");
-    public static final File ROOT = Arrays.stream(File.listRoots()).toList().getFirst();
-    public static final File PROJECT = new File(ROOT, "domainify");
-    public static final File DATA = new File(PROJECT, "data.txt");
+    // below should be in static initializer, ROOT should be accessible directory.
+    public static final File ROOT;
+    public static final File PROJECT;
+    public static final File DATA;
     public static String SRVROOT = "";
 
     public static void createProjRoot() {
@@ -292,6 +293,7 @@ public class FileUtils {
                     configureApacheHttpd(conf, apacheDir);
                 }
             } else if (SystemUtils.IS_OS_LINUX) {
+                // https://httpd.apache.org/docs/2.4/install.html read requirements stuff.
                 File apacheZipped = downloadFileFromWeb("https://dlcdn.apache.org/httpd", apacheDir,
                         "httpd", ".tar.gz", new String[]{"TGZ"}, false);
 
@@ -508,5 +510,15 @@ public class FileUtils {
             return false;
         }
         return true;
+    }
+
+    static {
+        if (Util.IS_WINDOWS) {
+             ROOT = Arrays.stream(File.listRoots()).toList().getFirst();
+        } else {
+            ROOT = new File("/opt/");
+        }
+        PROJECT = new File(ROOT, "domainify");
+        DATA = new File(PROJECT, "data.txt");
     }
 }
