@@ -11,6 +11,10 @@ import java.io.*;
 
 public class Main {
     public static void main(String[] args) {
+        // add build-linux module that will build the project for linux.
+        // use https://developer.apple.com/library/archive/documentation/Java/Conceptual/Jar_Bundler/Introduction/Introduction.html#//apple_ref/doc/uid/TP40000884
+        // for mac os
+        // use launch4j for windows
         if (Util.firstLaunch()) {
             try {
                 FileUtils.downloadRequirements();

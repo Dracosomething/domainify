@@ -292,7 +292,7 @@ public class FileUtils {
                     File conf = new File(apacheDir, "conf/httpd.conf");
                     configureApacheHttpd(conf, apacheDir);
                 }
-            } else if (SystemUtils.IS_OS_LINUX) {
+            } else {
                 // https://httpd.apache.org/docs/2.4/install.html read requirements stuff.
                 File apacheZipped = downloadFileFromWeb("https://dlcdn.apache.org/httpd", apacheDir,
                         "httpd", ".tar.gz", new String[]{"TGZ"}, false);
@@ -329,7 +329,7 @@ public class FileUtils {
                 File phpZip = downloadFileFromWeb("https://downloads.php.net/~windows/releases/archives", phpDir,
                         "php", ".zip", new String[]{"$!php-(\\.?[0-9]+)+-Win32-", "-x64"}, true);
                 File php = unZip(phpZip, phpVerDir);
-            } else if (SystemUtils.IS_OS_LINUX) {
+            } else {
                 BrowserEmulator browser = new BrowserEmulator();
                 browser.connect(URI.create(
                         "https://www.php.net/downloads.php?usage=web&os=linux&osvariant=linux-debian&version=default&source=Y").toURL());
@@ -366,7 +366,7 @@ public class FileUtils {
                 File mariadbZipped = downloadFileFromWeb(finalLocation, serverDir,
                         latestVersion.replace("/", ""), "64.zip", false);
                 File mariadb = unZip(mariadbZipped, serverDir);
-            } else if (SystemUtils.IS_OS_LINUX) {
+            } else {
                 String mariadbDownloadLocation = getFileNameFromWeb(url, "bintar-linux-systemd", "/",
                         null, false);
                 String finalLocation = url.toString() + mariadbDownloadLocation;
