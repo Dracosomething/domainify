@@ -10,12 +10,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d7ab1385-168d-4e32-98b0-5e9c3c72e3a0" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/artifacts/test.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/pitch.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/artifacts/domainify_jar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/artifacts/domainify_jar.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/domain/CustomDomain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/domain/CustomDomain.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/domain/DummyCustomDomain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/domain/DummyCustomDomain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/BrowserEmulator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/BrowserEmulator.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/FileUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/FileUtils.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -55,6 +54,8 @@
         <option value="Record" />
         <option value="HTML File" />
         <option value="Class" />
+        <option value="module-info" />
+        <option value="package-info" />
       </list>
     </option>
   </component>
@@ -90,13 +91,13 @@
     "Gradle.HTMLObjectParseTest.HTMLObject_parse_test.executor": "Debug",
     "Gradle.SourceForgeTest.parse_test.executor": "Run",
     "Gradle.domainify [:HTMLObjectParseTest.main()].executor": "Run",
-    "Gradle.domainify [:io.github.dracosomething.Main.main()].executor": "Debug",
+    "Gradle.domainify [:io.github.dracosomething.Main.main()].executor": "Run",
     "Gradle.regexTest.string_matches_regex_version.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "git-widget-placeholder": "master",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/alias/Documents/school/schooljaar2025-2026/periode1/XPerience/profielen/fullstack/domainify/src/main/resources",
+    "last_opened_file_path": "C:/Users/alias/Documents/school/schooljaar2025-2026/periode1/XPerience/profielen/fullstack/domainify/src/main/resources/META-INF/MANIFEST.MF",
     "onboarding.tips.debug.path": "C:/Users/alias/Documents/school/schooljaar2025-2026/periode1/XPerience/profielen/fullstack/domainify/src/main/java/io/github/dracosomething/Main.java",
     "project.structure.last.edited": "Artifacts",
     "project.structure.proportion": "0.15",
@@ -114,6 +115,7 @@
       <recent name="io.github.dracosomething.Util" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\alias\Documents\school\schooljaar2025-2026\periode1\XPerience\profielen\fullstack\domainify\src\main\java\io\github\dracosomething\util" />
       <recent name="C:\Users\alias\Documents\school\schooljaar2025-2026\periode1\XPerience\profielen\fullstack\domainify\src\main\resources\files" />
       <recent name="C:\Users\alias\Documents\school\schooljaar2025-2026\periode1\XPerience\profielen\fullstack\domainify\src\main\resources" />
       <recent name="C:\Users\alias\Documents\school\schooljaar2025-2026\periode1\XPerience\profielen\fullstack\domainify\src\main\java\org\apache\commons" />
@@ -293,51 +295,6 @@
           <url>file://$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/Console.java</url>
           <line>156</line>
           <option name="timeStamp" value="321" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/io/github/dracosomething/domain/CustomDomain.java</url>
-          <line>209</line>
-          <option name="timeStamp" value="446" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/io/github/dracosomething/domain/CustomDomain.java</url>
-          <line>178</line>
-          <option name="timeStamp" value="456" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/io/github/dracosomething/domain/CustomDomain.java</url>
-          <line>177</line>
-          <option name="timeStamp" value="504" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/io/github/dracosomething/domain/CustomDomain.java</url>
-          <line>176</line>
-          <option name="timeStamp" value="505" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/io/github/dracosomething/domain/CustomDomain.java</url>
-          <line>179</line>
-          <option name="timeStamp" value="506" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/io/github/dracosomething/domain/CustomDomain.java</url>
-          <line>180</line>
-          <option name="timeStamp" value="507" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/io/github/dracosomething/domain/CustomDomain.java</url>
-          <line>183</line>
-          <option name="timeStamp" value="512" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/io/github/dracosomething/domain/CustomDomain.java</url>
-          <line>184</line>
-          <option name="timeStamp" value="513" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/io/github/dracosomething/domain/CustomDomain.java</url>
-          <line>187</line>
-          <option name="timeStamp" value="514" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-method">
           <url>jar://$USER_HOME$/AppData/Local/Programs/Eclipse Adoptium/jdk-21.0.4.7-hotspot/lib/src.zip!/java.base/java/util/stream/Stream.java</url>

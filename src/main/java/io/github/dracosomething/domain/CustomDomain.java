@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 
 public class CustomDomain {
     public static final ArrayList<CustomDomain> DOMAINS = new ArrayList<>();
-    private static final File HOSTS =  new File(URI.create("file:/Windows/System32/drivers/etc/hosts"));
+    private static final File HOSTS;
     private static final File CONFIG = new File(FileUtils.PROJECT, "/apache/conf/extra/httpd-vhosts.conf");
 
     private String serverAdmin;
@@ -173,50 +173,25 @@ public class CustomDomain {
     }
 
     private static CustomDomain getConfData(Scanner reader, String currentLine, CustomDomain fillIn) {
-        ArrayList<String> serverAlias = new ArrayList<>();
-        String name = null;
-        File target = null;
-        String serverAdmin = null;
-        File errorLog = null;
-        File customLog = null;
-
+        DummyCustomDomain domain = new DummyCustomDomain();
+        writeDataToDummyDomain(domain, currentLine);
 
         while(reader.hasNextLine()) {
             String data = reader.nextLine().trim();
             if (data.startsWith("</") && data.endsWith(">"))
                 break;
-            value = getValue(data);
-            switch (value.getKey()) {
-                case "ServerName" -> name = value.getValue();
-                case "ServerAlias" -> serverAlias.add(value.getValue());
-                case "ServerAdmin" -> serverAdmin = value.getValue();
-                case "DocumentRoot" -> {
-                    if (!FileUtils.isProperPath(value.getValue()))
-                        throw new RuntimeException("string is not a proper file path");
-                    target = new File(value.getValue());
-                }
-                case "ErrorLog" -> {
-                    if (!FileUtils.isProperPath(value.getValue()))
-                        throw new RuntimeException("string is not a proper file path");
-                    errorLog = new File(value.getValue());
-                }
-                case "CustomLog" -> {
-                    if (!FileUtils.isProperPath(value.getValue()))
-                        throw new RuntimeException("string is not a proper file path");
-                    customLog = new File(value.getValue());
-                }
-            }
+            writeDataToDummyDomain(domain, data);
         }
-        if (name == null || serverAdmin == null || target == null)
-            throw new RuntimeException("One of required fields is null. fields: " + name + ", " + serverAdmin + ", "
-             + target);
+        if (domain.getName() == null || domain.getServerAdmin() == null || domain.getTarget() == null)
+            throw new RuntimeException("One of required fields is null. fields: " + domain.getName() + ", " +
+                    domain.getServerAdmin() + ", " + domain.getTarget());
 
-        fillIn.name = name;
-        fillIn.serverAdmin = serverAdmin;
-        fillIn.target = target;
+        fillIn.name = domain.getName();
+        fillIn.serverAdmin = domain.getServerAdmin();
+        fillIn.target = domain.getTarget();
 
-        if (!serverAlias.isEmpty() || errorLog != null || customLog != null) {
-            fillIn.domainData = new CustomDomainData(serverAlias, errorLog, customLog);
+        if (!domain.getServerAlias().isEmpty() || domain.getErrorLog() != null || domain.getCustomLog() != null) {
+            fillIn.domainData = new CustomDomainData(domain.getServerAlias(), domain.getErrorLog(), domain.getCustomLog());
         }
 
         return fillIn;
@@ -226,22 +201,22 @@ public class CustomDomain {
         Pair<String, String> value = getValue(line);
         switch (value.getKey()) {
             case "ServerName" -> dummy.setName(value.getValue());
-            case "ServerAlias" -> .add(value.getValue());
-            case "ServerAdmin" -> serverAdmin = value.getValue();
+            case "ServerAlias" -> dummy.addServerAlias(value.getValue());
+            case "ServerAdmin" -> dummy.setServerAdmin(value.getValue());
             case "DocumentRoot" -> {
                 if (!FileUtils.isProperPath(value.getValue()))
                     throw new RuntimeException("string is not a proper file path");
-                target = new File(value.getValue());
+                dummy.setTarget(new File(value.getValue()));
             }
             case "ErrorLog" -> {
                 if (!FileUtils.isProperPath(value.getValue()))
                     throw new RuntimeException("string is not a proper file path");
-                errorLog = new File(value.getValue());
+                dummy.setErrorLog(new File(value.getValue()));
             }
             case "CustomLog" -> {
                 if (!FileUtils.isProperPath(value.getValue()))
                     throw new RuntimeException("string is not a proper file path");
-                customLog = new File(value.getValue());
+                dummy.setCustomLog(new File(value.getValue()));
             }
         }
     }
@@ -499,5 +474,13 @@ public class CustomDomain {
 
     public static File getConfig() {
         return CONFIG;
+    }
+
+    static {
+        if (Util.IS_WINDOWS) {
+            HOSTS =  new File(FileUtils.ROOT, "Windows/System32/drivers/etc/hosts");
+        } else {
+            HOSTS = new File(FileUtils.ROOT, "etc/hosts");
+        }
     }
 }

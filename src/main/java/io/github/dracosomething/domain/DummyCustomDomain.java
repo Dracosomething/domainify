@@ -27,7 +27,7 @@ public class DummyCustomDomain{
     }
 
     public DummyCustomDomain() {
-        this(null, null, null, new CustomDomainData(null, null, null));
+        this(null, null, null, new CustomDomainData(new ArrayList<>(), null, null));
     }
 
     public DummyCustomDomain(String serverAdmin, String name, File target) {
@@ -67,6 +67,8 @@ public class DummyCustomDomain{
     }
 
     public ArrayList<String> getServerAlias() {
+        if (serverAlias == null)
+            serverAlias = new ArrayList<>();
         return serverAlias;
     }
 
@@ -102,7 +104,11 @@ public class DummyCustomDomain{
         this.target = target;
     }
 
-    public void add
+    public void addServerAlias(String alias) {
+        if (this.serverAlias == null)
+            this.serverAlias = new ArrayList<>();
+        this.serverAlias.add(alias);
+    }
 
     public String getServerAliasFormatted() {
         if (this.serverAlias == null) return "";

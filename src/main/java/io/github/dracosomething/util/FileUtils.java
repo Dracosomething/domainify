@@ -10,7 +10,6 @@ import org.apache.commons.io.FileExistsException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SystemUtils;
 
-import javax.swing.*;
 import java.io.*;
 import java.net.*;
 import java.nio.channels.Channels;
@@ -30,6 +29,7 @@ public class FileUtils {
     public static final File ROOT = Arrays.stream(File.listRoots()).toList().getFirst();
     public static final File PROJECT = new File(ROOT, "domainify");
     public static final File DATA = new File(PROJECT, "data.txt");
+    public static String SRVROOT = "";
 
     public static void createProjRoot() {
         if (PROJECT.exists()) {
@@ -206,13 +206,13 @@ public class FileUtils {
         }
     }
 
-    public static void configureApacheHttpd(File conf) throws IOException {
+    public static void configureApacheHttpd(File conf, File root) throws IOException {
         FileIterator iterator = new FileIterator(conf);
         StringBuilder contents = new StringBuilder();
         while (iterator.hasNext()) {
             String line = iterator.next();
             if (line.startsWith("Define SRVROOT")) {
-                line = "Define SRVROOT \"" + conf.toString() + "\"";
+                line = "Define SRVROOT \"" + root.toString() + "\"";
             }
             contents.append(line).append(System.lineSeparator());
         }
@@ -246,6 +246,7 @@ public class FileUtils {
         if (!DATA.exists()) {
             DATA.createNewFile();
         }
+        SRVROOT = serverDir.toString();
         BufferedReader reader = new BufferedReader(new FileReader(DATA));
         String apacheVer = "";
         String PHPVersion = "";
@@ -287,7 +288,7 @@ public class FileUtils {
                     File apacheZipped = optional.get();
                     File apache = unZip(apacheZipped, apacheDir, "Apache24");
                     File conf = new File(apacheDir, "conf/httpd.conf");
-                    configureApacheHttpd(conf);
+                    configureApacheHttpd(conf, apacheDir);
                 }
             } else if (SystemUtils.IS_OS_LINUX) {
                 File apacheZipped = downloadFileFromWeb("https://dlcdn.apache.org/httpd", apacheDir,
@@ -302,14 +303,12 @@ public class FileUtils {
                 console.schedule((console1) -> {
                     File conf = new File(apacheDir, "conf/httpd.conf");
                     try {
-                        configureApacheHttpd(conf);
+                        configureApacheHttpd(conf, apacheDir);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 });
             }
-            File conf = new File(apacheDir, "conf/httpd.conf");
-            configureApacheHttpd(conf);
 
             System.out.println("Apache installed.");
         }

@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@SuppressWarnings("deprecated")
 public class BrowserEmulator {
     private HtmlUnitDriver driver;
     private boolean isActive;

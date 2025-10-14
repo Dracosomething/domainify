@@ -3,6 +3,9 @@
     <output-path>$PROJECT_DIR$/out/artifacts/domainify_jar</output-path>
     <root id="archive" name="domainify.jar">
       <element id="module-output" name="domainify.main" />
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/src/main/resources/META-INF/MANIFEST.MF" />
+      </element>
       <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.eclipse.jetty/jetty-http/9.4.50.v20221201/f025a779b60e276ee9e4edd03f7f6bf853ea0521/jetty-http-9.4.50.v20221201.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.seleniumhq.selenium/selenium-safari-driver/4.36.0/69bc0c15fc8f6c9968e60dbedd5f23f6a0f9af63/selenium-safari-driver-4.36.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.guava/guava/33.5.0-jre/8699de25f2f979108d6c1b804a7ba38cda1116bc/guava-33.5.0-jre.jar" path-in-jar="/" />
@@ -72,9 +75,6 @@
       <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy/1.17.7/3856bfab61beb23e099a0d6629f2ba8de4b98ace/byte-buddy-1.17.7.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.sourceforge.htmlunit/htmlunit-xpath/2.70.0/33454527e317ca2ec22e34fc5f7eaaf0399e8253/htmlunit-xpath-2.70.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-exec/1.5.0/d83ddeb0b9e0f3011a6902984551fc2d3aa1fe7c/commons-exec-1.5.0.jar" path-in-jar="/" />
-      <element id="directory" name="META-INF">
-        <element id="file-copy" path="$PROJECT_DIR$/META-INF/MANIFEST.MF" />
-      </element>
     </root>
   </artifact>
 </component>
