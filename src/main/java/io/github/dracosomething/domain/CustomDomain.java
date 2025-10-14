@@ -206,17 +206,29 @@ public class CustomDomain {
             case "DocumentRoot" -> {
                 if (!FileUtils.isProperPath(value.getValue()))
                     throw new RuntimeException("string is not a proper file path");
-                dummy.setTarget(new File(value.getValue()));
+                String val = value.getValue();
+                if (val.startsWith("${SRVROOT}")) {
+                    val = val.replace("${SRVROOT}", FileUtils.SRVROOT);
+                }
+                dummy.setTarget(new File(val));
             }
             case "ErrorLog" -> {
                 if (!FileUtils.isProperPath(value.getValue()))
                     throw new RuntimeException("string is not a proper file path");
-                dummy.setErrorLog(new File(value.getValue()));
+                String val = value.getValue();
+                if (val.startsWith("${SRVROOT}")) {
+                    val = val.replace("${SRVROOT}", FileUtils.SRVROOT);
+                }
+                dummy.setErrorLog(new File(val));
             }
             case "CustomLog" -> {
                 if (!FileUtils.isProperPath(value.getValue()))
                     throw new RuntimeException("string is not a proper file path");
-                dummy.setCustomLog(new File(value.getValue()));
+                String val = value.getValue();
+                if (val.startsWith("${SRVROOT}")) {
+                    val = val.replace("${SRVROOT}", FileUtils.SRVROOT);
+                }
+                dummy.setCustomLog(new File(val));
             }
         }
     }

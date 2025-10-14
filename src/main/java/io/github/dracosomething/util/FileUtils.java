@@ -246,7 +246,7 @@ public class FileUtils {
         if (!DATA.exists()) {
             DATA.createNewFile();
         }
-        SRVROOT = serverDir.toString();
+        SRVROOT = apacheDir.toString();
         BufferedReader reader = new BufferedReader(new FileReader(DATA));
         String apacheVer = "";
         String PHPVersion = "";
