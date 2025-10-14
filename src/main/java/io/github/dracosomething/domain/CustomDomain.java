@@ -147,11 +147,13 @@ public class CustomDomain {
             CustomDomain[] arr = new CustomDomain[1];
             int index = 0;
             while (reader.hasNextLine()) {
-                String data = reader.nextLine();
+                String data = reader.nextLine().trim();
                 if ((data.startsWith("<") && !data.startsWith("</")) && data.endsWith(">")) {
                     arr[index] = new CustomDomain();
                 }
                 if (shouldSkip(data))
+                    continue;
+                if (arr[index] == null)
                     continue;
                 CustomDomain domain = getConfData(reader, data, arr[index]);
                 arr[index] = domain;
@@ -177,30 +179,10 @@ public class CustomDomain {
         String serverAdmin = null;
         File errorLog = null;
         File customLog = null;
-        Pair<String, String> value = getValue(currentLine);
-        switch (value.getKey()) {
-            case "ServerName" -> name = value.getValue();
-            case "ServerAlias" -> serverAlias.add(value.getValue());
-            case "ServerAdmin" -> serverAdmin = value.getValue();
-            case "DocumentRoot" -> {
-                if (!FileUtils.isProperPath(value.getValue()))
-                    throw new RuntimeException("string is not a proper file path");
-                target = new File(value.getValue());
-            }
-            case "ErrorLog" -> {
-                if (!FileUtils.isProperPath(value.getValue()))
-                    throw new RuntimeException("string is not a proper file path");
-                errorLog = new File(value.getValue());
-            }
-            case "CustomLog" -> {
-                if (!FileUtils.isProperPath(value.getValue()))
-                    throw new RuntimeException("string is not a proper file path");
-                customLog = new File(value.getValue());
-            }
-        }
+
 
         while(reader.hasNextLine()) {
-            String data = reader.nextLine();
+            String data = reader.nextLine().trim();
             if (data.startsWith("</") && data.endsWith(">"))
                 break;
             value = getValue(data);
@@ -226,7 +208,8 @@ public class CustomDomain {
             }
         }
         if (name == null || serverAdmin == null || target == null)
-            throw new RuntimeException("One of required field isn't null.");
+            throw new RuntimeException("One of required fields is null. fields: " + name + ", " + serverAdmin + ", "
+             + target);
 
         fillIn.name = name;
         fillIn.serverAdmin = serverAdmin;
@@ -237,6 +220,30 @@ public class CustomDomain {
         }
 
         return fillIn;
+    }
+
+    private static void writeDataToDummyDomain(DummyCustomDomain dummy, String line) {
+        Pair<String, String> value = getValue(line);
+        switch (value.getKey()) {
+            case "ServerName" -> dummy.setName(value.getValue());
+            case "ServerAlias" -> .add(value.getValue());
+            case "ServerAdmin" -> serverAdmin = value.getValue();
+            case "DocumentRoot" -> {
+                if (!FileUtils.isProperPath(value.getValue()))
+                    throw new RuntimeException("string is not a proper file path");
+                target = new File(value.getValue());
+            }
+            case "ErrorLog" -> {
+                if (!FileUtils.isProperPath(value.getValue()))
+                    throw new RuntimeException("string is not a proper file path");
+                errorLog = new File(value.getValue());
+            }
+            case "CustomLog" -> {
+                if (!FileUtils.isProperPath(value.getValue()))
+                    throw new RuntimeException("string is not a proper file path");
+                customLog = new File(value.getValue());
+            }
+        }
     }
 
     private static Pair<String, String> getValue(String data) {

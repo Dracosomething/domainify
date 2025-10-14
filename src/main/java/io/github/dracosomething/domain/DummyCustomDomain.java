@@ -26,6 +26,10 @@ public class DummyCustomDomain{
         }
     }
 
+    public DummyCustomDomain() {
+        this(null, null, null, new CustomDomainData(null, null, null));
+    }
+
     public DummyCustomDomain(String serverAdmin, String name, File target) {
         this.serverAdmin = serverAdmin;
         this.name = name;
@@ -97,6 +101,8 @@ public class DummyCustomDomain{
     public void setTarget(File target) {
         this.target = target;
     }
+
+    public void add
 
     public String getServerAliasFormatted() {
         if (this.serverAlias == null) return "";

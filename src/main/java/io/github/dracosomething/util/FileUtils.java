@@ -28,8 +28,8 @@ public class FileUtils {
     public static final ArchiveStreamFactory FACTORY = new ArchiveStreamFactory();
     public static final String PATH_SEPARATOR = System.getProperty("file.separator");
     public static final File ROOT = Arrays.stream(File.listRoots()).toList().getFirst();
-    public static final File PROJECT = new File(ROOT, PATH_SEPARATOR + "domainify");
-    public static final File DATA = new File(PROJECT, PATH_SEPARATOR + "data.txt");
+    public static final File PROJECT = new File(ROOT, "domainify");
+    public static final File DATA = new File(PROJECT, "data.txt");
 
     public static void createProjRoot() {
         if (PROJECT.exists()) {
@@ -206,17 +206,19 @@ public class FileUtils {
         }
     }
 
-    public static void configureApacheHttpd(File conf) throws FileNotFoundException {
+    public static void configureApacheHttpd(File conf) throws IOException {
         FileIterator iterator = new FileIterator(conf);
-        iterator.fullySkip('#', FileIterator.SkipType.BEGIN);
         StringBuilder contents = new StringBuilder();
         while (iterator.hasNext()) {
-            String line = iterator.next;
+            String line = iterator.next();
             if (line.startsWith("Define SRVROOT")) {
                 line = "Define SRVROOT \"" + conf.toString() + "\"";
             }
-            contents.append(line);
+            contents.append(line).append(System.lineSeparator());
         }
+        BufferedWriter writer = new BufferedWriter(new FileWriter(conf));
+        writer.append(contents.toString());
+        writer.close();
     }
 
     /**
@@ -301,11 +303,14 @@ public class FileUtils {
                     File conf = new File(apacheDir, "conf/httpd.conf");
                     try {
                         configureApacheHttpd(conf);
-                    } catch (FileNotFoundException e) {
+                    } catch (IOException e) {
                         e.printStackTrace();
                     }
                 });
             }
+            File conf = new File(apacheDir, "conf/httpd.conf");
+            configureApacheHttpd(conf);
+
             System.out.println("Apache installed.");
         }
 
