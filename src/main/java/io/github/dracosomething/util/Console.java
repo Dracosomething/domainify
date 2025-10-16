@@ -3,8 +3,6 @@ package io.github.dracosomething.util;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
-import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 

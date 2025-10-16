@@ -4,16 +4,13 @@ import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.UnexpectedPage;
 import com.gargoylesoftware.htmlunit.WebWindow;
 import io.github.dracosomething.util.comparator.VersionWebElementComparator;
-import org.apache.commons.io.IOUtils;
 import org.openqa.selenium.*;
-import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.remote.Browser;
 
 import java.io.*;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.channels.Channels;

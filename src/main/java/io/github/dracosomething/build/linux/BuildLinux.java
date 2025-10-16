@@ -6,7 +6,6 @@ import io.github.dracosomething.util.Console;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.Collection;
 
 public class BuildLinux {
     public static void build(File jar, File out) {

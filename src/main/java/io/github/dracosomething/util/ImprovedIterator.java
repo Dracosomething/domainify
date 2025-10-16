@@ -2,7 +2,6 @@ package io.github.dracosomething.util;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 
 public class ImprovedIterator<T> implements Iterator<T> {
     protected final T[] array;

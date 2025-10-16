@@ -9,7 +9,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class MainGuiPanel extends JPanel {
-
     public MainGuiPanel(JFrame frame) {
         CustomDomain.readDomainXML(CustomDomain.getConfig());
         this.setSize(1000, 1500);

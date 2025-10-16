@@ -5,7 +5,6 @@ import io.github.dracosomething.domain.CustomDomainData;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

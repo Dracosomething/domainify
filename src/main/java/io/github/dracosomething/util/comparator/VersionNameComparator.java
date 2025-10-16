@@ -2,8 +2,6 @@ package io.github.dracosomething.util.comparator;
 
 import io.github.dracosomething.util.HTMLObject;
 
-import java.util.Comparator;
-
 public class VersionNameComparator extends VersionComparator<HTMLObject> {
     public VersionNameComparator(String fileName, String fileExtension) {
         super(fileName, fileExtension);

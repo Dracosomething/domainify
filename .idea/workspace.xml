@@ -10,11 +10,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d7ab1385-168d-4e32-98b0-5e9c3c72e3a0" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/build/Build.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/build/linux/BuildLinux.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/build/macOS/BuildMac.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/build/windows/BuildWindows.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/build/Build.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/build/Build.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/build/linux/BuildLinux.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/build/linux/BuildLinux.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/domain/CustomDomain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/domain/CustomDomain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/gui/AddDomainPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/gui/AddDomainPanel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/gui/DomainTable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/gui/DomainTable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/gui/EditDomainPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/gui/EditDomainPanel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/gui/MainGuiPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/gui/MainGuiPanel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/BrowserEmulator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/BrowserEmulator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/Console.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/Console.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/FileUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/FileUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/HTMLObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/HTMLObject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/ImprovedIterator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/ImprovedIterator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/comparator/ReverseFileOrder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/comparator/ReverseFileOrder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/comparator/VersionNameComparator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/comparator/VersionNameComparator.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -310,58 +320,43 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/io/github/dracosomething/gui/EditDomainPanel.java</url>
-          <line>123</line>
+          <line>121</line>
           <option name="timeStamp" value="158" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/io/github/dracosomething/gui/EditDomainPanel.java</url>
-          <line>118</line>
+          <line>116</line>
           <option name="timeStamp" value="159" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/io/github/dracosomething/gui/EditDomainPanel.java</url>
-          <line>113</line>
+          <line>111</line>
           <option name="timeStamp" value="160" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/io/github/dracosomething/gui/AddDomainPanel.java</url>
-          <line>191</line>
+          <line>190</line>
           <option name="timeStamp" value="165" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/io/github/dracosomething/gui/AddDomainPanel.java</url>
-          <line>192</line>
+          <line>191</line>
           <option name="timeStamp" value="166" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/io/github/dracosomething/gui/AddDomainPanel.java</url>
-          <line>193</line>
+          <line>192</line>
           <option name="timeStamp" value="167" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/io/github/dracosomething/gui/AddDomainPanel.java</url>
-          <line>194</line>
+          <line>193</line>
           <option name="timeStamp" value="168" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/io/github/dracosomething/gui/AddDomainPanel.java</url>
-          <line>195</line>
+          <line>194</line>
           <option name="timeStamp" value="169" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/Console.java</url>
-          <line>124</line>
-          <option name="timeStamp" value="317" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/Console.java</url>
-          <line>152</line>
-          <option name="timeStamp" value="320" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/Console.java</url>
-          <line>156</line>
-          <option name="timeStamp" value="321" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-method">
           <url>jar://$USER_HOME$/AppData/Local/Programs/Eclipse Adoptium/jdk-21.0.4.7-hotspot/lib/src.zip!/java.base/java/util/stream/Stream.java</url>
