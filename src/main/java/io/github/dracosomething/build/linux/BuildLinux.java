@@ -15,7 +15,7 @@ public class BuildLinux {
         // use launch4j for windows
 
         File buildDir = new File(out, "buildLinux");
-        if (buildDir.exists()) {
+        if (!buildDir.exists()) {
             buildDir.mkdirs();
         }
 
@@ -28,10 +28,14 @@ public class BuildLinux {
             console.runCommand("echo '#!/usr/bin/java -jar' > domainify");
             console.runCommand("car domainify.jar >> domainify");
             console.runCommand("chmod +x domainify");
+            File tarBall = new File(buildDir, "linux.tar.gz");
+            if (!tarBall.exists()) {
+                tarBall.createNewFile();
+            }
+
+            Build.archive("tar", tarBall, buildJar, script);
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        Build.archive("tar", new File(buildDir, "linux.tar.gz"), buildJar, script);
     }
 }
