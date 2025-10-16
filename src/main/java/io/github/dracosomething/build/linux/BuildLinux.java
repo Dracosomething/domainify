@@ -10,7 +10,7 @@ import java.nio.file.StandardCopyOption;
 public class BuildLinux {
     public static void build(File jar, File out) {
         // add build-linux module that will build the project for linux.
-        // use https://developer.apple.com/library/archive/documentation/Java/Conceptual/Jar_Bundler/Introduction/Introduction.html#//apple_ref/doc/uid/TP40000884
+        // use https://github.com/crotwell/gradle-macappbundle/wiki/Introref/doc/uid/TP40000884
         // for mac os
         // use launch4j for windows
 
