@@ -9,12 +9,13 @@ import java.util.function.Consumer;
 @SuppressWarnings("deprecated")
 public class Console extends Thread {
     private static final AtomicInteger INDEX = new AtomicInteger(0);
-    private List<String> que = new ArrayList<>();
-    private Process currentActive;
-    private ProcessBuilder builder;
-    private List<String> command;
     private boolean isActive = false;
     private int exitCode = -1;
+    private ProcessBuilder builder;
+    private Process currentActive;
+    private List<String> command;
+    private List<String> que = new ArrayList<>();
+    private File directory;
     private File log = null;
     private Consumer<Console> scheduled = null;
 
@@ -44,6 +45,7 @@ public class Console extends Thread {
     }
 
     public void directory(File dir) {
+        this.directory = dir;
         this.builder.directory(dir);
     }
 
@@ -111,6 +113,7 @@ public class Console extends Thread {
             } else {
                 String command = que.getFirst();
                 que.remove(command);
+                this.builder.directory(this.directory);
                 this.runCommand(command);
             }
         }
