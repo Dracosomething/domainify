@@ -26,14 +26,20 @@ public class BuildLinux {
             Console console = new Console();
             console.directory(buildDir);
             console.runCommand("echo '#!/usr/bin/java -jar' > domainify");
-            console.runCommand("car domainify.jar >> domainify");
+            console.runCommand("cat domainify.jar >> domainify");
             console.runCommand("chmod +x domainify");
-            File tarBall = new File(buildDir, "linux.tar.gz");
-            if (!tarBall.exists()) {
-                tarBall.createNewFile();
-            }
+            console.schedule((tmp) -> {
+                File tarBall = new File(buildDir, "linux.tar.gz");
+                if (!tarBall.exists()) {
+                    try {
+                        tarBall.createNewFile();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
 
-            Build.archive("tar", tarBall, buildJar, script);
+                Build.archive("tar", tarBall, buildJar, script);
+            });
         } catch (IOException e) {
             e.printStackTrace();
         }

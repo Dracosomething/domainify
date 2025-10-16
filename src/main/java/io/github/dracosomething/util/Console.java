@@ -109,7 +109,7 @@ public class Console extends Thread {
                     this.scheduled.accept(this);
                 }
             } else {
-                String command = que.getLast();
+                String command = que.getFirst();
                 que.remove(command);
                 this.runCommand(command);
             }
