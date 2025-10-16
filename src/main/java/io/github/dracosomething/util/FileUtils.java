@@ -222,6 +222,7 @@ public class FileUtils {
         writer.close();
     }
 
+    // add loading screen.
     /**
      * method sets downloads all required files, and it updates them if necessary.
      *
