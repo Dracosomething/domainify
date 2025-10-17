@@ -178,6 +178,14 @@ public class BrowserEmulator {
         return downloadFile(fileName, fileExtension, downloadLocation, extraData, false);
     }
 
+    public Optional<String> getBody() {
+        if (this.url != null) {
+            String body = this.driver.getPageSource();
+            return Optional.of(body);
+        }
+        return Optional.empty();
+    }
+
     @Override
     protected void finalize() throws Throwable {
         super.finalize();

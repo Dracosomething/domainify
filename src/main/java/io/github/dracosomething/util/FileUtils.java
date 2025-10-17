@@ -25,6 +25,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import static io.github.dracosomething.util.Util.LOGGER;
+import static io.github.dracosomething.util.Util.firstLaunch;
 
 public class FileUtils {
     public static final ArchiveStreamFactory FACTORY = new ArchiveStreamFactory();
@@ -263,6 +264,7 @@ public class FileUtils {
         setupApache(writer, apacheDir, apacheVer);
         setupPHP(writer, phpDir, PHPVersion);
         setupMySQL(writer, serverDir, mySQLVersion);
+        setupUnix(writer, data, apacheDir);
 
         writer.close();
         LOGGER.info("Everything is installed and/or up to date.");
@@ -284,14 +286,14 @@ public class FileUtils {
             final int PCRE = 5;
             final int libTool = 6;
             final int autoconf = 7;
-            final int gnuM4 = 8;
             String aprVersion = data[apr];
             String aprUtilVersion = data[aprUtil];
             String PCREVersion = data[PCRE];
             // GNU versions
             String libtoolVersion = data[libTool];
             String autoconfVersion = data[autoconf];
-            String gnuM4Version = data[gnuM4];
+
+            setupGNU(writer, libtoolVersion, autoconfVersion);
 
             Console console = new Console();
             console.directory(apacheDir);
@@ -310,7 +312,7 @@ public class FileUtils {
     }
 
     public static String[] extractData() throws IOException {
-        String[] result = new String[9];
+        String[] result = new String[8];
         BufferedReader reader = new BufferedReader(new FileReader(DATA));
         String str;
         while ((str = reader.readLine()) != null) {
@@ -329,7 +331,6 @@ public class FileUtils {
                 case "PCRE version" -> result[5] = value;
                 case "libtool version" -> result[6] = value;
                 case "autoconf version" -> result[7] = value;
-                case "gnu m4 version" -> result[8] = value;
             }
         }
         return result;
@@ -440,58 +441,89 @@ public class FileUtils {
         }
     }
 
-    public static void setupGNU(BufferedWriter writer, String libtoolVersion, String autoconfVersion,
-                                String gnuM4Version) throws IOException, ArchiveException {
+    public static void setupGNU(BufferedWriter writer, String libtoolVersion, String autoconfVersion)
+            throws IOException, ArchiveException {
         final String autoconfURL = "https://mirror.dogado.de/gnu/autoconf";
         final String libtoolURL = "https://www.artfiles.org/gnu.org/libtool";
-        final String gnuM4 = "https://ftp.gnu.org/gnu/m4/m4-latest.tar.gz";
+        final String gnuM4URL = "https://ftp.gnu.org/gnu/m4/m4-latest.tar.gz";
 
-        final File gnuDir = new File(PROJECT, "gnu");
+        final File gnuM4Dir = new File(PROJECT, "gnu-m4");
         final File libtoolDir = new File(PROJECT, "libtool");
         final File autoconfDir = new File(PROJECT, "autoconf");
-        makeDir(gnuDir);
+        makeDir(gnuM4Dir);
         makeDir(libtoolDir);
         makeDir(autoconfDir);
 
-        String latestM4 = getFileNameFromWeb()
-        if (shouldUpdate(gnuDir, "", "")) {
-
+        File current = new File(gnuM4Dir, "m4-latest.tar.gz");
+        if (shouldUpdate(gnuM4Dir, current, gnuM4URL)) {
+            clearDirectory(gnuM4Dir);
+            File gnuM4GZipped = downloadFileFromWeb(gnuM4URL, gnuM4Dir, "m4-latest", ".tar.gz",
+                    true);
+            File gnuM4TarBall = unGzip(gnuM4GZipped, gnuM4Dir, true);
+            File gnuM4 = unTar(gnuM4TarBall, gnuM4Dir);
         }
-
 
         String latestAutoconf = getFileNameFromWeb(URI.create(autoconfURL).toURL(), "autoconf",
                 ".tar.gz", null, true, true);
         writer.append("autoconf version=").append(latestAutoconf);
         if (shouldUpdate(libtoolDir, autoconfVersion, latestAutoconf)) {
             File autoconfGZipped = downloadFileFromWeb(autoconfURL, autoconfDir, "autoconf",
-                    ".tar.gz", null, true);
+                    ".tar.gz", true);
             File autoconfTarBall = unGzip(autoconfGZipped, autoconfDir);
-            File autoconf = unTar(autoconfGZipped, autoconfDir);
+            File autoconf = unTar(autoconfTarBall, autoconfDir);
         }
-    }
 
-    public static void setupAPR(BufferedWriter writer, File directory, String versionAPR, String versionUtil)
-            throws IOException, ArchiveException {
-        File aprDirectory = new File(directory, "apr");
-        File aprUtilDirectory = new File(directory, "apr-util");
-
-        String latestAPRVersion = getFileNameFromWeb(URI.create("https://dlcdn.apache.org//apr").toURL(),
-                "apr", ".tar.gz", new String[]{"TGZ", "apr-(?!util).*", "apr-(?!iconv).*"},
-                true, true);
-        String latestUtilVersion = getFileNameFromWeb(URI.create("https://dlcdn.apache.org//apr").toURL(),
-                "apr-util", ".tar.gz", new String[]{"TGZ"}, true, true);
-        if (shouldUpdate(aprDirectory, versionAPR, latestAPRVersion)) {
-            clearDirectory(aprDirectory);
-            File aprGZipped = downloadFileFromWeb("https://dlcdn.apache.org//apr", aprDirectory,
-                    "apr", ".tar.gz", new String[]{"TGZ", "apr-(?!util).*", "apr-(?!iconv).*"},
+        String latestLibtool = getFileNameFromWeb(URI.create(libtoolURL).toURL(), "libtool",
+                ".tar.gz", null, true);
+        if (shouldUpdate(libtoolDir, libtoolVersion, latestLibtool)) {
+            File libtoolGZipped = downloadFileFromWeb(libtoolURL, libtoolDir, "libtool", ".tar.gz",
                     true);
-            File aprTarBall = unGzip(aprGZipped, aprDirectory);
-            File apr = unTar(aprTarBall, aprDirectory);
+            File libtoolTarBall = unGzip(libtoolGZipped, libtoolDir);
+            File libtool = unTar(libtoolTarBall, libtoolDir);
         }
     }
+
+//    public static void setupAPR(BufferedWriter writer, File directory, String versionAPR, String versionUtil)
+//            throws IOException, ArchiveException {
+//        File aprDirectory = new File(directory, "apr");
+//        File aprUtilDirectory = new File(directory, "apr-util");
+//
+//        String latestAPRVersion = getFileNameFromWeb(URI.create("https://dlcdn.apache.org//apr").toURL(),
+//                "apr", ".tar.gz", new String[]{"TGZ", "apr-(?!util).*", "apr-(?!iconv).*"},
+//                true, true);
+//        String latestUtilVersion = getFileNameFromWeb(URI.create("https://dlcdn.apache.org//apr").toURL(),
+//                "apr-util", ".tar.gz", new String[]{"TGZ"}, true, true);
+//        if (shouldUpdate(aprDirectory, versionAPR, latestAPRVersion)) {
+//            clearDirectory(aprDirectory);
+//            File aprGZipped = downloadFileFromWeb("https://dlcdn.apache.org//apr", aprDirectory,
+//                    "apr", ".tar.gz", new String[]{"TGZ", "apr-(?!util).*", "apr-(?!iconv).*"},
+//                    true);
+//            File aprTarBall = unGzip(aprGZipped, aprDirectory);
+//            File apr = unTar(aprTarBall, aprDirectory);
+//        }
+//    }
 
     public static boolean shouldUpdate(File directory, String currentVersion, String latestVersion) {
         return !Objects.equals(currentVersion, latestVersion) || directory.listFiles() == null;
+    }
+
+    public static boolean shouldUpdate(File directory, File current, String url) throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(current));
+        StringBuilder builder = new StringBuilder();
+        for (String line : reader.lines().toList()) {
+            builder.append(line).append(System.lineSeparator());
+        }
+        reader.close();
+
+        BrowserEmulator emulator = new BrowserEmulator();
+        emulator.connect(URI.create(url).toURL());
+        Optional<String> optional = emulator.getBody();
+        if (optional.isEmpty()) return false;
+        String body = optional.get();
+        emulator.close();
+
+        boolean emptyCheck = shouldUpdate(directory, "", "");
+        return emptyCheck || !body.contentEquals(builder);
     }
 
     public static File unTar(File infile, File outDir) throws IOException, ArchiveException {
@@ -528,15 +560,21 @@ public class FileUtils {
         return outDir;
     }
 
-    public static File unGzip(File infile, File outDir) throws IOException {
+    public static File unGzip(File infile, File outDir, boolean keepOriginal) throws IOException {
         File outFile = new File(outDir, infile.getName().replaceAll("\\.gz", ""));
         GZIPInputStream in = new GZIPInputStream(new FileInputStream(infile));
         FileOutputStream out = new FileOutputStream(outFile);
         IOUtils.copy(in, out);
         in.close();
         out.close();
-        infile.delete();
+        if (!keepOriginal) {
+            infile.delete();
+        }
         return outFile;
+    }
+
+    public static File unGzip(File infile, File outDir) throws IOException {
+        return unGzip(infile, outDir, false);
     }
 
     public static File unZip(File infile, File outDir) throws IOException, ArchiveException {
