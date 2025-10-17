@@ -3,6 +3,8 @@ package io.github.dracosomething.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import static io.github.dracosomething.util.Util.LOGGER;
+
 public class ChildIterator {
     private List<HTMLObject> children;
     private HTMLObject current;
@@ -71,7 +73,7 @@ public class ChildIterator {
                 this.previous = this.children.get(this.currentIndex-1);
             }
         } else {
-            System.out.println("There is no object before the current one.");
+            LOGGER.info("There is no object before the current one.");
         }
         return this.current;
     }

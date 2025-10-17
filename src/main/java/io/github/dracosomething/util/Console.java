@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+
+import static io.github.dracosomething.util.Util.LOGGER;
 
 @SuppressWarnings("deprecated")
 public class Console extends Thread {
@@ -102,7 +105,7 @@ public class Console extends Thread {
             e.printStackTrace();
         }
         if (!currentActive.isAlive() || !this.isActive) {
-            System.out.println("Finished with exit code: " + exitCode);
+            LOGGER.info("Finished with exit code: " + exitCode);
             exitCode = -1;
             this.isActive = false;
             this.interrupt();

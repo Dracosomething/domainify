@@ -8,6 +8,8 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.io.FileExistsException;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.SystemUtils;
+import org.eclipse.jetty.util.IO;
 
 import java.io.*;
 import java.net.*;
@@ -21,6 +23,8 @@ import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
+import static io.github.dracosomething.util.Util.LOGGER;
 
 public class FileUtils {
     public static final ArchiveStreamFactory FACTORY = new ArchiveStreamFactory();
@@ -221,6 +225,18 @@ public class FileUtils {
         writer.close();
     }
 
+    public static void makeDir(File file) {
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+    }
+
+    public static void makeFile(File file) throws IOException {
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+    }
+
     // add loading screen.
     /**
      * method sets downloads all required files, and it updates them if necessary.
@@ -229,30 +245,63 @@ public class FileUtils {
      * @throws ArchiveException
      */
     public static void downloadRequirements() throws IOException, ArchiveException {
+        LOGGER.entering("FileUtils", "downloadRequirements");
         createProjRoot();
-        // constructs all directory objects.
         final File apacheDir = new File(PROJECT, PATH_SEPARATOR + "apache" + PATH_SEPARATOR);
         final File phpDir = new File(PROJECT,  PATH_SEPARATOR + "php" + PATH_SEPARATOR);
         final File serverDir = new File(PROJECT, PATH_SEPARATOR + "mysql" + PATH_SEPARATOR);
-        // make directory if they don't exist.
-        if (!apacheDir.exists()) {
-            apacheDir.mkdir();
-        }
-        if (!phpDir.exists()) {
-            phpDir.mkdir();
-        }
-        if (!serverDir.exists()) {
-            serverDir.mkdir();
-        }
-        // construct data file, contains all version data
-        if (!DATA.exists()) {
-            DATA.createNewFile();
-        }
+        makeDir(apacheDir);
+        makeDir(phpDir);
+        makeDir(serverDir);
+        makeFile(DATA);
+
         SRVROOT = apacheDir.toString();
+
+        final int apache = 0;
+        final int PHP = 1;
+        final int mySQL = 2;
+        String[] data = extractData();
+        String apacheVer = data[apache];
+        String PHPVersion = data[PHP];
+        String mySQLVersion = data[mySQL];
+
+        BufferedWriter writer = new BufferedWriter(new FileWriter(DATA));
+
+        setupApache(writer, apacheDir, apacheVer);
+
+        setupPHP(writer, phpDir, PHPVersion);
+
+        setupMySQL(writer, serverDir, mySQLVersion);
+
+        writer.close();
+        LOGGER.info("Everything is installed and/or up to date.");
+        LOGGER.exiting("FileUtils", "downloadRequirements");
+    }
+
+    public static void setupUnix(BufferedWriter writer, String[] data)
+            throws IOException, ArchiveException {
+        if (SystemUtils.IS_OS_LINUX || SystemUtils.IS_OS_MAC) {
+            final String aprURL = "https://dlcdn.apache.org//apr";
+            final String aprUtilURL = "https://dlcdn.apache.org//apr";
+            final String PCREURL = "https://github.com/PCRE2Project/pcre2/releases";
+            final String gccURL = "https://gcc.gnu.org";
+
+            final int apr = 3;
+            final int aprUtil = 4;
+            final int PCRE = 5;
+            final int gcc = 6;
+            String aprVersion = data[apr];
+            String aprUtilVersion = data[aprUtil];
+            String PCREVersion = data[PCRE];
+            String gccVersion = data[gcc];
+
+
+        }
+    }
+
+    public static String[] extractData() throws IOException {
+        String[] result = new String[7];
         BufferedReader reader = new BufferedReader(new FileReader(DATA));
-        String apacheVer = "";
-        String PHPVersion = "";
-        String mySQLVersion = "";
         String str;
         while ((str = reader.readLine()) != null) {
             StringBuilder builder = new StringBuilder();
@@ -260,16 +309,22 @@ public class FileUtils {
                 if (character == '=') break;
                 builder.append(character);
             }
-            String value = str.replace(builder.toString()+"=", "");
+            String value = str.replace(builder + "=", "");
             switch (builder.toString()) {
-                case "apache version" -> apacheVer = value;
-                case "php version" -> PHPVersion = value;
-                case "sql version" -> mySQLVersion = value;
+                case "apache version" -> result[0] = value;
+                case "php version" -> result[1] = value;
+                case "sql version" -> result[2] = value;
+                case "apr version" -> result[3] = value;
+                case "apr-util version" -> result[4] = value;
+                case "PCRE version" -> result[5] = value;
+                case "gcc version" -> result[6] = value;
             }
         }
+        return result;
+    }
 
-        BufferedWriter writer = new BufferedWriter(new FileWriter(DATA));
-
+    public static void setupApache(BufferedWriter writer, File apacheDir, String apacheVer)
+            throws IOException, ArchiveException {
         String fileName = getFileNameFromWeb(URI.create("https://dlcdn.apache.org/httpd/").toURL(), "httpd",
                 ".tar.gz", new String[]{"TGZ"}, false, true);
         writer.append("apache version=").append(fileName).append(System.lineSeparator());
@@ -313,9 +368,12 @@ public class FileUtils {
                 });
             }
 
-            System.out.println("Apache installed.");
+            LOGGER.info("Apache installed.");
         }
+    }
 
+    public static void setupPHP(BufferedWriter writer, File phpDir, String PHPVersion)
+            throws IOException, ArchiveException {
         String phpName = getFileNameFromWeb(URI.create("https://downloads.php.net/~windows/releases/archives").toURL(),
                 "php", ".zip", new String[]{"$!php-(\\.?[0-9]+)+-Win32-", "-x64"}, true,
                 true);
@@ -349,9 +407,12 @@ public class FileUtils {
                     console.runCommand("make");
                 }
             }
-            System.out.println("PHP installed...");
+            LOGGER.info("PHP installed...");
         }
+    }
 
+    public static void setupMySQL(BufferedWriter writer, File serverDir, String mySQLVersion)
+            throws IOException, ArchiveException {
         String latestVersion = getFileNameFromWeb(URI.create("https://archive.mariadb.org").toURL(),
                 "mariadb", "", new String[]{"$!mariadb-(\\.?[0-9]+)+\\/"}, true);
         writer.append("sql version=").append(latestVersion);
@@ -377,11 +438,12 @@ public class FileUtils {
                 File mariadbTar = unGzip(mariadbGzipped, serverDir);
                 File mariadb = unTar(mariadbTar, serverDir);
             }
-            System.out.println("MySQL installed...");
+            LOGGER.info("MySQL installed...");
         }
+    }
 
-        writer.close();
-        System.out.println("Everything is installed and/or up to date.");
+    public static void setupAPR(BufferedWriter writer, File directory, String version) {
+
     }
 
     public static File unTar(File infile, File outDir) throws IOException, ArchiveException {

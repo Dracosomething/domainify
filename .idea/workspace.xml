@@ -9,9 +9,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d7ab1385-168d-4e32-98b0-5e9c3c72e3a0" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/Console.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/Console.java" afterDir="false" />
-    </list>
+    <list default="true" id="d7ab1385-168d-4e32-98b0-5e9c3c72e3a0" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -102,9 +100,9 @@
         <option value="Exception" />
         <option value="Record" />
         <option value="HTML File" />
-        <option value="module-info" />
         <option value="package-info" />
         <option value="Class" />
+        <option value="module-info" />
       </list>
     </option>
   </component>
@@ -172,6 +170,9 @@
       <recent name="C:\Users\alias\Documents\school\schooljaar2025-2026\periode1\XPerience\profielen\fullstack\domainify\src\main\resources" />
       <recent name="C:\Users\alias\Documents\school\schooljaar2025-2026\periode1\XPerience\profielen\fullstack\domainify\src\main\java\org\apache\commons" />
       <recent name="C:\Users\alias\Documents\school\schooljaar2025-2026\periode1\XPerience\profielen\fullstack\domainify\src\main\java" />
+    </key>
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="io.github.dracosomething.util" />
@@ -347,7 +348,7 @@
         <line-breakpoint enabled="true" type="java-method">
           <url>jar://$USER_HOME$/AppData/Local/Programs/Eclipse Adoptium/jdk-21.0.4.7-hotspot/lib/src.zip!/java.base/java/util/stream/Stream.java</url>
           <line>591</line>
-          <properties class="java.util.stream.Stream" method="sorted">
+          <properties class="java.util.stream.Stream">
             <option name="EMULATED" value="true" />
             <option name="WATCH_EXIT" value="false" />
           </properties>
@@ -356,7 +357,7 @@
         <line-breakpoint enabled="true" type="java-method">
           <url>jar://$USER_HOME$/AppData/Local/Programs/Eclipse Adoptium/jdk-21.0.4.7-hotspot/lib/src.zip!/java.desktop/java/awt/peer/DesktopPeer.java</url>
           <line>115</line>
-          <properties class="java.awt.peer.DesktopPeer" method="browse">
+          <properties class="java.awt.peer.DesktopPeer">
             <option name="EMULATED" value="true" />
             <option name="WATCH_EXIT" value="false" />
           </properties>

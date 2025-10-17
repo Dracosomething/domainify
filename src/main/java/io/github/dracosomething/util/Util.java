@@ -5,11 +5,13 @@ import org.apache.commons.lang3.SystemUtils;
 import java.io.File;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 public class Util {
     public static final boolean IS_WINDOWS = System.getProperty("os.name").toLowerCase().startsWith("windows");
     public static final LinuxVersion LINUX_VERSION;
     public static final boolean IS_64_BIT;
+    public static final Logger LOGGER = Logger.getLogger("domainify");
 
     public static boolean firstLaunch() {
         File php = new File(FileUtils.PROJECT, FileUtils.PATH_SEPARATOR + "php");
@@ -35,7 +37,6 @@ public class Util {
                 builder.append("\\b");
             }
             builder.append(".*");
-
         }
         return builder.toString();
     }
@@ -48,7 +49,6 @@ public class Util {
             e.printStackTrace();
         }
     }
-
 
     public static Integer[] parseStringArray(String[] array) {
         Integer[] retVal = new Integer[array.length];
