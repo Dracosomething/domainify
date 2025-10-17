@@ -35,13 +35,6 @@ public class FileUtils {
     public static final File DATA;
     public static String SRVROOT = "";
 
-    public static void createProjRoot() {
-        if (PROJECT.exists()) {
-            return;
-        }
-        PROJECT.mkdir();
-    }
-
     public static BufferedReader getUrlReader(URL url) throws IOException {
         return new BufferedReader(new InputStreamReader(url.openStream()));
     }
@@ -246,7 +239,7 @@ public class FileUtils {
      */
     public static void downloadRequirements() throws IOException, ArchiveException {
         LOGGER.entering("FileUtils", "downloadRequirements");
-        createProjRoot();
+        makeDir(PROJECT);
         final File apacheDir = new File(PROJECT, PATH_SEPARATOR + "apache" + PATH_SEPARATOR);
         final File phpDir = new File(PROJECT,  PATH_SEPARATOR + "php" + PATH_SEPARATOR);
         final File serverDir = new File(PROJECT, PATH_SEPARATOR + "mysql" + PATH_SEPARATOR);
@@ -268,9 +261,7 @@ public class FileUtils {
         BufferedWriter writer = new BufferedWriter(new FileWriter(DATA));
 
         setupApache(writer, apacheDir, apacheVer);
-
         setupPHP(writer, phpDir, PHPVersion);
-
         setupMySQL(writer, serverDir, mySQLVersion);
 
         writer.close();
@@ -278,29 +269,48 @@ public class FileUtils {
         LOGGER.exiting("FileUtils", "downloadRequirements");
     }
 
-    public static void setupUnix(BufferedWriter writer, String[] data)
+    public static void setupUnix(BufferedWriter writer, String[] data, File apacheDir)
             throws IOException, ArchiveException {
         if (SystemUtils.IS_OS_LINUX || SystemUtils.IS_OS_MAC) {
+            final File srcLib = new File(apacheDir, "srcLib");
+            makeDir(srcLib);
+
             final String aprURL = "https://dlcdn.apache.org//apr";
             final String aprUtilURL = "https://dlcdn.apache.org//apr";
             final String PCREURL = "https://github.com/PCRE2Project/pcre2/releases";
-            final String gccURL = "https://gcc.gnu.org";
 
             final int apr = 3;
             final int aprUtil = 4;
             final int PCRE = 5;
-            final int gcc = 6;
+            final int libTool = 6;
+            final int autoconf = 7;
+            final int gnuM4 = 8;
             String aprVersion = data[apr];
             String aprUtilVersion = data[aprUtil];
             String PCREVersion = data[PCRE];
-            String gccVersion = data[gcc];
+            // GNU versions
+            String libtoolVersion = data[libTool];
+            String autoconfVersion = data[autoconf];
+            String gnuM4Version = data[gnuM4];
 
-
+            Console console = new Console();
+            console.directory(apacheDir);
+            console.runCommand("./configure --prefix=apache");
+            console.runCommand("make");
+            console.runCommand("make install");
+            console.schedule((console1) -> {
+                File conf = new File(apacheDir, "conf/httpd.conf");
+                try {
+                    configureApacheHttpd(conf, apacheDir);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
         }
     }
 
     public static String[] extractData() throws IOException {
-        String[] result = new String[7];
+        String[] result = new String[9];
         BufferedReader reader = new BufferedReader(new FileReader(DATA));
         String str;
         while ((str = reader.readLine()) != null) {
@@ -317,7 +327,9 @@ public class FileUtils {
                 case "apr version" -> result[3] = value;
                 case "apr-util version" -> result[4] = value;
                 case "PCRE version" -> result[5] = value;
-                case "gcc version" -> result[6] = value;
+                case "libtool version" -> result[6] = value;
+                case "autoconf version" -> result[7] = value;
+                case "gnu m4 version" -> result[8] = value;
             }
         }
         return result;
@@ -328,10 +340,8 @@ public class FileUtils {
         String fileName = getFileNameFromWeb(URI.create("https://dlcdn.apache.org/httpd/").toURL(), "httpd",
                 ".tar.gz", new String[]{"TGZ"}, false, true);
         writer.append("apache version=").append(fileName).append(System.lineSeparator());
-        if (!Objects.equals(apacheVer, fileName) || apacheDir.listFiles() == null) {
+        if (shouldUpdate(apacheDir, apacheVer, fileName)) {
             clearDirectory(apacheDir);
-            Console console = new Console();
-            console.directory(apacheDir);
             if (Util.IS_WINDOWS) {
                 BrowserEmulator emulator = new BrowserEmulator();
                 emulator.connect(URI.create("https://www.apachelounge.com/download").toURL());
@@ -354,18 +364,6 @@ public class FileUtils {
 
                 File apacheTar = unGzip(apacheZipped, apacheDir);
                 File httpd = unTar(apacheTar, apacheDir, fileName);
-
-                console.runCommand("./configure --prefix=apache");
-                console.runCommand("make");
-                console.runCommand("make install");
-                console.schedule((console1) -> {
-                    File conf = new File(apacheDir, "conf/httpd.conf");
-                    try {
-                        configureApacheHttpd(conf, apacheDir);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
             }
 
             LOGGER.info("Apache installed.");
@@ -382,7 +380,7 @@ public class FileUtils {
         if (!phpVerDir.exists()) {
             phpVerDir.mkdir();
         }
-        if (!Objects.equals(phpName, PHPVersion) || phpVerDir.listFiles() == null) {
+        if (shouldUpdate(phpDir, PHPVersion, phpName)) {
             if (Util.IS_WINDOWS) {
                 File phpZip = downloadFileFromWeb("https://downloads.php.net/~windows/releases/archives", phpDir,
                         "php", ".zip", new String[]{"$!php-(\\.?[0-9]+)+-Win32-", "-x64"}, true);
@@ -416,7 +414,7 @@ public class FileUtils {
         String latestVersion = getFileNameFromWeb(URI.create("https://archive.mariadb.org").toURL(),
                 "mariadb", "", new String[]{"$!mariadb-(\\.?[0-9]+)+\\/"}, true);
         writer.append("sql version=").append(latestVersion);
-        if (!Objects.equals(mySQLVersion, latestVersion) || serverDir.listFiles() == null) {
+        if (shouldUpdate(serverDir, mySQLVersion, latestVersion)) {
             clearDirectory(serverDir);
             URL url = URI.create("https://archive.mariadb.org/" + latestVersion).toURL();
             if(Util.IS_WINDOWS) {
@@ -442,8 +440,58 @@ public class FileUtils {
         }
     }
 
-    public static void setupAPR(BufferedWriter writer, File directory, String version) {
+    public static void setupGNU(BufferedWriter writer, String libtoolVersion, String autoconfVersion,
+                                String gnuM4Version) throws IOException, ArchiveException {
+        final String autoconfURL = "https://mirror.dogado.de/gnu/autoconf";
+        final String libtoolURL = "https://www.artfiles.org/gnu.org/libtool";
+        final String gnuM4 = "https://ftp.gnu.org/gnu/m4/m4-latest.tar.gz";
 
+        final File gnuDir = new File(PROJECT, "gnu");
+        final File libtoolDir = new File(PROJECT, "libtool");
+        final File autoconfDir = new File(PROJECT, "autoconf");
+        makeDir(gnuDir);
+        makeDir(libtoolDir);
+        makeDir(autoconfDir);
+
+        String latestM4 = getFileNameFromWeb()
+        if (shouldUpdate(gnuDir, "", "")) {
+
+        }
+
+
+        String latestAutoconf = getFileNameFromWeb(URI.create(autoconfURL).toURL(), "autoconf",
+                ".tar.gz", null, true, true);
+        writer.append("autoconf version=").append(latestAutoconf);
+        if (shouldUpdate(libtoolDir, autoconfVersion, latestAutoconf)) {
+            File autoconfGZipped = downloadFileFromWeb(autoconfURL, autoconfDir, "autoconf",
+                    ".tar.gz", null, true);
+            File autoconfTarBall = unGzip(autoconfGZipped, autoconfDir);
+            File autoconf = unTar(autoconfGZipped, autoconfDir);
+        }
+    }
+
+    public static void setupAPR(BufferedWriter writer, File directory, String versionAPR, String versionUtil)
+            throws IOException, ArchiveException {
+        File aprDirectory = new File(directory, "apr");
+        File aprUtilDirectory = new File(directory, "apr-util");
+
+        String latestAPRVersion = getFileNameFromWeb(URI.create("https://dlcdn.apache.org//apr").toURL(),
+                "apr", ".tar.gz", new String[]{"TGZ", "apr-(?!util).*", "apr-(?!iconv).*"},
+                true, true);
+        String latestUtilVersion = getFileNameFromWeb(URI.create("https://dlcdn.apache.org//apr").toURL(),
+                "apr-util", ".tar.gz", new String[]{"TGZ"}, true, true);
+        if (shouldUpdate(aprDirectory, versionAPR, latestAPRVersion)) {
+            clearDirectory(aprDirectory);
+            File aprGZipped = downloadFileFromWeb("https://dlcdn.apache.org//apr", aprDirectory,
+                    "apr", ".tar.gz", new String[]{"TGZ", "apr-(?!util).*", "apr-(?!iconv).*"},
+                    true);
+            File aprTarBall = unGzip(aprGZipped, aprDirectory);
+            File apr = unTar(aprTarBall, aprDirectory);
+        }
+    }
+
+    public static boolean shouldUpdate(File directory, String currentVersion, String latestVersion) {
+        return !Objects.equals(currentVersion, latestVersion) || directory.listFiles() == null;
     }
 
     public static File unTar(File infile, File outDir) throws IOException, ArchiveException {
@@ -454,7 +502,7 @@ public class FileUtils {
         System.out.println("Untar " + infile.getPath() + "...");
         InputStream in = new FileInputStream(infile);
         TarArchiveInputStream tarIn = FACTORY.createArchiveInputStream("tar", in);
-        TarArchiveEntry entry = null;
+        TarArchiveEntry entry;
         while ((entry = tarIn.getNextEntry()) != null) {
             System.out.println("Moving file " + entry.getName() + "...");
             File outputFile;

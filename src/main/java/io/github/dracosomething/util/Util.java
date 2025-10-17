@@ -3,6 +3,10 @@ package io.github.dracosomething.util;
 import org.apache.commons.lang3.SystemUtils;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URL;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
@@ -99,6 +103,27 @@ public class Util {
             retVal.add(new Pair<>(key, value));
         });
         return retVal;
+    }
+
+    public static boolean isValidURL(URL url) {
+        try {
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            int code = connection.getResponseCode();
+            return code < 400;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static boolean isValidURL(String url) {
+        try {
+            URL url1 = URI.create(url).toURL();
+            return isValidURL(url1);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     static {
