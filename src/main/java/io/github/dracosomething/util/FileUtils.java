@@ -278,11 +278,10 @@ public class FileUtils {
         final File logDir = new File(PROJECT, "logs");
         makeDir(logDir);
 
-        DateTimeFormat format = new DateTimeFormat("yyyy-MM-dd");
-        String stringDate = LocalDate.now().format();
-
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String stringDate = LocalDate.now().format(format);
         int index = 1;
-        String filename =
+        String filename = stringDate + '-' + index;
 
         LOGGER.leaving(downloadRequirements);
     }
