@@ -1,6 +1,6 @@
 package io.github.dracosomething.util;
 
-import java.io.PrintStream;
+import java.io.*;
 import java.lang.reflect.Method;
 import java.time.LocalTime;
 import java.util.*;
@@ -10,6 +10,8 @@ public class Logger {
     private final PrintStream out;
     private final String name;
     private final String callerClass;
+    private final StringBuilder logs = new StringBuilder();
+    private File logFile = null;
 
     public Logger(PrintStream out, String name) {
         this.out = out;
@@ -18,21 +20,34 @@ public class Logger {
     }
 
     public Logger(String name) {
-        this.name = name;
-        this.out = System.out;
-        this.callerClass = Util.shortenClassPath(WALKER.getCallerClass().getName(), 2);
+        this(System.out, name);
     }
 
     public Logger(PrintStream out) {
-        this.out = out;
-        this.name = "";
-        this.callerClass = Util.shortenClassPath(WALKER.getCallerClass().getName(), 2);
+        this(out, "");
     }
 
     public Logger() {
-        this.name = "";
-        this.out = System.out;
-        this.callerClass = Util.shortenClassPath(WALKER.getCallerClass().getName(), 2);
+        this(System.out, "");
+    }
+
+    public void setLogFile(File log) {
+        this.logFile = log;
+        Runnable onClose = new Runnable() {
+            @Override
+            public void run() {
+                File logFile = Logger.this.logFile;
+                try {
+                    BufferedWriter writer = new BufferedWriter(new FileWriter(logFile));
+                    writer.append(Logger.this.logs);
+                    writer.close();
+                    Logger.this.info("Wrote logs to log file.");
+                } catch (IOException e) {
+                    Logger.this.error("Encountered error when trying to construct BufferedWriter.", e);
+                }
+            }
+        };
+        Runtime.getRuntime().addShutdownHook(new Thread(onClose));
     }
 
     public void info(String message) {
@@ -91,6 +106,7 @@ public class Logger {
         fullMessage.append(PrintColor.RESET);
 
         out.println(fullMessage);
+        logs.append(fullMessage).append(System.lineSeparator());
     }
 
     static {
