@@ -5,9 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
-import java.util.logging.Level;
 
-import static io.github.dracosomething.util.Util.LOGGER;
+import static io.github.dracosomething.Main.LOGGER;
 
 @SuppressWarnings("deprecated")
 public class Console extends Thread {

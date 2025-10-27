@@ -9,13 +9,13 @@ import java.net.URI;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
+
+import static io.github.dracosomething.Main.LOGGER;
 
 public class Util {
     public static final boolean IS_WINDOWS = System.getProperty("os.name").toLowerCase().startsWith("windows");
     public static final LinuxVersion LINUX_VERSION;
     public static final boolean IS_64_BIT;
-    public static final Logger LOGGER = Logger.getLogger("domainify");
 
     public static boolean firstLaunch() {
         File php = new File(FileUtils.PROJECT, FileUtils.PATH_SEPARATOR + "php");
@@ -50,7 +50,7 @@ public class Util {
         try {
             Thread.sleep(waitingTime);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOGGER.error("staticWait method got interupted when trying to sleep thread.", e);
         }
     }
 
@@ -58,6 +58,7 @@ public class Util {
         Integer[] retVal = new Integer[array.length];
         for (int i = 0; i < array.length; i++) {
             String str = array[i];
+            if (str.isBlank()) continue;
             int integer = Integer.parseInt(str);
             retVal[i] = integer;
         }
@@ -111,7 +112,7 @@ public class Util {
             int code = connection.getResponseCode();
             return code < 400;
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("Encountered IOException.", e);
             return false;
         }
     }
@@ -121,9 +122,33 @@ public class Util {
             URL url1 = URI.create(url).toURL();
             return isValidURL(url1);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("Encountered IOException.", e);
             return false;
         }
+    }
+
+    public static String shortenClassPath(String path, int maxStringSize) {
+        StringBuilder retVal = new StringBuilder();
+        String[] names = path.split("\\.");
+        ImprovedIterator<String> iterator = new ImprovedIterator<>(names);
+        while (iterator.hasNext()) {
+            String name = iterator.next();
+            if (iterator.peek() != null) {
+                StringBuilder builder = new StringBuilder();
+                char[] characters = name.toCharArray();
+                if (characters.length <= maxStringSize) {
+                    builder.append(characters);
+                    continue;
+                }
+                for (int i = 0; i < maxStringSize; i++) {
+                    char character = characters[i];
+                    builder.append(character);
+                }
+                name = builder.toString();
+            }
+            retVal.append(name).append(".");
+        }
+        return retVal.toString();
     }
 
     static {
@@ -132,6 +157,12 @@ public class Util {
         } else {
             IS_64_BIT = System.getProperty("os.arch").contains("64");
         }
+        LOGGER.success("Successfully identified if machine is 64 bit.");
+        String message = "Machine is 64 bit.";
+        if (!IS_64_BIT) {
+            message = "Machine is not 64 bit, most likely is 32 bit";
+        }
+        LOGGER.important(message);
         if (SystemUtils.IS_OS_LINUX) {
             String osName = System.getProperty("os.name");
             if (containsIgnoreCase(osName, "debian"))

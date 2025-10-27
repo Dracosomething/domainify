@@ -1,7 +1,11 @@
 package io.github.dracosomething.util;
 
+import io.github.dracosomething.Main;
+
 import java.util.Iterator;
 import java.util.List;
+
+import static io.github.dracosomething.Main.LOGGER;
 
 public class ImprovedIterator<T> implements Iterator<T> {
     protected final T[] array;
@@ -74,7 +78,7 @@ public class ImprovedIterator<T> implements Iterator<T> {
                 this.previous = this.array[this.currentIndex-1];
             }
         } else {
-            System.out.println("There is no object before the current one.");
+            LOGGER.warn("There is no object before the current one.");
         }
         return this.current;
     }

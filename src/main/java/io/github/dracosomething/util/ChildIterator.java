@@ -3,7 +3,7 @@ package io.github.dracosomething.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.github.dracosomething.util.Util.LOGGER;
+import static io.github.dracosomething.Main.LOGGER;
 
 public class ChildIterator {
     private List<HTMLObject> children;

@@ -11,6 +11,7 @@ import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.remote.Browser;
 
 import java.io.*;
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URL;
 import java.nio.channels.Channels;
@@ -19,6 +20,8 @@ import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static io.github.dracosomething.Main.LOGGER;
 
 @SuppressWarnings("deprecated")
 public class BrowserEmulator {
@@ -65,8 +68,16 @@ public class BrowserEmulator {
             this.driver.get(url.toString());
             this.url = url;
         } else {
-            System.out.println("Already active, closing now...");
+            LOGGER.warn("Already active, closing now...");
             this.close();
+            if (this.url == null) {
+                try {
+                    Method close = this.getClass().getMethod("connect", URL.class);
+                    LOGGER.success("Succesfully closed connection.", close);
+                } catch (NoSuchMethodException e) {
+                    LOGGER.error("Failed to find connect method", e);
+                }
+            }
             this.connect(url);
         }
     }

@@ -9,9 +9,9 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.io.FileExistsException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SystemUtils;
-import org.eclipse.jetty.util.IO;
 
 import java.io.*;
+import java.lang.reflect.Method;
 import java.net.*;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
@@ -24,8 +24,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import static io.github.dracosomething.util.Util.LOGGER;
-import static io.github.dracosomething.util.Util.firstLaunch;
+import static io.github.dracosomething.Main.LOGGER;
 
 public class FileUtils {
     public static final ArchiveStreamFactory FACTORY = new ArchiveStreamFactory();
@@ -238,8 +237,9 @@ public class FileUtils {
      * @throws IOException
      * @throws ArchiveException
      */
-    public static void downloadRequirements() throws IOException, ArchiveException {
-        LOGGER.entering("FileUtils", "downloadRequirements");
+    public static void downloadRequirements() throws IOException, ArchiveException, NoSuchMethodException {
+        Method downloadRequirements = FileUtils.class.getMethod("downloadRequirements", new Class[]{});
+        LOGGER.entering(downloadRequirements);
         makeDir(PROJECT);
         final File apacheDir = new File(PROJECT, PATH_SEPARATOR + "apache" + PATH_SEPARATOR);
         final File phpDir = new File(PROJECT,  PATH_SEPARATOR + "php" + PATH_SEPARATOR);
@@ -268,7 +268,7 @@ public class FileUtils {
 
         writer.close();
         LOGGER.info("Everything is installed and/or up to date.");
-        LOGGER.exiting("FileUtils", "downloadRequirements");
+        LOGGER.leaving(downloadRequirements);
     }
 
     public static void setupUnix(BufferedWriter writer, String[] data, File apacheDir)
@@ -466,7 +466,8 @@ public class FileUtils {
         String latestAutoconf = getFileNameFromWeb(URI.create(autoconfURL).toURL(), "autoconf",
                 ".tar.gz", null, true, true);
         writer.append("autoconf version=").append(latestAutoconf);
-        if (shouldUpdate(libtoolDir, autoconfVersion, latestAutoconf)) {
+        if (shouldUpdate(autoconfDir, autoconfVersion, latestAutoconf)) {
+            clearDirectory(autoconfDir);
             File autoconfGZipped = downloadFileFromWeb(autoconfURL, autoconfDir, "autoconf",
                     ".tar.gz", true);
             File autoconfTarBall = unGzip(autoconfGZipped, autoconfDir);
@@ -476,6 +477,7 @@ public class FileUtils {
         String latestLibtool = getFileNameFromWeb(URI.create(libtoolURL).toURL(), "libtool",
                 ".tar.gz", null, true);
         if (shouldUpdate(libtoolDir, libtoolVersion, latestLibtool)) {
+            clearDirectory(libtoolDir);
             File libtoolGZipped = downloadFileFromWeb(libtoolURL, libtoolDir, "libtool", ".tar.gz",
                     true);
             File libtoolTarBall = unGzip(libtoolGZipped, libtoolDir);
@@ -531,12 +533,12 @@ public class FileUtils {
     }
 
     public static File unTar(File infile, File outDir, String shouldRemove) throws IOException, ArchiveException {
-        System.out.println("Untar " + infile.getPath() + "...");
+        LOGGER.info("Untaring " + infile.getPath() + "...");
         InputStream in = new FileInputStream(infile);
         TarArchiveInputStream tarIn = FACTORY.createArchiveInputStream("tar", in);
         TarArchiveEntry entry;
         while ((entry = tarIn.getNextEntry()) != null) {
-            System.out.println("Moving file " + entry.getName() + "...");
+            LOGGER.info("Moving file " + entry.getName() + "...");
             File outputFile;
             if (shouldRemove == null) {
                 outputFile = new File(outDir, entry.getName());
@@ -546,7 +548,9 @@ public class FileUtils {
             if (entry.isDirectory()) {
                 if (!outputFile.exists()) {
                     if (!outputFile.mkdirs()) {
-                        throw new FileExistsException(outputFile);
+                        FileExistsException e = new FileExistsException(outputFile);
+                        LOGGER.error("File already exists." , e);
+                        throw e;
                     }
                 }
             } else {
@@ -582,23 +586,27 @@ public class FileUtils {
     }
 
     public static File unZip(File infile, File outDir, String shouldRemove) throws IOException, ArchiveException {
-        System.out.println("Unzipping " + infile.getPath() + "...");
+        LOGGER.info("Unzipping " + infile.getPath() + "...");
         File outFile = new File(outDir, infile.getName().replaceAll("\\.zip", ""));
         byte[] buffer = new byte[1024];
         ZipInputStream in = new ZipInputStream(new FileInputStream(infile));
         ZipEntry entry;
         while ((entry = in.getNextEntry()) != null) {
-            System.out.println("Moving " + entry.getName() + " to " + outDir.getPath() + "...");
+            LOGGER.info("Moving " + entry.getName() + " to " + outDir.getPath() + "...");
             File toMove = getFileFromZipEntry(outDir, entry, shouldRemove);
             if (toMove == null) continue;
             if (entry.isDirectory()) {
                 if (!toMove.isDirectory() && !toMove.mkdirs()) {
-                    throw new FileExistsException(toMove);
+                    FileExistsException e = new FileExistsException(toMove);
+                    LOGGER.error("File already exists.", e);
+                    throw e;
                 }
             } else {
                 File parent = toMove.getParentFile();
                 if (!parent.isDirectory() && !parent.mkdirs()) {
-                    throw new FileExistsException(toMove);
+                    FileExistsException e = new FileExistsException(toMove);
+                    LOGGER.error("File already exists.", e);
+                    throw e;
                 }
 
                 FileOutputStream out = new FileOutputStream(toMove);
@@ -616,17 +624,17 @@ public class FileUtils {
     }
 
     public static void clearDirectory(File dir) {
-        System.out.println("Clearing " + dir.getPath() + "...");
+        LOGGER.info("Clearing " + dir.getPath() + "...");
         File[] arr = dir.listFiles();
         if (arr != null) {
             for (File file : arr) {
-                System.out.println("Deleting file:" + file.getPath() + "...");
+                LOGGER.info("Deleting file:" + file.getPath() + "...");
                 if (file.isDirectory()) {
-                    System.out.println("File is directory, calling self on file...");
+                    LOGGER.info("File is directory, calling self on file...");
                     clearDirectory(file);
                 }
                 if (file.delete()) {
-                    System.out.println("Deleted file. Moving on to next file...");
+                    LOGGER.success("Deleted file. Moving on to next file...");
                 }
             }
             if (arr.length <= 1) {

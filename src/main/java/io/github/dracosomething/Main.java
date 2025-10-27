@@ -2,6 +2,7 @@ package io.github.dracosomething;
 
 import io.github.dracosomething.gui.MainGuiPanel;
 import io.github.dracosomething.util.FileUtils;
+import io.github.dracosomething.util.Logger;
 import io.github.dracosomething.util.Util;
 import org.apache.commons.compress.archivers.ArchiveException;
 
@@ -10,6 +11,8 @@ import java.awt.*;
 import java.io.*;
 
 public class Main {
+    public static final Logger LOGGER = new Logger();
+
     public static void main(String[] args) {
         // add build-linux module that will build the project for linux.
         // use https://developer.apple.com/library/archive/documentation/Java/Conceptual/Jar_Bundler/Introduction/Introduction.html#//apple_ref/doc/uid/TP40000884
@@ -18,8 +21,8 @@ public class Main {
         if (Util.firstLaunch()) {
             try {
                 FileUtils.downloadRequirements();
-            } catch (IOException | ArchiveException e) {
-                e.printStackTrace();
+            } catch (IOException | NoSuchMethodException | ArchiveException e) {
+                LOGGER.error("Encountered error when downloading all requirements.", e);
             }
         }
         JFrame frame = new JFrame("domainify");

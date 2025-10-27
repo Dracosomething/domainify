@@ -8,6 +8,8 @@ import java.io.*;
 import java.util.*;
 import java.util.stream.Stream;
 
+import static io.github.dracosomething.Main.LOGGER;
+
 public class CustomDomain {
     public static final ArrayList<CustomDomain> DOMAINS = new ArrayList<>();
     private static final File HOSTS;
@@ -180,9 +182,12 @@ public class CustomDomain {
                 break;
             writeDataToDummyDomain(domain, data);
         }
-        if (domain.getName() == null || domain.getServerAdmin() == null || domain.getTarget() == null)
-            throw new RuntimeException("One of required fields is null. fields: " + domain.getName() + ", " +
+        if (domain.getName() == null || domain.getServerAdmin() == null || domain.getTarget() == null) {
+            RuntimeException e = new RuntimeException("One of required fields is null. fields: " + domain.getName() + ", " +
                     domain.getServerAdmin() + ", " + domain.getTarget());
+            LOGGER.error("Encountered error during config data gthering.", e);
+            throw e;
+        }
 
         fillIn.name = domain.getName();
         fillIn.serverAdmin = domain.getServerAdmin();
@@ -196,14 +201,17 @@ public class CustomDomain {
     }
 
     private static void writeDataToDummyDomain(DummyCustomDomain dummy, String line) {
+        RuntimeException invalidFilePath = new RuntimeException("string is not a proper file path");
         Pair<String, String> value = getValue(line);
         switch (value.getKey()) {
             case "ServerName" -> dummy.setName(value.getValue());
             case "ServerAlias" -> dummy.addServerAlias(value.getValue());
             case "ServerAdmin" -> dummy.setServerAdmin(value.getValue());
             case "DocumentRoot" -> {
-                if (!FileUtils.isProperPath(value.getValue()))
-                    throw new RuntimeException("string is not a proper file path");
+                if (!FileUtils.isProperPath(value.getValue())) {
+                    LOGGER.error("Encountered error when writing data to dummy domain.", invalidFilePath);
+                    throw invalidFilePath;
+                }
                 String val = value.getValue();
                 if (val.startsWith("${SRVROOT}")) {
                     val = val.replace("${SRVROOT}", FileUtils.SRVROOT);
@@ -211,8 +219,10 @@ public class CustomDomain {
                 dummy.setTarget(new File(val));
             }
             case "ErrorLog" -> {
-                if (!FileUtils.isProperPath(value.getValue()))
-                    throw new RuntimeException("string is not a proper file path");
+                if (!FileUtils.isProperPath(value.getValue())) {
+                    LOGGER.error("Encountered error when writing data to dummy domain.", invalidFilePath);
+                    throw invalidFilePath;
+                }
                 String val = value.getValue();
                 if (val.startsWith("${SRVROOT}")) {
                     val = val.replace("${SRVROOT}", FileUtils.SRVROOT);
@@ -220,8 +230,10 @@ public class CustomDomain {
                 dummy.setErrorLog(new File(val));
             }
             case "CustomLog" -> {
-                if (!FileUtils.isProperPath(value.getValue()))
-                    throw new RuntimeException("string is not a proper file path");
+                if (!FileUtils.isProperPath(value.getValue())) {
+                    LOGGER.error("Encountered error when writing data to dummy domain.", invalidFilePath);
+                    throw invalidFilePath;
+                }
                 String val = value.getValue();
                 if (val.startsWith("${SRVROOT}")) {
                     val = val.replace("${SRVROOT}", FileUtils.SRVROOT);

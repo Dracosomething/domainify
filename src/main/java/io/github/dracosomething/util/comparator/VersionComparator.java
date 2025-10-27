@@ -29,6 +29,11 @@ public abstract class VersionComparator<T> implements Comparator<T> {
     }
 
     private int compareNextNumbers(Integer[] versions1, Integer[] versions2) {
+        if (versions1[0] == null || versions2[0] == null)
+            return 0;
+        if (versions1.length == 1 || versions2.length == 1)
+            return versions2[0].compareTo(versions1[0]);
+
         if (versions2[0].compareTo(versions1[0]) == 0) {
             int length1 = versions1.length;
             int length2 = versions2.length;
