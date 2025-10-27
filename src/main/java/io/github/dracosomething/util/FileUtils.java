@@ -281,7 +281,14 @@ public class FileUtils {
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String stringDate = LocalDate.now().format(format);
         int index = 1;
-        String filename = stringDate + '-' + index;
+        String filename = stringDate + '-' + index + ".txt";
+        while (fileExists(logDir.getPath() + filename)) {
+            index++;
+            filename = stringDate + '-' + index + ".txt";
+        }
+        File log = new File(logDir, filename);
+        makeFile(log);
+        LOGGER.setLogFile(log);
 
         LOGGER.leaving(downloadRequirements);
     }
@@ -681,6 +688,11 @@ public class FileUtils {
             return false;
         }
         return true;
+    }
+
+    public static boolean fileExists(String path) {
+        File tmp = new File(path);
+        return tmp.exists();
     }
 
     static {
