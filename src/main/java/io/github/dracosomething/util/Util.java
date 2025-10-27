@@ -157,12 +157,6 @@ public class Util {
         } else {
             IS_64_BIT = System.getProperty("os.arch").contains("64");
         }
-        LOGGER.success("Successfully identified if machine is 64 bit.");
-        String message = "Machine is 64 bit.";
-        if (!IS_64_BIT) {
-            message = "Machine is not 64 bit, most likely is 32 bit";
-        }
-        LOGGER.important(message);
         if (SystemUtils.IS_OS_LINUX) {
             String osName = System.getProperty("os.name");
             if (containsIgnoreCase(osName, "debian"))

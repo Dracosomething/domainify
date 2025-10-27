@@ -1,5 +1,6 @@
 package io.github.dracosomething.util;
 
+import com.gargoylesoftware.htmlunit.javascript.host.intl.DateTimeFormat;
 import io.github.dracosomething.util.comparator.VersionNameComparator;
 import io.github.dracosomething.util.comparator.VersionStringComparator;
 import org.apache.commons.compress.archivers.ArchiveException;
@@ -10,6 +11,7 @@ import org.apache.commons.io.FileExistsException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SystemUtils;
 
+import javax.swing.text.DateFormatter;
 import java.io.*;
 import java.lang.reflect.Method;
 import java.net.*;
@@ -18,6 +20,10 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.*;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
@@ -268,6 +274,16 @@ public class FileUtils {
 
         writer.close();
         LOGGER.info("Everything is installed and/or up to date.");
+
+        final File logDir = new File(PROJECT, "logs");
+        makeDir(logDir);
+
+        DateTimeFormat format = new DateTimeFormat("yyyy-MM-dd");
+        String stringDate = LocalDate.now().format();
+
+        int index = 1;
+        String filename =
+
         LOGGER.leaving(downloadRequirements);
     }
 
