@@ -173,6 +173,19 @@ public class FileUtils {
         return download;
     }
 
+    public static File downloadFileFromWeb(String urlString, File downloadLocation) throws IOException {
+        URI uri = URI.create(urlString);
+        URL url = uri.toURL();
+        ReadableByteChannel channel = Channels.newChannel(url.openStream());
+        String name = url.toString().replaceAll("(https|http)://.*\\..*\\..*/.*/", "");
+        File download = new File(downloadLocation, "/" + name);
+        FileOutputStream outputStream = new FileOutputStream(download);
+        FileChannel fileChannel = outputStream.getChannel();
+        fileChannel.transferFrom(channel, 0, Long.MAX_VALUE);
+        outputStream.close();
+        return download;
+    }
+
     public static File downloadFileFromWeb(String urlString, File downloadLocation, String fileName,
                                            String fileExtension, boolean shouldFilter)
             throws IOException {
@@ -514,10 +527,9 @@ public class FileUtils {
         File current = new File(gnuM4Dir, "m4-latest.tar.gz");
         if (shouldUpdate(gnuM4Dir, current, gnuM4URL)) {
             clearDirectory(gnuM4Dir);
-            File gnuM4GZipped = downloadFileFromWeb(gnuM4URL, gnuM4Dir, "m4-latest", ".tar.gz",
-                    true);
+            File gnuM4GZipped = downloadFileFromWeb(gnuM4URL, gnuM4Dir);
             File gnuM4TarBall = unGzip(gnuM4GZipped, gnuM4Dir, true);
-            File gnuM4 = unTar(gnuM4TarBall, gnuM4Dir);
+            File gnuM4 = unTar(gnuM4TarBall, gnuM4Dir, "m4-latest");
         }
 
         String latestAutoconf = getFileNameFromWeb(URI.create(autoconfURL).toURL(), "autoconf",
@@ -528,7 +540,7 @@ public class FileUtils {
             File autoconfGZipped = downloadFileFromWeb(autoconfURL, autoconfDir, "autoconf",
                     ".tar.gz", true);
             File autoconfTarBall = unGzip(autoconfGZipped, autoconfDir);
-            File autoconf = unTar(autoconfTarBall, autoconfDir);
+            File autoconf = unTar(autoconfTarBall, autoconfDir, latestAutoconf);
         }
 
         String latestLibtool = getFileNameFromWeb(URI.create(libtoolURL).toURL(), "libtool",
@@ -538,7 +550,7 @@ public class FileUtils {
             File libtoolGZipped = downloadFileFromWeb(libtoolURL, libtoolDir, "libtool", ".tar.gz",
                     true);
             File libtoolTarBall = unGzip(libtoolGZipped, libtoolDir);
-            File libtool = unTar(libtoolTarBall, libtoolDir);
+            File libtool = unTar(libtoolTarBall, libtoolDir, latestLibtool);
         }
     }
 

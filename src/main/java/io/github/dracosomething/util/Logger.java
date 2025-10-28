@@ -90,7 +90,7 @@ public class Logger {
     }
 
     public void error(String message, Exception exception) {
-        String fullMessage = "%1$s: encountered error %2$s\nstacktrace: %3$s";
+        String fullMessage = "%1$s\n encountered error %2$s\nstacktrace: %3$s";
         fullMessage = fullMessage.formatted(message, exception.getMessage(), Util.formatStacktrace(exception));
         log(fullMessage, PrintColor.RED, LogType.ERROR);
     }
