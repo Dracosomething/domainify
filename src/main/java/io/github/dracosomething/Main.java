@@ -1,6 +1,7 @@
 package io.github.dracosomething;
 
 import io.github.dracosomething.gui.MainGuiPanel;
+import io.github.dracosomething.gui.ProgressBar;
 import io.github.dracosomething.util.FileUtils;
 import io.github.dracosomething.util.Logger;
 import io.github.dracosomething.util.Util;
@@ -13,9 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class Main extends Thread {
+public class Main {
     public static final Logger LOGGER = new Logger();
-    private static final List<Supplier<Boolean>> TASKS = new ArrayList<>();
 
     public static void main(String[] args) {
         // add build-linux module that will build the project for linux.
@@ -27,6 +27,7 @@ public class Main extends Thread {
         } catch (IOException | NoSuchMethodException | ArchiveException e) {
             LOGGER.error("Encountered error when downloading all requirements.", e);
         }
+
         JFrame frame = new JFrame("domainify");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
@@ -39,21 +40,5 @@ public class Main extends Thread {
         frame.setContentPane(panel);
         frame.pack();
         frame.setSize(frame.getWidth(), 800);
-    }
-
-    @Override
-    public void run() {
-        super.run();
-        List<Supplier<Boolean>> toRemove = new ArrayList<>();
-        TASKS.forEach(supplier -> {
-           if (supplier.get()) {
-               toRemove.add(supplier);
-           }
-        });
-        TASKS.removeAll(toRemove);
-    }
-
-    public static void schedule(Supplier<Boolean> task) {
-        TASKS.add(task);
     }
 }

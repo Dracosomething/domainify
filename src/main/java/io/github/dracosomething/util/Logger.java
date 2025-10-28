@@ -1,5 +1,7 @@
 package io.github.dracosomething.util;
 
+import org.apache.commons.logging.Log;
+
 import java.io.*;
 import java.lang.reflect.Method;
 import java.time.LocalTime;
@@ -94,6 +96,10 @@ public class Logger {
         log(message, PrintColor.PURPLE, LogType.IMPORTANT);
     }
 
+    public void logFormatted(String message, PrintColor color, Object... params) {
+        message = message.formatted(params);
+        this.log(message, color, LogType.INFO);
+    }
 
     public void log(String message, PrintColor color, LogType type) {
         StringBuilder fullMessage = new StringBuilder(color.code);
