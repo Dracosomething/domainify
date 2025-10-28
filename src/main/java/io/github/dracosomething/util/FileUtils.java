@@ -505,7 +505,7 @@ public class FileUtils {
                         latestVersion.replace("/", ""), ".tar.gz", new String[]{"linux"},
                         false);
                 File mariadbTar = unGzip(mariadbGzipped, serverDir);
-                File mariadb = unTar(mariadbTar, serverDir);
+                File mariadb = unTar(mariadbTar, serverDir, mariadbDownloadLocation);
             }
             LOGGER.info("MySQL installed...");
         }
@@ -528,8 +528,17 @@ public class FileUtils {
         if (shouldUpdate(gnuM4Dir, current, gnuM4URL)) {
             clearDirectory(gnuM4Dir);
             File gnuM4GZipped = downloadFileFromWeb(gnuM4URL, gnuM4Dir);
-            File gnuM4TarBall = unGzip(gnuM4GZipped, gnuM4Dir, true);
-            File gnuM4 = unTar(gnuM4TarBall, gnuM4Dir, "m4-latest");
+            File gnuM4TarBall = unGzip(gnuM4GZipped, gnuM4Dir);
+            String m4Name = "";
+            if (gnuM4Dir.list() != null) {
+                for (String name : gnuM4Dir.list()) {
+                    if (name.matches("m4-([1-9]+\\.?){1,3}")) {
+                        m4Name = name;
+                        break;
+                    }
+                }
+            }
+            File gnuM4 = unTar(gnuM4TarBall, gnuM4Dir, "");
         }
 
         String latestAutoconf = getFileNameFromWeb(URI.create(autoconfURL).toURL(), "autoconf",

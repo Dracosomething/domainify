@@ -55,8 +55,9 @@ public class ImprovedIterator<T> implements Iterator<T> {
     }
 
     public T next() {
+        T oldCurrent = this.current;
         setNext();
-        return this.current;
+        return oldCurrent;
     }
 
     public T peek() {

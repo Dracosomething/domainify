@@ -173,8 +173,9 @@ public class Util {
                 }
                 name = builder.toString();
             }
+            retVal.append(name);
             if (iterator.hasNext()) {
-                retVal.append(name).append(".");
+                retVal.append(".");
             }
         }
 
