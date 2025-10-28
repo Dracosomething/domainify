@@ -1,18 +1,13 @@
 package io.github.dracosomething;
 
 import io.github.dracosomething.gui.MainGuiPanel;
-import io.github.dracosomething.gui.ProgressBar;
 import io.github.dracosomething.util.FileUtils;
 import io.github.dracosomething.util.Logger;
-import io.github.dracosomething.util.Util;
 import org.apache.commons.compress.archivers.ArchiveException;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Supplier;
+import java.io.*
 
 public class Main {
     public static final Logger LOGGER = new Logger();

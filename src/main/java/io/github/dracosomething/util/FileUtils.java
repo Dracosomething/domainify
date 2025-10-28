@@ -212,10 +212,15 @@ public class FileUtils {
         }
     }
 
-    public static void configureApacheHttpd(File conf, File root) throws IOException, NoSuchMethodException {
-        Method configureApacheHttpd = Util.getClassMethod(FileUtils.class, "configureApacheHttpd", File.class,
-                File.class);
-        LOGGER.entering(configureApacheHttpd);
+    public static void configureApacheHttpd(File conf, File root) throws IOException {
+        try {
+            Method configureApacheHttpd = Util.getClassMethod(FileUtils.class, "configureApacheHttpd", File.class,
+                    File.class);
+            LOGGER.entering(configureApacheHttpd);
+        } catch (NoSuchMethodException e) {
+            LOGGER.error("Encountered an error when trying to find configureApacheHttpd(File, File) method " +
+                    "in FileUtils class.", e);
+        }
         FileIterator iterator = new FileIterator(conf);
         StringBuilder contents = new StringBuilder();
         while (iterator.hasNext()) {
@@ -228,6 +233,14 @@ public class FileUtils {
         BufferedWriter writer = new BufferedWriter(new FileWriter(conf));
         writer.append(contents.toString());
         writer.close();
+        try {
+            Method configureApacheHttpd = Util.getClassMethod(FileUtils.class, "configureApacheHttpd", File.class,
+                    File.class);
+            LOGGER.leaving(configureApacheHttpd);
+        } catch (NoSuchMethodException e) {
+            LOGGER.error("Encountered an error when trying to find configureApacheHttpd(File, File) method " +
+                    "in FileUtils class.", e);
+        }
     }
 
     public static void makeDir(File file) {
@@ -341,7 +354,7 @@ public class FileUtils {
                 File conf = new File(apacheDir, "conf/httpd.conf");
                 try {
                     configureApacheHttpd(conf, apacheDir);
-                } catch (IOException | NoSuchMethodException e) {
+                } catch (IOException e) {
                     LOGGER.error("Encountered an error when configure Apache httpd.", e);
                 }
             });
@@ -349,8 +362,7 @@ public class FileUtils {
     }
 
     public static String[] extractData() throws IOException {
-        LOGGER.info("Extracting data from data.txt file. Indexes of elements:" + System.lineSeparator() +
-                "");
+        LOGGER.info("Extracting data from data.txt file.");
         String[] result = new String[8];
         BufferedReader reader = new BufferedReader(new FileReader(DATA));
         String str;
@@ -361,7 +373,10 @@ public class FileUtils {
                 if (character == '=') break;
                 builder.append(character);
             }
+            LOGGER.info("Key is " + builder);
+
             String value = str.replace(builder + "=", "");
+            LOGGER.info("Value is " + value);
             switch (builder.toString()) {
                 case "apache version" -> result[0] = value;
                 case "php version" -> result[1] = value;
@@ -372,6 +387,7 @@ public class FileUtils {
                 case "libtool version" -> result[6] = value;
                 case "autoconf version" -> result[7] = value;
             }
+            LOGGER.info("Extracted key and value and stored them in the result array.");
         }
 
         return result;
