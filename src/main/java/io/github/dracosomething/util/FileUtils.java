@@ -567,6 +567,10 @@ public class FileUtils {
     }
 
     public static boolean shouldUpdate(File directory, File current, String url) throws IOException {
+        if (!directory.exists())
+            return false;
+        if (!current.exists())
+            return true;
         BufferedReader reader = new BufferedReader(new FileReader(current));
         StringBuilder builder = new StringBuilder();
         for (String line : reader.lines().toList()) {
