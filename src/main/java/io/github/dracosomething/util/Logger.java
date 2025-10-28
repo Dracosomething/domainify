@@ -68,6 +68,12 @@ public class Logger {
         info(message);
     }
 
+    public void leaving(Method method, Object retVal) {
+        String message = "Leaving %1$s in %2$s.\n %1$s returned %3$s.";
+        message = message.formatted(method.getName(), method.getDeclaringClass().getName(), retVal);
+        info(message);
+    }
+
     public void warn(String message) {
         log(message, PrintColor.YELLOW, LogType.WARN);
     }

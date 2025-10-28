@@ -49,6 +49,7 @@ public class FileUtils {
                                             boolean shouldFilter, boolean replaceExtension) throws IOException {
         String retVal = getFileNameFromWeb(url, name, fileExtension, extraData, shouldFilter);
         if (replaceExtension) {
+            LOGGER.info("Removing file extension.");
             retVal = retVal.replace(fileExtension, "");
         }
         return retVal;
@@ -69,9 +70,11 @@ public class FileUtils {
         List<HTMLObject> list = new ArrayList<>();
         String str;
         String regex = null;
+
         if (extraData != null) {
             regex = Util.formatArrayToRegex(extraData);
         }
+
         while ((str = in.readLine()) != null) {
             if (!str.contains(name)) continue;
             if (extraData != null && !str.matches(regex)) continue;
@@ -209,7 +212,10 @@ public class FileUtils {
         }
     }
 
-    public static void configureApacheHttpd(File conf, File root) throws IOException {
+    public static void configureApacheHttpd(File conf, File root) throws IOException, NoSuchMethodException {
+        Method configureApacheHttpd = Util.getClassMethod(FileUtils.class, "configureApacheHttpd", File.class,
+                File.class);
+        LOGGER.entering(configureApacheHttpd);
         FileIterator iterator = new FileIterator(conf);
         StringBuilder contents = new StringBuilder();
         while (iterator.hasNext()) {
@@ -226,13 +232,21 @@ public class FileUtils {
 
     public static void makeDir(File file) {
         if (!file.exists()) {
+            LOGGER.info(file.getPath() + " does not yet exist.");
+            LOGGER.info("Making " + file.getPath() + '.');
             file.mkdirs();
+        } else {
+            LOGGER.warn("Directory already exists");
         }
     }
 
     public static void makeFile(File file) throws IOException {
         if (!file.exists()) {
+            LOGGER.info(file.getPath() + " does not yet exist.");
+            LOGGER.info("Making " + file.getPath() + '.');
             file.createNewFile();
+        } else {
+            LOGGER.warn("File already exists");
         }
     }
 
@@ -246,6 +260,7 @@ public class FileUtils {
     public static void downloadRequirements() throws IOException, ArchiveException, NoSuchMethodException {
         Method downloadRequirements = FileUtils.class.getMethod("downloadRequirements", new Class[]{});
         LOGGER.entering(downloadRequirements);
+
         makeDir(PROJECT);
         final File apacheDir = new File(PROJECT, PATH_SEPARATOR + "apache" + PATH_SEPARATOR);
         final File phpDir = new File(PROJECT,  PATH_SEPARATOR + "php" + PATH_SEPARATOR);
@@ -326,8 +341,8 @@ public class FileUtils {
                 File conf = new File(apacheDir, "conf/httpd.conf");
                 try {
                     configureApacheHttpd(conf, apacheDir);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                } catch (IOException | NoSuchMethodException e) {
+                    LOGGER.error("Encountered an error when configure Apache httpd.", e);
                 }
             });
         }

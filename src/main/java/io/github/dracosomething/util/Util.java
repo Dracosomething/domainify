@@ -4,6 +4,7 @@ import org.apache.commons.lang3.SystemUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
@@ -20,17 +21,23 @@ public class Util {
     public static String formatArrayToRegex(String[] arr) {
         StringBuilder builder = new StringBuilder(".*");
         Iterator<String> it = Arrays.stream(arr).iterator();
+
+        LOGGER.info("Iterating through array arr: " + Arrays.toString(arr));
         while (it.hasNext()) {
             String str = it.next();
+            LOGGER.info("Current string: " + str);
             boolean isRegex = str.startsWith("$!");
             if (isRegex) {
+                LOGGER.info("String is regex. Removing \"$!\" from string.");
                 str = str.replaceFirst("[$]!", "");
             }
             if (!isRegex) {
+                LOGGER.info("String is not regex. Appending \"\\b\" to StringBuilder.");
                 builder.append("\\b");
             }
             builder.append(str);
             if (!isRegex) {
+                LOGGER.info("Appending \"\\b\" at the end of non regex string.");
                 builder.append("\\b");
             }
             builder.append(".*");
@@ -49,21 +56,43 @@ public class Util {
 
     public static Integer[] parseStringArray(String[] array) {
         Integer[] retVal = new Integer[array.length];
+
         for (int i = 0; i < array.length; i++) {
             String str = array[i];
-            if (str.isBlank()) continue;
+            if (str.isBlank() || !isStringNumeric(str))
+                continue;
+
             int integer = Integer.parseInt(str);
             retVal[i] = integer;
         }
+
         return retVal;
+    }
+
+    public static boolean isStringNumeric(String string) {
+        if (string == null || string.isBlank())
+            return false;
+        try {
+            Integer.parseInt(string);
+            Double.parseDouble(string);
+            Float.parseFloat(string);
+            Short.parseShort(string);
+            Long.parseLong(string);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+        return true;
     }
 
     public static String replaceOther(String regex, String replacement, String in) {
         String toRemove = in.replaceAll(regex, "toSplitAtHere");
         String[] remove = toRemove.split("toSplitAtHere");
+        LOGGER.info("Should remove " + Arrays.toString(remove) + " from string " + in + '.');
+
         for (String str : remove) {
             in = in.replaceFirst(str, replacement);
         }
+
         return in;
     }
 
@@ -93,9 +122,11 @@ public class Util {
 
     public static <K, V> List<Pair<K, V>> mapToPairList(Map<K, V> map) {
         List<Pair<K, V>> retVal = new ArrayList<>();
+
         map.forEach((key, value) -> {
             retVal.add(new Pair<>(key, value));
         });
+
         return retVal;
     }
 
@@ -124,15 +155,18 @@ public class Util {
         StringBuilder retVal = new StringBuilder();
         String[] names = path.split("\\.");
         ImprovedIterator<String> iterator = new ImprovedIterator<>(names);
+
         while (iterator.hasNext()) {
             String name = iterator.next();
             if (iterator.peek() != null) {
                 StringBuilder builder = new StringBuilder();
                 char[] characters = name.toCharArray();
+
                 if (characters.length <= maxStringSize) {
                     builder.append(characters);
                     continue;
                 }
+
                 for (int i = 0; i < maxStringSize; i++) {
                     char character = characters[i];
                     builder.append(character);
@@ -141,7 +175,16 @@ public class Util {
             }
             retVal.append(name).append(".");
         }
+
         return retVal.toString();
+    }
+
+    public static Method getClassMethodNoParams(Class<?> clazz, String name) throws NoSuchMethodException {
+        return getClassMethod(clazz, name, null);
+    }
+
+    public static Method getClassMethod(Class<?> clazz, String name, Class<?>... params) throws NoSuchMethodException {
+        return clazz.getMethod(name, params);
     }
 
     static {
