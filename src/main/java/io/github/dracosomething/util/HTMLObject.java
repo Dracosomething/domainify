@@ -183,20 +183,22 @@ public class HTMLObject {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder("{");
-        builder.append("\n").append("\t");
-        builder.append("type: ").append(this.type).append(", ").append("\n").append("\t");
-        builder.append("contents: ").append(this.contents).append(", ").append("\n").append("\t");
-        builder.append("data: {").append("\n");
+        builder.append(System.lineSeparator()).append(" ").append("\t");
+        builder.append("type: ").append(this.type).append(", ").append(System.lineSeparator()).append(" ").append("\t");
+        builder.append("contents: ").append(this.contents).append(", ").append(System.lineSeparator()).append(" ")
+                .append("\t");
+        builder.append("data: {").append(System.lineSeparator()).append(" ");
         data.forEach((string, string2) -> {
-            builder.append("\t\t").append(string).append(": ").append(string2).append(", ").append("\n");
+            builder.append("\t\t").append(string).append(": ").append(string2).append(", ")
+                    .append(System.lineSeparator()).append(" ");
         });
-        builder.append("\t").append("}").append(", ").append("\n");
-        builder.append("childObjects: {").append("\n");
+        builder.append("\t").append("}").append(", ").append(System.lineSeparator()).append(" ");
+        builder.append("childObjects: {").append(System.lineSeparator()).append(" ");
         childObjects.forEach(htmlObject -> {
-            builder.append("\t\t").append(htmlObject).append(", ").append("\n");
+            builder.append("\t\t").append(htmlObject).append(", ").append(System.lineSeparator()).append(" ");
         });
         builder.append("\t").append("}");
-        builder.append("\n").append("}");
+        builder.append(System.lineSeparator()).append(" ").append("}");
         return builder.toString();
     }
 }

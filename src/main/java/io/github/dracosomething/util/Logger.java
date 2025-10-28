@@ -69,7 +69,7 @@ public class Logger {
     }
 
     public void leaving(Method method, Object retVal) {
-        String message = "Leaving %1$s in %2$s.\n %1$s returned %3$s.";
+        String message = "Leaving %1$s in %2$s." + System.lineSeparator() + "  %1$s returned %3$s.";
         message = message.formatted(method.getName(), method.getDeclaringClass().getName(), retVal);
         info(message);
     }
@@ -79,7 +79,7 @@ public class Logger {
     }
 
     public void error(String message, Exception exception) {
-        String fullMessage = "%1$s: encountered error %2$s\nstacktrace: %3$s";
+        String fullMessage = "%1$s: encountered error %2$s" + System.lineSeparator() + " stacktrace: %3$s";
         fullMessage = fullMessage.formatted(message, exception.getMessage(), Arrays.toString(exception.getStackTrace()));
         log(fullMessage, PrintColor.RED, LogType.ERROR);
     }

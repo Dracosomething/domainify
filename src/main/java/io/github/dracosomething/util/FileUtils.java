@@ -349,9 +349,12 @@ public class FileUtils {
     }
 
     public static String[] extractData() throws IOException {
+        LOGGER.info("Extracting data from data.txt file. Indexes of elements:" + System.lineSeparator() +
+                "");
         String[] result = new String[8];
         BufferedReader reader = new BufferedReader(new FileReader(DATA));
         String str;
+
         while ((str = reader.readLine()) != null) {
             StringBuilder builder = new StringBuilder();
             for (char character : str.toCharArray()) {
@@ -370,6 +373,7 @@ public class FileUtils {
                 case "autoconf version" -> result[7] = value;
             }
         }
+
         return result;
     }
 
