@@ -467,7 +467,7 @@ public class FileUtils {
             throws IOException, ArchiveException {
         final String autoconfURL = "https://mirror.dogado.de/gnu/autoconf";
         final String libtoolURL = "https://www.artfiles.org/gnu.org/libtool";
-        final String gnuM4URL = "https://ftp.gnu.org/gnu/m4/m4-latest.tar.gz";
+        final String gnuM4URL = "https://www.artfiles.org/gnu.org/m4/m4-latest.tar.gz";
 
         final File gnuM4Dir = new File(PROJECT, "gnu-m4");
         final File libtoolDir = new File(PROJECT, "libtool");

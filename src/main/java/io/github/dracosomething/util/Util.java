@@ -17,13 +17,6 @@ public class Util {
     public static final LinuxVersion LINUX_VERSION;
     public static final boolean IS_64_BIT;
 
-    public static boolean firstLaunch() {
-        File php = new File(FileUtils.PROJECT, FileUtils.PATH_SEPARATOR + "php");
-        File apache = new File(FileUtils.PROJECT, FileUtils.PATH_SEPARATOR + "apache");
-        File mySql = new File(FileUtils.PROJECT, FileUtils.PATH_SEPARATOR + "sql");
-        return !FileUtils.PROJECT.exists() || !php.exists() || !apache.exists() || !mySql.exists();
-    }
-
     public static String formatArrayToRegex(String[] arr) {
         StringBuilder builder = new StringBuilder(".*");
         Iterator<String> it = Arrays.stream(arr).iterator();

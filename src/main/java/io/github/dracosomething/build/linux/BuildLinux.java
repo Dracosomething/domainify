@@ -40,7 +40,8 @@ public class BuildLinux {
 
                 Build.archive("tar", tarBall, buildJar, script);
             });
-        } catch (IOException e) {
+            console.join();
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
     }

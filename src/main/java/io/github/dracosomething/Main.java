@@ -9,23 +9,23 @@ import org.apache.commons.compress.archivers.ArchiveException;
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
-import java.time.LocalDate;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
 
-public class Main {
+public class Main extends Thread {
     public static final Logger LOGGER = new Logger();
+    private static final List<Supplier<Boolean>> TASKS = new ArrayList<>();
 
     public static void main(String[] args) {
         // add build-linux module that will build the project for linux.
         // use https://developer.apple.com/library/archive/documentation/Java/Conceptual/Jar_Bundler/Introduction/Introduction.html#//apple_ref/doc/uid/TP40000884
         // for mac os
         // use launch4j for windows
-        if (Util.firstLaunch()) {
-            try {
-                FileUtils.downloadRequirements();
-            } catch (IOException | NoSuchMethodException | ArchiveException e) {
-                LOGGER.error("Encountered error when downloading all requirements.", e);
-            }
+        try {
+            FileUtils.downloadRequirements();
+        } catch (IOException | NoSuchMethodException | ArchiveException e) {
+            LOGGER.error("Encountered error when downloading all requirements.", e);
         }
         JFrame frame = new JFrame("domainify");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -39,5 +39,21 @@ public class Main {
         frame.setContentPane(panel);
         frame.pack();
         frame.setSize(frame.getWidth(), 800);
+    }
+
+    @Override
+    public void run() {
+        super.run();
+        List<Supplier<Boolean>> toRemove = new ArrayList<>();
+        TASKS.forEach(supplier -> {
+           if (supplier.get()) {
+               toRemove.add(supplier);
+           }
+        });
+        TASKS.removeAll(toRemove);
+    }
+
+    public static void schedule(Supplier<Boolean> task) {
+        TASKS.add(task);
     }
 }
