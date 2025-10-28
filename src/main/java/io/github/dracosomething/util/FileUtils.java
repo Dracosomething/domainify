@@ -310,7 +310,7 @@ public class FileUtils {
         String stringDate = LocalDate.now().format(format);
         int index = 1;
         String filename = stringDate + '-' + index + ".txt";
-        while (fileExists(logDir.getPath() + filename)) {
+        while (fileExists(logDir.getPath() + "/" + filename)) {
             index++;
             filename = stringDate + '-' + index + ".txt";
         }

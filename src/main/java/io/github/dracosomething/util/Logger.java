@@ -80,7 +80,7 @@ public class Logger {
     }
 
     public void leaving(Method method, Object retVal) {
-        String message = "Leaving %1$s in %2$s.\n``%1$s returned %3$s.";
+        String message = "Leaving %1$s in %2$s.\n%1$s returned %3$s.";
         message = message.formatted(method.getName(), method.getDeclaringClass().getName(), retVal);
         info(message);
     }
@@ -132,7 +132,7 @@ public class Logger {
         StringBuilder fullMessage = new StringBuilder(color.toString());
         fullMessage.append(logMessage);
         fullMessage.append(PrintColor.RESET);
-        out.println(logMessage);
+        out.println(fullMessage);
     }
 
     static {
