@@ -15,7 +15,7 @@ public class HTMLObjectParseTest {
 
     @Test
     public void logger_test() {
-        Logger logger = new Logger("test");
+        Logger logger = Logger.getLogger("test");
         logger.log("ewrer", Logger.PrintColor.WHITE, Logger.LogType.INFO);
     }
 }

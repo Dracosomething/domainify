@@ -6,6 +6,7 @@ import java.io.*;
 import java.lang.reflect.Method;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Logger {
     private static final StackWalker WALKER;
@@ -15,22 +16,32 @@ public class Logger {
     private final StringBuilder logs = new StringBuilder();
     private File logFile = null;
 
-    public Logger(PrintStream out, String name) {
+    public static Logger getLogger() {
+        return getLogger(System.out, "");
+    }
+
+    public static Logger getLogger(String name) {
+        return getLogger(System.out, name);
+    }
+
+    public static Logger getLogger(PrintStream out) {
+        return getLogger(out, "");
+    }
+
+    public static Logger getLogger(PrintStream out, String name) {
+        List<StackWalker.StackFrame> list = WALKER.walk(stream -> stream.collect(Collectors.toList()));
+        StackWalker.StackFrame caller = list.getLast();
+        return getLogger(out, name, caller.getDeclaringClass());
+    }
+
+    public static Logger getLogger(PrintStream out, String name, Class<?> clazz) {
+        return new Logger(out, name, Util.shortenClassPath(clazz.getName(), 2));
+    }
+
+    Logger(PrintStream out, String name, String classPath) {
         this.out = out;
         this.name = name;
-        this.callerClass = Util.shortenClassPath(WALKER.getCallerClass().getName(), 2);
-    }
-
-    public Logger(String name) {
-        this(System.out, name);
-    }
-
-    public Logger(PrintStream out) {
-        this(out, "");
-    }
-
-    public Logger() {
-        this(System.out, "");
+        this.callerClass = classPath;
     }
 
     public void setLogFile(File log) {
@@ -122,8 +133,7 @@ public class Logger {
     }
 
     static {
-        Set<StackWalker.Option> options = Set.of(StackWalker.Option.RETAIN_CLASS_REFERENCE, StackWalker.Option.SHOW_HIDDEN_FRAMES);
-        WALKER = StackWalker.getInstance(options);
+        WALKER = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
     }
 
     public static enum PrintColor {

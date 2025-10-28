@@ -7,10 +7,10 @@ import org.apache.commons.compress.archivers.ArchiveException;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.*
+import java.io.*;
 
 public class Main {
-    public static final Logger LOGGER = new Logger();
+    public static final Logger LOGGER = Logger.getLogger();
 
     public static void main(String[] args) {
         // add build-linux module that will build the project for linux.
