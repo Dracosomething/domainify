@@ -187,6 +187,17 @@ public class Util {
         return clazz.getMethod(name, params);
     }
 
+    public static String formatStacktrace(Exception e) {
+        StringBuilder builder = new StringBuilder();
+        StackTraceElement[] elements = e.getStackTrace();
+
+        for (StackTraceElement element : elements) {
+            builder.append(element).append("\n");
+        }
+
+        return builder.toString();
+    }
+
     static {
         if (IS_WINDOWS) {
             IS_64_BIT = System.getenv("ProgramFiles(x86)") != null;
