@@ -1,6 +1,7 @@
 package io.github.dracosomething.util;
 
 import com.gargoylesoftware.htmlunit.javascript.host.intl.DateTimeFormat;
+import com.google.common.io.Files;
 import io.github.dracosomething.util.comparator.VersionNameComparator;
 import io.github.dracosomething.util.comparator.VersionStringComparator;
 import org.apache.commons.compress.archivers.ArchiveException;
@@ -529,6 +530,7 @@ public class FileUtils {
             clearDirectory(gnuM4Dir);
             File gnuM4GZipped = downloadFileFromWeb(gnuM4URL, gnuM4Dir);
             File gnuM4TarBall = unGzip(gnuM4GZipped, gnuM4Dir);
+            File gnuM4 = unTar(gnuM4TarBall, gnuM4Dir);
             String m4Name = "";
             if (gnuM4Dir.list() != null) {
                 for (String name : gnuM4Dir.list()) {
@@ -538,7 +540,8 @@ public class FileUtils {
                     }
                 }
             }
-            File gnuM4 = unTar(gnuM4TarBall, gnuM4Dir, m4Name);
+            File directory = new File(gnuM4Dir, m4Name);
+            moveDirectoryContent(directory, gnuM4Dir, true);
         }
 
         File currentAutoconf = new File(autoconfDir, "autoconf-latest.tar.gz");
@@ -546,6 +549,7 @@ public class FileUtils {
             clearDirectory(autoconfDir);
             File autoconfGZipped = downloadFileFromWeb(autoconfURL, autoconfDir);
             File autoconfTarball = unGzip(autoconfGZipped, autoconfDir);
+            File autoconf = unTar(autoconfTarball, autoconfDir);
             String autoconfName = "";
             if (autoconfDir.list() != null) {
                 for (String name : autoconfDir.list()) {
@@ -555,11 +559,12 @@ public class FileUtils {
                     }
                 }
             }
-            File autoconf = unTar(autoconfTarball, autoconfDir, autoconfName);
+            File directory = new File(autoconfDir, autoconfName);
+            moveDirectoryContent(directory, autoconfDir, true);
         }
 
         String latestLibtool = getFileNameFromWeb(URI.create(libtoolURL).toURL(), "libtool",
-                ".tar.gz", null, true);
+                ".tar.gz", null, true, true);
         if (shouldUpdate(libtoolDir, libtoolVersion, latestLibtool)) {
             clearDirectory(libtoolDir);
             File libtoolGZipped = downloadFileFromWeb(libtoolURL, libtoolDir, "libtool", ".tar.gz",
@@ -760,6 +765,29 @@ public class FileUtils {
     public static boolean fileExists(String path) {
         File tmp = new File(path);
         return tmp.exists();
+    }
+
+    public static void moveDirectoryContent(String directoryPath, File target, boolean shouldRemoveDirectory)
+            throws IOException {
+        File directory = new File(directoryPath);
+        moveDirectoryContent(directory, target, shouldRemoveDirectory);
+    }
+
+    public static void moveDirectoryContent(File directory, File target, boolean shouldRemoveDirectory)
+            throws IOException {
+        if (!directory.isDirectory())
+            return;
+        if (directory.listFiles() != null && directory.listFiles().length < 1)
+            return;
+        for (File file : directory.listFiles()) {
+            Files.move(file, target);
+            if (file.isDirectory()) {
+                moveDirectoryContent(file, target, false);
+            }
+        }
+        if (shouldRemoveDirectory) {
+            directory.delete();
+        }
     }
 
     static {
