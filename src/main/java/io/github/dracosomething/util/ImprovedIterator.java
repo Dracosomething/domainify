@@ -39,25 +39,25 @@ public class ImprovedIterator<T> implements Iterator<T> {
         return new ImprovedIterator<>(toUse);
     }
 
-    protected void setNext() {
+    protected T setNext() {
         this.previous = this.current;
         this.currentIndex++;
+        T result = this.current;
         this.current = this.next;
-        if (this.currentIndex+1 == this.array.length) {
+        if (this.currentIndex+1 >= this.array.length) {
             this.next = null;
         } else {
             this.next = this.array[this.currentIndex+1];
         }
+        return result;
     }
 
     public boolean hasNext() {
-        return this.current != null;
+        return this.next != null;
     }
 
     public T next() {
-        T oldCurrent = this.current;
-        setNext();
-        return oldCurrent;
+        return setNext();
     }
 
     public T peek() {
