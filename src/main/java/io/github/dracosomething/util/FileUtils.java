@@ -782,11 +782,10 @@ public class FileUtils {
             return;
         for (File file : directory.listFiles()) {
             if (file.isDirectory()) {
-                File newDir = new File(target, file.getName());
-                makeDir(newDir);
+                org.apache.commons.io.FileUtils.moveDirectory(file, target);
                 moveDirectoryContent(file, target, false);
             } else {
-                Files.move(file, target);
+                org.apache.commons.io.FileUtils.moveToDirectory(file, target, false);
             }
         }
         if (shouldRemoveDirectory) {
