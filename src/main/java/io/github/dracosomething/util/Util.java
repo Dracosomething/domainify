@@ -213,6 +213,15 @@ public class Util {
         return retVal;
     }
 
+    public static int convertIntegerArrayToNumber(Integer[] array) {
+        StringBuilder numberString = new StringBuilder();
+        for (Integer integer : array) {
+            numberString.append(integer);
+        }
+        int number = Integer.parseInt(numberString.toString());
+        return number;
+    }
+
     static {
         if (IS_WINDOWS) {
             IS_64_BIT = System.getenv("ProgramFiles(x86)") != null;

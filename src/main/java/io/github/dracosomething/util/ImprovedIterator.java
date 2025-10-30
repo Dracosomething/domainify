@@ -83,4 +83,9 @@ public class ImprovedIterator<T> implements Iterator<T> {
         }
         return this.current;
     }
+
+    public T updateThroughIndex(int index) {
+        this.currentIndex = index-1;
+        return next();
+    }
 }
