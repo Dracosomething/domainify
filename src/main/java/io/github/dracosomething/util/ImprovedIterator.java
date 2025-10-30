@@ -51,7 +51,7 @@ public class ImprovedIterator<T> implements Iterator<T> {
     }
 
     public boolean hasNext() {
-        return this.next != null;
+        return this.current != null;
     }
 
     public T next() {
