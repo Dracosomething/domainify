@@ -785,7 +785,7 @@ public class FileUtils {
             File newFile = new File(target, file.getName());
             if (file.isDirectory()) {
                 makeDir(newFile);
-                moveDirectoryContent(file, target, false);
+                moveDirectoryContent(newFile, target, false);
             } else {
                 if (newFile.exists()) continue;
                 org.apache.commons.io.FileUtils.moveToDirectory(file, target, false);
