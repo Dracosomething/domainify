@@ -95,6 +95,7 @@ public class FileUtils {
             list = list.stream().sorted(new VersionNameComparator(name, fileExtension)).toList();
             object = list.getLast();
         }
+        LOGGER.info("File selected: " + object.getProperty("href"));
         return object.getProperty("href");
     }
 
@@ -781,10 +782,12 @@ public class FileUtils {
         if (directory.listFiles() != null && directory.listFiles().length < 1)
             return;
         for (File file : directory.listFiles()) {
+            File newFile = new File(target, file.getName());
             if (file.isDirectory()) {
-                org.apache.commons.io.FileUtils.moveDirectory(file, target);
+                makeDir(newFile);
                 moveDirectoryContent(file, target, false);
             } else {
+                if (newFile.exists()) continue;
                 org.apache.commons.io.FileUtils.moveToDirectory(file, target, false);
             }
         }
