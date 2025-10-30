@@ -781,9 +781,12 @@ public class FileUtils {
         if (directory.listFiles() != null && directory.listFiles().length < 1)
             return;
         for (File file : directory.listFiles()) {
-            Files.move(file, target);
             if (file.isDirectory()) {
+                File newDir = new File(target, file.getName());
+                makeDir(newDir);
                 moveDirectoryContent(file, target, false);
+            } else {
+                Files.move(file, target);
             }
         }
         if (shouldRemoveDirectory) {

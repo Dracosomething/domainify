@@ -10,9 +10,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d7ab1385-168d-4e32-98b0-5e9c3c72e3a0" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/comparator/VersionComparator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/comparator/VersionComparator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/GeneralTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/GeneralTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/FileUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/FileUtils.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -144,7 +142,7 @@
     "Gradle.HTMLObjectParseTest.logger_test.executor": "Run",
     "Gradle.SourceForgeTest.parse_test.executor": "Run",
     "Gradle.domainify [:HTMLObjectParseTest.main()].executor": "Run",
-    "Gradle.domainify [:io.github.dracosomething.Main.main()].executor": "Run",
+    "Gradle.domainify [:io.github.dracosomething.Main.main()].executor": "Debug",
     "Gradle.domainify [:io.github.dracosomething.build.BuildLinux.main()].executor": "Run",
     "Gradle.domainify [buildSources].executor": "Run",
     "Gradle.domainify [tasks].executor": "Run",
@@ -405,8 +403,13 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/FileUtils.java</url>
-          <line>446</line>
-          <option name="timeStamp" value="510" />
+          <line>94</line>
+          <option name="timeStamp" value="525" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/FileUtils.java</url>
+          <line>95</line>
+          <option name="timeStamp" value="526" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-method">
           <url>jar://$USER_HOME$/AppData/Local/Programs/Eclipse Adoptium/jdk-21.0.4.7-hotspot/lib/src.zip!/java.base/java/util/stream/Stream.java</url>
