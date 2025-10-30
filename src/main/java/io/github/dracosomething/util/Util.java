@@ -201,6 +201,21 @@ public class Util {
         return builder.toString();
     }
 
+    public static String[] removeNullFromArray(String[] array) {
+        String[] retVal = new String[0];
+        ImprovedIterator<String> iterator = new ImprovedIterator<>(array);
+        int index = 0;
+        while (iterator.hasNext()) {
+            String item = iterator.next();
+            if (item != null) {
+                retVal = Arrays.copyOf(retVal, retVal.length+1);
+                retVal[index] = item;
+                index++;
+            }
+        }
+        return retVal;
+    }
+
     static {
         if (IS_WINDOWS) {
             IS_64_BIT = System.getenv("ProgramFiles(x86)") != null;

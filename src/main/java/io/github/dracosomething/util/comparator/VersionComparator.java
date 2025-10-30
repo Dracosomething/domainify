@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 public abstract class VersionComparator<T> implements Comparator<T> {
 //    private static final Integer DEFAULT_COMPARISON = 0;
-    private static final Pattern NUMBER_REGEX = Pattern.compile("(?<=[-_.\\\\/])(\\.?[0-9]+)+(?=[-_.\\\\/])");
+    private static final Pattern NUMBER_REGEX = Pattern.compile("(?<=[-_.\\\\/\\s])(\\.?[0-9]+)+(?=[-_.\\\\/\\s])");
     protected final String fileName;
     protected final String fileExtension;
 
@@ -26,12 +26,12 @@ public abstract class VersionComparator<T> implements Comparator<T> {
                 format(o2).replace(fileName, "").replace(fileExtension, ""));
         String[] versions1 = version1.split("\\.");
         String[] versions2 = version2.split("\\.");
+        versions1 = Util.removeNullFromArray(versions1);
+        versions2 = Util.removeNullFromArray(versions2);
         return compareNextNumbers(Util.parseStringArray(versions1), Util.parseStringArray(versions2));
     }
 
     private int compareNextNumbers(Integer[] versions1, Integer[] versions2) {
-//        if (versions1[0] == null || versions2[0] == null)
-//            return DEFAULT_COMPARISON.compareTo(0);
         if (versions1.length == 1 || versions2.length == 1)
             return versions2[0].compareTo(versions1[0]);
 

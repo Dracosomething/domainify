@@ -451,7 +451,7 @@ public class FileUtils {
         if (!phpVerDir.exists()) {
             phpVerDir.mkdir();
         }
-        if (shouldUpdate(phpDir, PHPVersion, phpName)) {
+        if (shouldUpdate(phpVerDir, PHPVersion, phpName)) {
             if (Util.IS_WINDOWS) {
                 File phpZip = downloadFileFromWeb("https://downloads.php.net/~windows/releases/archives", phpDir,
                         "php", ".zip", new String[]{"$!php-(\\.?[0-9]+)+-Win32-", "-x64"}, true);
@@ -584,7 +584,8 @@ public class FileUtils {
 //    }
 
     public static boolean shouldUpdate(File directory, String currentVersion, String latestVersion) {
-        return !Objects.equals(currentVersion, latestVersion) || directory.listFiles() == null;
+        if (directory.listFiles() == null || directory.listFiles().length < 1) return true;
+        return !Objects.equals(currentVersion, latestVersion);
     }
 
     public static boolean shouldUpdate(File directory, File current, String url) throws IOException {
