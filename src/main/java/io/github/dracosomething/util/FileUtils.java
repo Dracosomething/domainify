@@ -513,7 +513,7 @@ public class FileUtils {
 
     public static void setupGNU(BufferedWriter writer, String libtoolVersion, String autoconfVersion)
             throws IOException, ArchiveException {
-        final String autoconfURL = "https://mirror.dogado.de/gnu/autoconf";
+        final String autoconfURL = "https://mirror.dogado.de/gnu/autoconf/autoconf-latest.tar.gz";
         final String libtoolURL = "https://www.artfiles.org/gnu.org/libtool";
         final String gnuM4URL = "https://www.artfiles.org/gnu.org/m4/m4-latest.tar.gz";
 
@@ -524,8 +524,8 @@ public class FileUtils {
         makeDir(libtoolDir);
         makeDir(autoconfDir);
 
-        File current = new File(gnuM4Dir, "m4-latest.tar.gz");
-        if (shouldUpdate(gnuM4Dir, current, gnuM4URL)) {
+        File currentM4 = new File(gnuM4Dir, "m4-latest.tar.gz");
+        if (shouldUpdate(gnuM4Dir, currentM4, gnuM4URL)) {
             clearDirectory(gnuM4Dir);
             File gnuM4GZipped = downloadFileFromWeb(gnuM4URL, gnuM4Dir);
             File gnuM4TarBall = unGzip(gnuM4GZipped, gnuM4Dir);
@@ -538,18 +538,24 @@ public class FileUtils {
                     }
                 }
             }
-            File gnuM4 = unTar(gnuM4TarBall, gnuM4Dir, "");
+            File gnuM4 = unTar(gnuM4TarBall, gnuM4Dir, m4Name);
         }
 
-        String latestAutoconf = getFileNameFromWeb(URI.create(autoconfURL).toURL(), "autoconf",
-                ".tar.gz", null, true, true);
-        writer.append("autoconf version=").append(latestAutoconf);
-        if (shouldUpdate(autoconfDir, autoconfVersion, latestAutoconf)) {
+        File currentAutoconf = new File(autoconfDir, "autoconf-latest.tar.gz");
+        if (shouldUpdate(autoconfDir, currentAutoconf, autoconfURL)) {
             clearDirectory(autoconfDir);
-            File autoconfGZipped = downloadFileFromWeb(autoconfURL, autoconfDir, "autoconf",
-                    ".tar.gz", true);
-            File autoconfTarBall = unGzip(autoconfGZipped, autoconfDir);
-            File autoconf = unTar(autoconfTarBall, autoconfDir, latestAutoconf);
+            File autoconfGZipped = downloadFileFromWeb(autoconfURL, autoconfDir);
+            File autoconfTarball = unGzip(autoconfGZipped, autoconfDir);
+            String autoconfName = "";
+            if (autoconfDir.list() != null) {
+                for (String name : autoconfDir.list()) {
+                    if (name.matches("autoconf-([1-9]+\\.?){1,3}")) {
+                        autoconfName = name;
+                        break;
+                    }
+                }
+            }
+            File autoconf = unTar(autoconfTarball, autoconfDir, autoconfName);
         }
 
         String latestLibtool = getFileNameFromWeb(URI.create(libtoolURL).toURL(), "libtool",
