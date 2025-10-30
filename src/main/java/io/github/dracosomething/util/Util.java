@@ -158,20 +158,17 @@ public class Util {
 
         while (iterator.hasNext()) {
             String name = iterator.next();
-            if (iterator.peek() != null) {
-                StringBuilder builder = new StringBuilder();
+            if (iterator.hasNext()) {
                 char[] characters = name.toCharArray();
 
-                if (characters.length <= maxStringSize) {
-                    builder.append(characters);
-                    continue;
+                if (!(characters.length <= maxStringSize)) {
+                    StringBuilder builder = new StringBuilder();
+                    for (int i = 0; i < maxStringSize; i++) {
+                        char character = characters[i];
+                        builder.append(character);
+                    }
+                    name = builder.toString();
                 }
-
-                for (int i = 0; i < maxStringSize; i++) {
-                    char character = characters[i];
-                    builder.append(character);
-                }
-                name = builder.toString();
             }
             retVal.append(name);
             if (iterator.hasNext()) {

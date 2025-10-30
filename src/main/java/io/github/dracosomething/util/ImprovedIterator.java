@@ -12,11 +12,11 @@ public class ImprovedIterator<T> implements Iterator<T> {
     protected T previous;
     protected T current;
     protected T next;
-    protected int currentIndex;
+    protected int currentIndex = 0;
+    protected boolean valueReady = false;
 
     public ImprovedIterator(T[] array) {
         this.array = array;
-        this.currentIndex = 0;
         this.previous = null;
         this.current = array[currentIndex];
         if (this.currentIndex+1 == this.array.length) {
@@ -39,25 +39,25 @@ public class ImprovedIterator<T> implements Iterator<T> {
         return new ImprovedIterator<>(toUse);
     }
 
-    protected T setNext() {
+    protected void setNext() {
         this.previous = this.current;
         this.currentIndex++;
-        T result = this.current;
         this.current = this.next;
         if (this.currentIndex+1 >= this.array.length) {
             this.next = null;
         } else {
             this.next = this.array[this.currentIndex+1];
         }
-        return result;
     }
 
     public boolean hasNext() {
-        return this.next != null;
+        return this.current != null;
     }
 
     public T next() {
-        return setNext();
+        T result = this.current;
+        setNext();
+        return result;
     }
 
     public T peek() {
