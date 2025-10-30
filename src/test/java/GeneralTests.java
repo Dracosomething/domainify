@@ -1,8 +1,12 @@
+import io.github.dracosomething.util.FileUtils;
 import io.github.dracosomething.util.HTMLObject;
 import io.github.dracosomething.util.Logger;
 import io.github.dracosomething.util.comparator.VersionStringComparator;
 import org.junit.jupiter.api.Test;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.stream.Stream;
 

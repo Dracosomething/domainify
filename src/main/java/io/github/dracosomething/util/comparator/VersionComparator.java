@@ -14,7 +14,7 @@ public abstract class VersionComparator<T> implements Comparator<T> {
     private static final int EQUAL = 0;
     private static final int LOWER = -1;
     private static final int HIGHER = 1;
-    private static final Pattern NUMBER_REGEX = Pattern.compile("(?<=[-_.\\\\/\\s\\na-zA-Z]|^)(\\.?[0-9]+)+(?=[-_.\\\\/\\s\\na-zA-Z]|$)");
+    private static final Pattern NUMBER_REGEX = Pattern.compile("(?<=[-_.\\\\/\\s\\n]|^)(\\.?[0-9]+)+(?=[-_.\\\\/\\s\\n]|$)");
     protected final String fileName;
     protected final String fileExtension;
 

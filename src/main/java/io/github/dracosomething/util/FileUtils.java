@@ -93,7 +93,7 @@ public class FileUtils {
         HTMLObject object = list.getFirst();
         if (shouldFilter) {
             list = list.stream().sorted(new VersionNameComparator(name, fileExtension)).toList();
-            object = list.getFirst();
+            object = list.getLast();
         }
         return object.getProperty("href");
     }
@@ -486,6 +486,7 @@ public class FileUtils {
         String latestVersion = getFileNameFromWeb(URI.create("https://archive.mariadb.org").toURL(),
                 "mariadb", "", new String[]{"$!mariadb-(\\.?[0-9]+)+\\/"}, true);
         writer.append("sql version=").append(latestVersion);
+        LOGGER.info("Latest mariadb version: " + latestVersion);
         if (shouldUpdate(serverDir, mySQLVersion, latestVersion)) {
             clearDirectory(serverDir);
             URL url = URI.create("https://archive.mariadb.org/" + latestVersion).toURL();
