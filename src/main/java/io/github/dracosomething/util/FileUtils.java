@@ -340,7 +340,6 @@ public class FileUtils {
             throws IOException, ArchiveException {
         if (SystemUtils.IS_OS_LINUX || SystemUtils.IS_OS_MAC) {
             final File srcLib = new File(apacheDir, "srcLib");
-            makeDir(srcLib);
 
             final String aprURL = "https://dlcdn.apache.org//apr";
             final String aprUtilURL = "https://dlcdn.apache.org//apr";
