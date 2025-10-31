@@ -10,6 +10,10 @@ import java.io.IOException;
 public class LinuxTests {
     @Test
     public void gnu_setup_test() throws IOException, ArchiveException {
-        FileUtils.setupGNU();
+        String[] data = FileUtils.extractData();
+        final int libTool = 6;
+        String libtoolVersion = data[libTool];
+        BufferedWriter writer = new BufferedWriter(new FileWriter(FileUtils.DATA));
+        FileUtils.setupGNU(writer, libtoolVersion);
     }
 }

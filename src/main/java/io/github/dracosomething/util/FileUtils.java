@@ -351,6 +351,7 @@ public class FileUtils {
             final int PCRE = 5;
             final int libxml = 6;
             final int libsqlite = 7;
+            final int libTool = 8;
             String aprVersion = data[apr];
             String aprUtilVersion = data[aprUtil];
             String PCREVersion = data[PCRE];
@@ -358,12 +359,14 @@ public class FileUtils {
             // get https://sqlite.org/$CURRENT_YEAR/
             String libxmlVersion = data[libxml];
             String libsqliteVersion = data[libsqlite];
+            String libtoolVersion = data[libTool];
 
-            setupGNU();
+            setupGNU(writer, libtoolVersion);
             setupAPR(writer, srcLib, aprVersion, aprUtilVersion);
 
             Console console = new Console();
             console.directory(apacheDir);
+            console.runCommand("chmod +x ./configure");
             console.runCommand("./configure --prefix=apache");
             console.runCommand("make");
             console.runCommand("make install");
@@ -375,12 +378,22 @@ public class FileUtils {
                     LOGGER.error("Encountered an error when configure Apache httpd.", e);
                 }
             });
+
+            /*
+            File config = new File(phpDir, "config");
+            config.mkdir();
+
+            Console console = new Console();
+            console.directory(phpDir);
+            console.runCommand("./configure --with-config-file-path=../config/");
+            console.runCommand("make");
+             */
         }
     }
 
     public static String[] extractData() throws IOException {
         LOGGER.info("Extracting data from data.txt file.");
-        String[] result = new String[8];
+        String[] result = new String[9];
         BufferedReader reader = new BufferedReader(new FileReader(DATA));
         String str;
 
@@ -403,6 +416,7 @@ public class FileUtils {
                 case "PCRE version" -> result[5] = value;
                 case "libxml version" -> result[6] = value;
                 case "libsqlite version" -> result[7] = value;
+                case "libtool version" -> result[8] = value;
             }
             LOGGER.info("Extracted key and value and stored them in the result array.");
         }
@@ -470,14 +484,6 @@ public class FileUtils {
                     File phpGzipped = optional.get();
                     File phpTar = unGzip(phpGzipped, phpDir);
                     File php = unTar(phpTar, phpDir);
-
-                    File config = new File(phpDir, "config");
-                    config.mkdir();
-
-                    Console console = new Console();
-                    console.directory(phpDir);
-                    console.runCommand("./configure --with-config-file-path=/config/");
-                    console.runCommand("make");
                 }
             }
             LOGGER.info("PHP installed...");
@@ -516,14 +522,17 @@ public class FileUtils {
         }
     }
 
-    public static void setupGNU()
+    public static void setupGNU(BufferedWriter writer, String libtoolVersion)
             throws IOException, ArchiveException {
         final String autoconfURL = "https://mirror.dogado.de/gnu/autoconf/autoconf-latest.tar.gz";
         final String gnuM4URL = "https://www.artfiles.org/gnu.org/m4/m4-latest.tar.gz";
+        final String libtoolURL = "https://www.artfiles.org/gnu.org/libtool";
 
         final File gnuM4Dir = new File(PROJECT, "gnu-m4");
+        final File libtoolDir = new File(PROJECT, "libtool");
         final File autoconfDir = new File(PROJECT, "autoconf");
         makeDir(gnuM4Dir);
+        makeDir(libtoolDir);
         makeDir(autoconfDir);
 
         File currentM4 = new File(gnuM4Dir, "m4-latest.tar.gz");
@@ -563,6 +572,17 @@ public class FileUtils {
             File directory = new File(autoconfDir, autoconfName);
             moveDirectoryContent(directory, autoconfDir, true);
         }
+
+        String latestLibtool = getFileNameFromWeb(URI.create(libtoolURL).toURL(), "libtool",
+                ".tar.gz", null, true, true);
+        writer.append("libtool version=").append(latestLibtool).append("\n");
+        if (shouldUpdate(libtoolDir, libtoolVersion, latestLibtool)) {
+            clearDirectory(libtoolDir);
+            File libtoolGZipped = downloadFileFromWeb(libtoolURL, libtoolDir, "libtool", ".tar.gz",
+                    true);
+            File libtoolTarBall = unGzip(libtoolGZipped, libtoolDir);
+            File libtool = unTar(libtoolTarBall, libtoolDir, latestLibtool);
+        }
     }
 
     public static void setupAPR(BufferedWriter writer, File directory, String versionAPR, String versionUtil)
@@ -577,8 +597,9 @@ public class FileUtils {
                 true, true);
         String latestUtilVersion = getFileNameFromWeb(URI.create("https://dlcdn.apache.org//apr").toURL(),
                 "apr-util", ".tar.gz", new String[]{"TGZ"}, true, true);
-        writer.append(latestAPRVersion).append("\n");
-        writer.append(latestUtilVersion).append("\n");
+        writer.append("apr version=").append(latestAPRVersion).append("\n");
+        writer.append("apr-util version=").append(latestUtilVersion).append("\n");
+        Console console;
         if (shouldUpdate(aprDirectory, versionAPR, latestAPRVersion)) {
             clearDirectory(aprDirectory);
             File aprGZipped = downloadFileFromWeb("https://dlcdn.apache.org//apr", aprDirectory,
@@ -586,6 +607,8 @@ public class FileUtils {
                     true);
             File aprTarBall = unGzip(aprGZipped, aprDirectory);
             File apr = unTar(aprTarBall, aprDirectory);
+            console = new Console();
+            console.runCommand("chmod +x ./configure");
         }
         if (shouldUpdate(aprUtilDirectory, versionUtil, latestUtilVersion)) {
             clearDirectory(aprUtilDirectory);
