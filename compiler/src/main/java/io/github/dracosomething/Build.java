@@ -1,6 +1,6 @@
-package io.github.dracosomething.build;
+package io.github.dracosomething;
 
-import io.github.dracosomething.build.linux.BuildLinux;
+import io.github.dracosomething.linux.BuildLinux;
 import io.github.dracosomething.util.FileUtils;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;

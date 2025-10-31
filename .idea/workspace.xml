@@ -10,9 +10,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d7ab1385-168d-4e32-98b0-5e9c3c72e3a0" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/compiler/build.gradle.kts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/compiler/src/main/java/io/github/dracosomething/macOS/BuildMac.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/compiler/src/main/java/io/github/dracosomething/windows/BuildWindows.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/project/src/main/java/io/github/dracosomething/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/FileUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/FileUtils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/LinuxTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/LinuxTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/settings.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/settings.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/build/Build.java" beforeDir="false" afterPath="$PROJECT_DIR$/compiler/src/main/java/io/github/dracosomething/Build.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/build/linux/BuildLinux.java" beforeDir="false" afterPath="$PROJECT_DIR$/compiler/src/main/java/io/github/dracosomething/linux/BuildLinux.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/build/macOS/BuildMac.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/build/windows/BuildWindows.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -134,35 +143,36 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.run.executor&quot;: &quot;Run&quot;,
-    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
-    &quot;Gradle.Build domainify.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.GeneralTests.version_comparator_test.executor&quot;: &quot;Debug&quot;,
-    &quot;Gradle.HTMLObjectParseTest.HTMLObject_parse_test.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.HTMLObjectParseTest.logger_test.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.SourceForgeTest.parse_test.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.domainify [:HTMLObjectParseTest.main()].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.domainify [:io.github.dracosomething.Main.main()].executor&quot;: &quot;Debug&quot;,
-    &quot;Gradle.domainify [:io.github.dracosomething.build.BuildLinux.main()].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.domainify [buildSources].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.domainify [tasks].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.regexTest.string_matches_regex_version.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/alias/Documents/school/schooljaar2025-2026/periode1/XPerience/profielen/fullstack/domainify/src/main/resources/META-INF/MANIFEST.MF&quot;,
-    &quot;onboarding.tips.debug.path&quot;: &quot;C:/Users/alias/Documents/school/schooljaar2025-2026/periode1/XPerience/profielen/fullstack/domainify/linuxBuild/src/main/java/io/github/dracosomething/Main.java&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Artifacts&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.intentionPowerPack&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.run.executor": "Run",
+    "DefaultHtmlFileTemplate": "HTML File",
+    "Gradle.Build domainify.executor": "Run",
+    "Gradle.GeneralTests.version_comparator_test.executor": "Debug",
+    "Gradle.HTMLObjectParseTest.HTMLObject_parse_test.executor": "Run",
+    "Gradle.HTMLObjectParseTest.logger_test.executor": "Run",
+    "Gradle.SourceForgeTest.parse_test.executor": "Run",
+    "Gradle.domainify [:HTMLObjectParseTest.main()].executor": "Run",
+    "Gradle.domainify [:io.github.dracosomething.Main.main()].executor": "Debug",
+    "Gradle.domainify [:io.github.dracosomething.build.BuildLinux.main()].executor": "Run",
+    "Gradle.domainify [buildSources].executor": "Run",
+    "Gradle.domainify [tasks].executor": "Run",
+    "Gradle.regexTest.string_matches_regex_version.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "master",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/alias/Documents/school/schooljaar2025-2026/periode1/XPerience/profielen/fullstack/domainify/src",
+    "onboarding.tips.debug.path": "C:/Users/alias/Documents/school/schooljaar2025-2026/periode1/XPerience/profielen/fullstack/domainify/project/src/main/java/io/github/dracosomething/Main.java",
+    "project.structure.last.edited": "Artifacts",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "preferences.intentionPowerPack"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\alias\Documents\school\schooljaar2025-2026\periode1\XPerience\profielen\fullstack\domainify\src" />
       <recent name="C:\Users\alias\Documents\school\schooljaar2025-2026\periode1\XPerience\profielen\fullstack\domainify\src\main\resources" />
     </key>
     <key name="MoveMembersDialog.RECENTS_KEY">
@@ -172,11 +182,11 @@
       <recent name="io.github.dracosomething.Util" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\alias\Documents\school\schooljaar2025-2026\periode1\XPerience\profielen\fullstack\domainify\project" />
       <recent name="C:\Users\alias\Documents\school\schooljaar2025-2026\periode1\XPerience\profielen\fullstack\domainify\src\main\java\io\github\dracosomething\util" />
       <recent name="C:\Users\alias\Documents\school\schooljaar2025-2026\periode1\XPerience\profielen\fullstack\domainify\src\main\resources\files" />
       <recent name="C:\Users\alias\Documents\school\schooljaar2025-2026\periode1\XPerience\profielen\fullstack\domainify\src\main\resources" />
       <recent name="C:\Users\alias\Documents\school\schooljaar2025-2026\periode1\XPerience\profielen\fullstack\domainify\src\main\java\org\apache\commons" />
-      <recent name="C:\Users\alias\Documents\school\schooljaar2025-2026\periode1\XPerience\profielen\fullstack\domainify\src\main\java" />
     </key>
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
       <recent name="" />
@@ -188,11 +198,11 @@
   </component>
   <component name="RunManager" selected="Application.run">
     <configuration name="BuildLinux" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="io.github.dracosomething.build.linux.BuildLinux" />
+      <option name="MAIN_CLASS_NAME" value="io.github.dracosomething.linux.BuildLinux" />
       <module name="domainify.main" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="io.github.dracosomething.build.linux.*" />
+          <option name="PATTERN" value="io.github.dracosomething.linux.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>

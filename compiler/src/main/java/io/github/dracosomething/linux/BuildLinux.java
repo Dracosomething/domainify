@@ -1,6 +1,6 @@
-package io.github.dracosomething.build.linux;
+package io.github.dracosomething.linux;
 
-import io.github.dracosomething.build.Build;
+import io.github.dracosomething.Build;
 import io.github.dracosomething.util.Console;
 
 import java.io.*;
