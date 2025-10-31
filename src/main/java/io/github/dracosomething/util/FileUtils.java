@@ -77,6 +77,7 @@ public class FileUtils {
         }
 
         while ((str = in.readLine()) != null) {
+            if (str.contains(".sig") && !fileExtension.contains(".sig")) continue;
             if (!str.contains(name)) continue;
             if (extraData != null && !str.matches(regex)) continue;
             if (str.contains(fileExtension)) {
