@@ -1,7 +1,5 @@
 package io.github.dracosomething.util;
 
-import com.gargoylesoftware.htmlunit.javascript.host.intl.DateTimeFormat;
-import com.google.common.io.Files;
 import io.github.dracosomething.util.comparator.VersionNameComparator;
 import io.github.dracosomething.util.comparator.VersionStringComparator;
 import org.apache.commons.compress.archivers.ArchiveException;
@@ -12,7 +10,6 @@ import org.apache.commons.io.FileExistsException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SystemUtils;
 
-import javax.swing.text.DateFormatter;
 import java.io.*;
 import java.lang.reflect.Method;
 import java.net.*;
@@ -21,10 +18,8 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.util.*;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
@@ -304,7 +299,7 @@ public class FileUtils {
         final int apache = 0;
         final int PHP = 1;
         final int mySQL = 2;
-        String[] data = extractData();
+        String[] data = extractVersionData();
         String apacheVer = data[apache];
         String PHPVersion = data[PHP];
         String mySQLVersion = data[mySQL];
@@ -391,7 +386,7 @@ public class FileUtils {
         }
     }
 
-    public static String[] extractData() throws IOException {
+    public static String[] extractVersionData() throws IOException {
         LOGGER.info("Extracting data from data.txt file.");
         String[] result = new String[9];
         BufferedReader reader = new BufferedReader(new FileReader(DATA));
@@ -609,6 +604,8 @@ public class FileUtils {
             File apr = unTar(aprTarBall, aprDirectory, latestAPRVersion);
             console = new Console();
             console.runCommand("chmod +x ./configure");
+            console.runCommand("./configure");
+            console.runCommand("make");
         }
         if (shouldUpdate(aprUtilDirectory, versionUtil, latestUtilVersion)) {
             clearDirectory(aprUtilDirectory);
@@ -616,6 +613,10 @@ public class FileUtils {
                     "apr-util", ".tar.gz", new String[]{"TGZ"}, true);
             File utilTarball = unGzip(utilGZipped, aprUtilDirectory);
             File util = unTar(utilTarball, aprUtilDirectory, latestUtilVersion);
+            console = new Console();
+            console.runCommand("chmod +x ./configure");
+            console.runCommand("./configure");
+            console.runCommand("make");
         }
     }
     

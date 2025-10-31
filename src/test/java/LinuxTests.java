@@ -3,14 +3,13 @@ import org.apache.commons.compress.archivers.ArchiveException;
 import org.junit.jupiter.api.Test;
 
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
 public class LinuxTests {
     @Test
     public void gnu_setup_test() throws IOException, ArchiveException {
-        String[] data = FileUtils.extractData();
+        String[] data = FileUtils.extractVersionData();
         final int libTool = 6;
         String libtoolVersion = data[libTool];
         BufferedWriter writer = new BufferedWriter(new FileWriter(FileUtils.DATA));

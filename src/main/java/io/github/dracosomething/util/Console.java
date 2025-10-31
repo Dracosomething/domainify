@@ -12,6 +12,7 @@ import static io.github.dracosomething.Main.LOGGER;
 public class Console extends Thread {
     private static final AtomicInteger INDEX = new AtomicInteger(0);
     private boolean isActive = false;
+    private boolean onSeparateThread = false;
     private int exitCode = -1;
     private ProcessBuilder builder;
     private Process currentActive;
@@ -46,6 +47,10 @@ public class Console extends Thread {
         INDEX.getAndIncrement();
     }
 
+    public void separateThread() {
+        onSeparateThread = true;
+    }
+
     public void directory(File dir) {
         this.directory = dir;
         this.builder.directory(dir);
@@ -74,7 +79,11 @@ public class Console extends Thread {
         try {
             currentActive = this.builder.start();
             isActive = true;
-            this.start();
+            if (!onSeparateThread) {
+                this.start();
+            } else {
+                executeCommands();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -95,9 +104,7 @@ public class Console extends Thread {
         }
     }
 
-    @Override
-    public void run() {
-        super.run();
+    private void executeCommands() {
         try {
             exitCode = currentActive.waitFor();
         } catch (InterruptedException e) {
@@ -119,5 +126,11 @@ public class Console extends Thread {
                 this.runCommand(command);
             }
         }
+    }
+
+    @Override
+    public void run() {
+        super.run();
+        executeCommands();
     }
 }
