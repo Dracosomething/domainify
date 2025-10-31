@@ -606,7 +606,7 @@ public class FileUtils {
                     "apr", ".tar.gz", new String[]{"TGZ", "apr-(?!util).*", "apr-(?!iconv).*"},
                     true);
             File aprTarBall = unGzip(aprGZipped, aprDirectory);
-            File apr = unTar(aprTarBall, aprDirectory);
+            File apr = unTar(aprTarBall, aprDirectory, latestAPRVersion);
             console = new Console();
             console.runCommand("chmod +x ./configure");
         }
@@ -615,7 +615,7 @@ public class FileUtils {
             File utilGZipped = downloadFileFromWeb("https://dlcdn.apache.org//apr", aprUtilDirectory,
                     "apr-util", ".tar.gz", new String[]{"TGZ"}, true);
             File utilTarball = unGzip(utilGZipped, aprUtilDirectory);
-            File util = unTar(utilTarball, aprUtilDirectory);
+            File util = unTar(utilTarball, aprUtilDirectory, latestUtilVersion);
         }
     }
     
