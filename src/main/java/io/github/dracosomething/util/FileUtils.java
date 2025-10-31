@@ -349,16 +349,18 @@ public class FileUtils {
             final int apr = 3;
             final int aprUtil = 4;
             final int PCRE = 5;
-            final int libTool = 6;
-            final int autoconf = 7;
+            final int libxml = 6;
+            final int libsqlite = 7;
             String aprVersion = data[apr];
             String aprUtilVersion = data[aprUtil];
             String PCREVersion = data[PCRE];
-            // GNU versions
-            String libtoolVersion = data[libTool];
-            String autoconfVersion = data[autoconf];
+            // get http://xmlsoft.org/sources/
+            // get https://sqlite.org/$CURRENT_YEAR/
+            String libxmlVersion = data[libxml];
+            String libsqliteVersion = data[libsqlite];
 
-            setupGNU(writer, libtoolVersion, autoconfVersion);
+            setupGNU();
+            setupAPR(writer, srcLib, aprVersion, aprUtilVersion);
 
             Console console = new Console();
             console.directory(apacheDir);
@@ -399,8 +401,8 @@ public class FileUtils {
                 case "apr version" -> result[3] = value;
                 case "apr-util version" -> result[4] = value;
                 case "PCRE version" -> result[5] = value;
-                case "libtool version" -> result[6] = value;
-                case "autoconf version" -> result[7] = value;
+                case "libxml version" -> result[6] = value;
+                case "libsqlite version" -> result[7] = value;
             }
             LOGGER.info("Extracted key and value and stored them in the result array.");
         }
@@ -514,17 +516,14 @@ public class FileUtils {
         }
     }
 
-    public static void setupGNU(BufferedWriter writer, String libtoolVersion, String autoconfVersion)
+    public static void setupGNU()
             throws IOException, ArchiveException {
         final String autoconfURL = "https://mirror.dogado.de/gnu/autoconf/autoconf-latest.tar.gz";
-        final String libtoolURL = "https://www.artfiles.org/gnu.org/libtool";
         final String gnuM4URL = "https://www.artfiles.org/gnu.org/m4/m4-latest.tar.gz";
 
         final File gnuM4Dir = new File(PROJECT, "gnu-m4");
-        final File libtoolDir = new File(PROJECT, "libtool");
         final File autoconfDir = new File(PROJECT, "autoconf");
         makeDir(gnuM4Dir);
-        makeDir(libtoolDir);
         makeDir(autoconfDir);
 
         File currentM4 = new File(gnuM4Dir, "m4-latest.tar.gz");
@@ -564,38 +563,39 @@ public class FileUtils {
             File directory = new File(autoconfDir, autoconfName);
             moveDirectoryContent(directory, autoconfDir, true);
         }
-
-        String latestLibtool = getFileNameFromWeb(URI.create(libtoolURL).toURL(), "libtool",
-                ".tar.gz", null, true, true);
-        if (shouldUpdate(libtoolDir, libtoolVersion, latestLibtool)) {
-            clearDirectory(libtoolDir);
-            File libtoolGZipped = downloadFileFromWeb(libtoolURL, libtoolDir, "libtool", ".tar.gz",
-                    true);
-            File libtoolTarBall = unGzip(libtoolGZipped, libtoolDir);
-            File libtool = unTar(libtoolTarBall, libtoolDir, latestLibtool);
-        }
     }
 
-//    public static void setupAPR(BufferedWriter writer, File directory, String versionAPR, String versionUtil)
-//            throws IOException, ArchiveException {
-//        File aprDirectory = new File(directory, "apr");
-//        File aprUtilDirectory = new File(directory, "apr-util");
-//
-//        String latestAPRVersion = getFileNameFromWeb(URI.create("https://dlcdn.apache.org//apr").toURL(),
-//                "apr", ".tar.gz", new String[]{"TGZ", "apr-(?!util).*", "apr-(?!iconv).*"},
-//                true, true);
-//        String latestUtilVersion = getFileNameFromWeb(URI.create("https://dlcdn.apache.org//apr").toURL(),
-//                "apr-util", ".tar.gz", new String[]{"TGZ"}, true, true);
-//        if (shouldUpdate(aprDirectory, versionAPR, latestAPRVersion)) {
-//            clearDirectory(aprDirectory);
-//            File aprGZipped = downloadFileFromWeb("https://dlcdn.apache.org//apr", aprDirectory,
-//                    "apr", ".tar.gz", new String[]{"TGZ", "apr-(?!util).*", "apr-(?!iconv).*"},
-//                    true);
-//            File aprTarBall = unGzip(aprGZipped, aprDirectory);
-//            File apr = unTar(aprTarBall, aprDirectory);
-//        }
-//    }
+    public static void setupAPR(BufferedWriter writer, File directory, String versionAPR, String versionUtil)
+            throws IOException, ArchiveException {
+        File aprDirectory = new File(directory, "apr");
+        File aprUtilDirectory = new File(directory, "apr-util");
+        makeDir(aprDirectory);
+        makeDir(aprUtilDirectory);
 
+        String latestAPRVersion = getFileNameFromWeb(URI.create("https://dlcdn.apache.org//apr").toURL(),
+                "apr", ".tar.gz", new String[]{"TGZ", "apr-(?!util).*", "apr-(?!iconv).*"},
+                true, true);
+        String latestUtilVersion = getFileNameFromWeb(URI.create("https://dlcdn.apache.org//apr").toURL(),
+                "apr-util", ".tar.gz", new String[]{"TGZ"}, true, true);
+        writer.append(latestAPRVersion).append("\n");
+        writer.append(latestUtilVersion).append("\n");
+        if (shouldUpdate(aprDirectory, versionAPR, latestAPRVersion)) {
+            clearDirectory(aprDirectory);
+            File aprGZipped = downloadFileFromWeb("https://dlcdn.apache.org//apr", aprDirectory,
+                    "apr", ".tar.gz", new String[]{"TGZ", "apr-(?!util).*", "apr-(?!iconv).*"},
+                    true);
+            File aprTarBall = unGzip(aprGZipped, aprDirectory);
+            File apr = unTar(aprTarBall, aprDirectory);
+        }
+        if (shouldUpdate(aprUtilDirectory, versionUtil, latestUtilVersion)) {
+            clearDirectory(aprUtilDirectory);
+            File utilGZipped = downloadFileFromWeb("https://dlcdn.apache.org//apr", aprUtilDirectory,
+                    "apr-util", ".tar.gz", new String[]{"TGZ"}, true);
+            File utilTarball = unGzip(utilGZipped, aprUtilDirectory);
+            File util = unTar(utilTarball, aprUtilDirectory);
+        }
+    }
+    
     public static boolean shouldUpdate(File directory, String currentVersion, String latestVersion) {
         if (directory.listFiles() == null || directory.listFiles().length < 1) return true;
         return !Objects.equals(currentVersion, latestVersion);
@@ -785,7 +785,8 @@ public class FileUtils {
             File newFile = new File(target, file.getName());
             if (file.isDirectory()) {
                 makeDir(newFile);
-                moveDirectoryContent(file, target, false);
+                if (newFile.exists()) continue;
+                org.apache.commons.io.FileUtils.moveDirectoryToDirectory(newFile, target, false);
             } else {
                 if (newFile.exists()) continue;
                 org.apache.commons.io.FileUtils.moveToDirectory(file, target, false);
