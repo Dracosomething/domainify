@@ -13,6 +13,12 @@ public class Main {
     public static final Logger LOGGER = Logger.getLogger();
 
     public static void main(String[] args) {
+        // https://httpd.apache.org/docs/current/mod/mod_dbd.html
+        // for use of apache with sql
+        // https://www.php.net/manual/en/install.unix.apache2.php
+        // apache + php docs
+        // https://docs.gradle.org/current/userguide/multi_project_builds.html
+        // read for multiproject, add phpMyAdmin download, add default web page.
         // add build-linux module that will build the project for linux.
         // use https://developer.apple.com/library/archive/documentation/Java/Conceptual/Jar_Bundler/Introduction/Introduction.html#//apple_ref/doc/uid/TP40000884
         // for mac os
