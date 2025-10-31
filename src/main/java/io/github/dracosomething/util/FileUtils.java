@@ -586,7 +586,7 @@ public class FileUtils {
         File aprUtilDirectory = new File(directory, "apr-util");
         makeDir(aprDirectory);
         makeDir(aprUtilDirectory);
-
+// https://www.linuxfromscratch.org/blfs/view/svn/general/apr.html for more info on building
         String latestAPRVersion = getFileNameFromWeb(URI.create("https://dlcdn.apache.org//apr").toURL(),
                 "apr", ".tar.gz", new String[]{"TGZ", "apr-(?!util).*", "apr-(?!iconv).*"},
                 true, true);
