@@ -9,6 +9,7 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.io.FileExistsException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.openqa.selenium.WebElement;
 
 import java.io.*;
 import java.lang.reflect.Method;
@@ -335,18 +336,13 @@ public class FileUtils {
     public static void setupUnix(BufferedWriter writer, String[] data, File apacheDir)
             throws IOException, ArchiveException {
         if (SystemUtils.IS_OS_LINUX || SystemUtils.IS_OS_MAC) {
-            final File srcLib = new File(apacheDir, "srcLib");
-
-            final String aprURL = "https://dlcdn.apache.org//apr";
-            final String aprUtilURL = "https://dlcdn.apache.org//apr";
-            final String PCREURL = "https://github.com/PCRE2Project/pcre2/releases";
+            final File srcLib = new File(apacheDir, "srclib");
 
             final int apr = 3;
             final int aprUtil = 4;
             final int PCRE = 5;
             final int libxml = 6;
             final int libsqlite = 7;
-            final int libTool = 8;
             String aprVersion = data[apr];
             String aprUtilVersion = data[aprUtil];
             String PCREVersion = data[PCRE];
@@ -354,15 +350,13 @@ public class FileUtils {
             // get https://sqlite.org/$CURRENT_YEAR/
             String libxmlVersion = data[libxml];
             String libsqliteVersion = data[libsqlite];
-            String libtoolVersion = data[libTool];
 
-            setupGNU(writer, libtoolVersion);
             setupAPR(writer, srcLib, aprVersion, aprUtilVersion);
 
             Console console = new Console();
             console.directory(apacheDir);
             console.runCommand("chmod +x ./configure");
-            console.runCommand("./configure --prefix=apache");
+            console.runCommand("./configure --prefix=apache --with-included-apr");
             console.runCommand("make");
             console.runCommand("make install");
             console.schedule((console1) -> {
@@ -411,7 +405,6 @@ public class FileUtils {
                 case "PCRE version" -> result[5] = value;
                 case "libxml version" -> result[6] = value;
                 case "libsqlite version" -> result[7] = value;
-                case "libtool version" -> result[8] = value;
             }
             LOGGER.info("Extracted key and value and stored them in the result array.");
         }
@@ -517,69 +510,6 @@ public class FileUtils {
         }
     }
 
-    public static void setupGNU(BufferedWriter writer, String libtoolVersion)
-            throws IOException, ArchiveException {
-        final String autoconfURL = "https://mirror.dogado.de/gnu/autoconf/autoconf-latest.tar.gz";
-        final String gnuM4URL = "https://www.artfiles.org/gnu.org/m4/m4-latest.tar.gz";
-        final String libtoolURL = "https://www.artfiles.org/gnu.org/libtool";
-
-        final File gnuM4Dir = new File(PROJECT, "gnu-m4");
-        final File libtoolDir = new File(PROJECT, "libtool");
-        final File autoconfDir = new File(PROJECT, "autoconf");
-        makeDir(gnuM4Dir);
-        makeDir(libtoolDir);
-        makeDir(autoconfDir);
-
-        File currentM4 = new File(gnuM4Dir, "m4-latest.tar.gz");
-        if (shouldUpdate(gnuM4Dir, currentM4, gnuM4URL)) {
-            clearDirectory(gnuM4Dir);
-            File gnuM4GZipped = downloadFileFromWeb(gnuM4URL, gnuM4Dir);
-            File gnuM4TarBall = unGzip(gnuM4GZipped, gnuM4Dir);
-            File gnuM4 = unTar(gnuM4TarBall, gnuM4Dir);
-            String m4Name = "";
-            if (gnuM4Dir.list() != null) {
-                for (String name : gnuM4Dir.list()) {
-                    if (name.matches("m4-([1-9]+\\.?){1,3}")) {
-                        m4Name = name;
-                        break;
-                    }
-                }
-            }
-            File directory = new File(gnuM4Dir, m4Name);
-            moveDirectoryContent(directory, gnuM4Dir, true);
-        }
-
-        File currentAutoconf = new File(autoconfDir, "autoconf-latest.tar.gz");
-        if (shouldUpdate(autoconfDir, currentAutoconf, autoconfURL)) {
-            clearDirectory(autoconfDir);
-            File autoconfGZipped = downloadFileFromWeb(autoconfURL, autoconfDir);
-            File autoconfTarball = unGzip(autoconfGZipped, autoconfDir);
-            File autoconf = unTar(autoconfTarball, autoconfDir);
-            String autoconfName = "";
-            if (autoconfDir.list() != null) {
-                for (String name : autoconfDir.list()) {
-                    if (name.matches("autoconf-([1-9]+\\.?){1,3}")) {
-                        autoconfName = name;
-                        break;
-                    }
-                }
-            }
-            File directory = new File(autoconfDir, autoconfName);
-            moveDirectoryContent(directory, autoconfDir, true);
-        }
-
-        String latestLibtool = getFileNameFromWeb(URI.create(libtoolURL).toURL(), "libtool",
-                ".tar.gz", null, true, true);
-        writer.append("libtool version=").append(latestLibtool).append("\n");
-        if (shouldUpdate(libtoolDir, libtoolVersion, latestLibtool)) {
-            clearDirectory(libtoolDir);
-            File libtoolGZipped = downloadFileFromWeb(libtoolURL, libtoolDir, "libtool", ".tar.gz",
-                    true);
-            File libtoolTarBall = unGzip(libtoolGZipped, libtoolDir);
-            File libtool = unTar(libtoolTarBall, libtoolDir, latestLibtool);
-        }
-    }
-
     public static void setupAPR(BufferedWriter writer, File directory, String versionAPR, String versionUtil)
             throws IOException, ArchiveException {
         File aprDirectory = new File(directory, "apr");
@@ -594,7 +524,6 @@ public class FileUtils {
                 "apr-util", ".tar.gz", new String[]{"TGZ"}, true, true);
         writer.append("apr version=").append(latestAPRVersion).append("\n");
         writer.append("apr-util version=").append(latestUtilVersion).append("\n");
-        Console console;
         if (shouldUpdate(aprDirectory, versionAPR, latestAPRVersion)) {
             clearDirectory(aprDirectory);
             File aprGZipped = downloadFileFromWeb("https://dlcdn.apache.org//apr", aprDirectory,
@@ -602,10 +531,6 @@ public class FileUtils {
                     true);
             File aprTarBall = unGzip(aprGZipped, aprDirectory);
             File apr = unTar(aprTarBall, aprDirectory, latestAPRVersion);
-            console = new Console();
-            console.runCommand("chmod +x ./configure");
-            console.runCommand("./configure");
-            console.runCommand("make");
         }
         if (shouldUpdate(aprUtilDirectory, versionUtil, latestUtilVersion)) {
             clearDirectory(aprUtilDirectory);
@@ -613,13 +538,36 @@ public class FileUtils {
                     "apr-util", ".tar.gz", new String[]{"TGZ"}, true);
             File utilTarball = unGzip(utilGZipped, aprUtilDirectory);
             File util = unTar(utilTarball, aprUtilDirectory, latestUtilVersion);
-            console = new Console();
-            console.runCommand("chmod +x ./configure");
-            console.runCommand("./configure");
-            console.runCommand("make");
         }
     }
-    
+
+    public static void setupPCRE(BufferedWriter writer, String version) throws IOException, ArchiveException {
+        final File pcreDir = new File(PROJECT, "PCRE");
+        makeDir(pcreDir);
+
+        BrowserEmulator emulator = new BrowserEmulator();
+
+        emulator.connect(URI.create("https://github.com/PCRE2Project/pcre2/releases").toURL());
+        String latest = version;
+        Optional<WebElement> optionalElement = emulator.getDownloadLocation("prce2-", ".tar.gz");
+        if (optionalElement.isPresent()) {
+            WebElement element = optionalElement.get();
+            String link = element.getAttribute("href");
+            if (link != null) {
+                latest = link.replaceAll("(https|http)://.*\\..*\\..*/.*/", "");
+            }
+        }
+
+        if (shouldUpdate(pcreDir, version, latest)) {
+            Optional<File> optional = emulator.downloadFile("pcre2-", ".tar.gz", pcreDir, null);
+            if (optional.isPresent()) {
+                File pcreGZipped = optional.get();
+                File pcreTarBall = unGzip(pcreGZipped, pcreDir);
+                File pcre = unZip(pcreTarBall, pcreDir);
+            }
+        }
+    }
+
     public static boolean shouldUpdate(File directory, String currentVersion, String latestVersion) {
         if (directory.listFiles() == null || directory.listFiles().length < 1) return true;
         return !Objects.equals(currentVersion, latestVersion);
