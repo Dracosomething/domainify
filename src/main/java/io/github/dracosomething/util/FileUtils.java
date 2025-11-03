@@ -547,7 +547,7 @@ public class FileUtils {
 
         BrowserEmulator emulator = new BrowserEmulator();
 
-        emulator.connect(URI.create("https://github.com/PCRE2Project/pcre2/releases").toURL());
+        emulator.connect(URI.create("https://github.com/PCRE2Project/pcre2/releases/latest").toURL());
         String latest = version;
         Optional<WebElement> optionalElement = emulator.getDownloadLocation("prce2-", ".tar.gz");
         if (optionalElement.isPresent()) {

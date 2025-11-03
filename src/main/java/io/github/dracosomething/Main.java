@@ -2,7 +2,6 @@ package io.github.dracosomething;
 
 import io.github.dracosomething.gui.MainGuiPanel;
 import io.github.dracosomething.util.*;
-import io.github.dracosomething.util.Action;
 import org.apache.commons.compress.archivers.ArchiveException;
 
 import javax.swing.*;

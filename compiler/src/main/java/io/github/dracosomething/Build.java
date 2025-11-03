@@ -2,6 +2,7 @@ package io.github.dracosomething;
 
 import io.github.dracosomething.linux.BuildLinux;
 import io.github.dracosomething.util.FileUtils;
+import io.github.dracosomething.windows.BuildWindows;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
@@ -17,10 +18,9 @@ public class Build {
         File out = new File(project, "out");
         File jar = new File(out, "artifacts/domainify_jar/domainify.jar");
         File buildDir = new File(out, "build");
-        if (!buildDir.exists()) {
-            buildDir.mkdirs();
-        }
+        FileUtils.makeDir(buildDir);
         BuildLinux.build(jar, buildDir);
+        BuildWindows.build(jar, buildDir);
     }
 
     public static void archive(String type, File archive, File... toArchive) {

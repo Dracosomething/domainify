@@ -2,6 +2,7 @@ package io.github.dracosomething.linux;
 
 import io.github.dracosomething.Build;
 import io.github.dracosomething.util.Console;
+import io.github.dracosomething.util.FileUtils;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -15,9 +16,7 @@ public class BuildLinux {
         // use launch4j for windows
 
         File buildDir = new File(out, "buildLinux");
-        if (!buildDir.exists()) {
-            buildDir.mkdirs();
-        }
+        FileUtils.makeDir(buildDir);
 
         File buildJar = new File(buildDir, "domainify.jar");
         File script = new File(buildDir, "domainify");
@@ -25,9 +24,9 @@ public class BuildLinux {
             Files.copy(jar.toPath(), buildJar.toPath(), StandardCopyOption.REPLACE_EXISTING);
             Console console = new Console();
             console.directory(buildDir);
-            console.runCommand("echo '#!/usr/bin/java -jar' > domainify");
-            console.runCommand("cat domainify.jar >> domainify");
-            console.runCommand("chmod +x domainify");
+            console.runCommand("echo '#!/usr/bin/java -jar' > ./domainify");
+            console.runCommand("cat domainify.jar >> ./domainify");
+            console.runCommand("chmod +x ./domainify");
             console.schedule((tmp) -> {
                 File tarBall = new File(buildDir, "linux.tar.gz");
                 if (!tarBall.exists()) {
