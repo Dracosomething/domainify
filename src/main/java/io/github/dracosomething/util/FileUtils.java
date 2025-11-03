@@ -570,7 +570,7 @@ public class FileUtils {
                     if (optional.isPresent()) {
                         File pcreGZipped = optional.get();
                         File pcreTarBall = unGzip(pcreGZipped, pcreDir);
-                        File pcre = unZip(pcreTarBall, pcreDir);
+                        File pcre = unTar(pcreTarBall, pcreDir, version);
                     }
                 }
             }

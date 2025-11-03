@@ -169,7 +169,7 @@ public class BrowserEmulator {
             this.driver = getBrowser(downloadDestination);
             this.connect(url);
 
-            String name = url.toString().replaceAll("(https|http)://.*\\..*\\..*/.*/", "");
+            String name = url.toString().replaceAll("(https|http)://.*\\..*/.*/", "");
             File file = new File(downloadDestination, name);
 
             WebWindow window = this.driver.getCurrentWindow().getWebWindow();
