@@ -571,6 +571,9 @@ public class FileUtils {
                         File pcreGZipped = optional.get();
                         File pcreTarBall = unGzip(pcreGZipped, pcreDir);
                         File pcre = unTar(pcreTarBall, pcreDir, version);
+                        Console console = new Console();
+                        console.directory(pcreDir);
+                        console.runCommand("./configure --prefix=/usr --docdir=/usr/share/doc/pcre2 --disable-static && make");
                     }
                 }
             }
