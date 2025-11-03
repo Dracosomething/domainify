@@ -9,6 +9,7 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.io.FileExistsException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 import java.io.*;
@@ -550,22 +551,28 @@ public class FileUtils {
 
         emulator.connect(URI.create("https://github.com/PCRE2Project/pcre2/releases/latest").toURL());
         String latest = version;
-        Optional<WebElement> optionalElement = emulator.getDownloadLocation("prce2-", ".tar.gz");
-        if (optionalElement.isPresent()) {
-            WebElement element = optionalElement.get();
-            String link = element.getAttribute("href");
-            if (link != null) {
-                latest = link.replaceAll("(https|http)://.*\\..*\\..*/.*/", "");
+        Optional<List<WebElement>> optionalElements = emulator.getElements(By.tagName("include-fragment"));
+        if (optionalElements.isPresent()) {
+            List<WebElement> elements = optionalElements.get();
+            elements = elements.stream().filter((element) -> {
+                String src = element.getAttribute("src");
+                if (src == null) return false;
+                return Util.containsIgnoreCase(src, "https://github.com/PCRE2Project/pcre2/releases/expanded_assets/");
+            }).toList();
+            String url = elements.getFirst().getAttribute("src");
+            if (url != null) {
+                emulator.connect(URI.create(url).toURL());
+                latest = url.replaceAll("(https|http)://.*\\..*\\..*/.*/", "");
                 writer.append("PCRE version=").append(latest).append("\n");
-            }
-        }
 
-        if (shouldUpdate(pcreDir, version, latest)) {
-            Optional<File> optional = emulator.downloadFile("pcre2-", ".tar.gz", pcreDir, null);
-            if (optional.isPresent()) {
-                File pcreGZipped = optional.get();
-                File pcreTarBall = unGzip(pcreGZipped, pcreDir);
-                File pcre = unZip(pcreTarBall, pcreDir);
+                if (shouldUpdate(pcreDir, version, latest)) {
+                    Optional<File> optional = emulator.downloadFile("pcre2-", ".tar.gz", pcreDir, null);
+                    if (optional.isPresent()) {
+                        File pcreGZipped = optional.get();
+                        File pcreTarBall = unGzip(pcreGZipped, pcreDir);
+                        File pcre = unZip(pcreTarBall, pcreDir);
+                    }
+                }
             }
         }
     }

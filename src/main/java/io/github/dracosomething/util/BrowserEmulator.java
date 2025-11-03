@@ -1,14 +1,14 @@
 package io.github.dracosomething.util;
 
-import com.gargoylesoftware.htmlunit.BrowserVersion;
-import com.gargoylesoftware.htmlunit.UnexpectedPage;
-import com.gargoylesoftware.htmlunit.WebWindow;
+import com.gargoylesoftware.htmlunit.*;
 import io.github.dracosomething.util.comparator.VersionWebElementComparator;
 import org.openqa.selenium.*;
+import org.openqa.selenium.firefox.FirefoxDriverLogLevel;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.remote.Browser;
+import org.openqa.selenium.remote.http.HttpRequest;
 
 import java.io.*;
 import java.lang.reflect.Method;
@@ -17,6 +17,7 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -66,7 +67,6 @@ public class BrowserEmulator {
     public void connect(URL url) {
         if (this.activate()) {
             this.driver.get(url.toString());
-            LOGGER.info("Driver webpage contents is: " + getBody());
             this.url = url;
         } else {
             LOGGER.warn("Already active, closing now...");
@@ -197,6 +197,7 @@ public class BrowserEmulator {
         }
         return Optional.empty();
     }
+
 
     @Override
     protected void finalize() throws Throwable {

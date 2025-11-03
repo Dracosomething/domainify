@@ -16,7 +16,6 @@ public class BuildWindows {
 
 
         File buildJar = new File(buildDir, "domainify.jar");
-
         try {
             Files.copy(jar.toPath(), buildJar.toPath(), StandardCopyOption.REPLACE_EXISTING);
             File config = new Configure.ConfigureBuilder()
@@ -35,11 +34,11 @@ public class BuildWindows {
                     .addXMLObject("path", "%JAVA_HOME%;%PATH%")
                     .leaveInternalObject()
                     .createInternalObject("versionInfo")
-                    .addXMLObject("fileVersion", "1.0")
+                    .addXMLObject("fileVersion", "1.0.0.0")
                     .addXMLObject("txtFileVersion", "1.0-SNAPSHOT")
                     .addXMLObject("fileDescription", "The main executable for domainify.")
-                    .addXMLObject("copyright", "")
-                    .addXMLObject("productVersion", "1.0")
+                    .addXMLObject("copyright", "null")
+                    .addXMLObject("productVersion", "1.0.0.0")
                     .addXMLObject("txtProductVersion", "1.0-SNAPSHOT")
                     .addXMLObject("productName", "Domainify")
                     .addXMLObject("internalName", "domainify")
@@ -48,9 +47,10 @@ public class BuildWindows {
                     .leaveInternalObject()
                     .build();
 
+            File launch4jDir = new File("C:\\Program Files (x86)\\Launch4j");
             Console console = new Console();
-            console.directory(buildDir);
-            console.runCommand("C:\\Program Files (x86)\\Launch4j\\launch4jc.exe config.xml");
+            console.directory(launch4jDir);
+            console.runCommand("launch4jc.exe " + config.getAbsolutePath());
             console.join();
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();

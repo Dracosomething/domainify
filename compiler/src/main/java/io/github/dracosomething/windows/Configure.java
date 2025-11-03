@@ -13,7 +13,7 @@ public class Configure extends File {
     private final BufferedWriter writer;
 
     Configure(File parent, StringBuilder text) throws IOException {
-        super(parent, "./config.xml");
+        super(parent, "config.xml");
         FileUtils.makeFile(this);
         this.writer = new BufferedWriter(new FileWriter(this));
         this.writer.append(text);

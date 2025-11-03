@@ -2,6 +2,7 @@ package io.github.dracosomething.util;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -48,6 +49,7 @@ public class Console extends Thread {
     }
 
     public void separateThread() {
+        LOGGER.info("Console: " + getName() + " will now run on a separate thread.");
         onSeparateThread = true;
     }
 
@@ -66,14 +68,17 @@ public class Console extends Thread {
 
     public void runCommand(String command) {
         if (isActive) {
+            LOGGER.info("Adding command to que.");
             que.add(command);
             return;
         }
         ArrayList<String> list = new ArrayList<>(this.command);
         list.add(command);
+        LOGGER.info("Constructed command.\nCommand: " + Arrays.toString(list.toArray()));
         this.builder.command(list);
         this.builder.inheritIO();
         if (this.log != null) {
+            LOGGER.info("Redirected console output to log file.");
             this.builder.redirectOutput(this.log);
         }
         try {
