@@ -351,6 +351,7 @@ public class FileUtils {
             String libxmlVersion = data[libxml];
             String libsqliteVersion = data[libsqlite];
 
+            setupPCRE(writer, PCREVersion);
             setupAPR(writer, srcLib, aprVersion, aprUtilVersion);
 
             Console console = new Console();
@@ -555,6 +556,7 @@ public class FileUtils {
             String link = element.getAttribute("href");
             if (link != null) {
                 latest = link.replaceAll("(https|http)://.*\\..*\\..*/.*/", "");
+                writer.append("PCRE version=").append(latest).append("\n");
             }
         }
 

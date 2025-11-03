@@ -48,8 +48,11 @@ public class BuildWindows {
                     .leaveInternalObject()
                     .build();
 
-
-        } catch (IOException e) {
+            Console console = new Console();
+            console.directory(buildDir);
+            console.runCommand("C:\\Program Files (x86)\\Launch4j\\launch4jc.exe config.xml");
+            console.join();
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
     }

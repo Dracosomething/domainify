@@ -66,6 +66,7 @@ public class BrowserEmulator {
     public void connect(URL url) {
         if (this.activate()) {
             this.driver.get(url.toString());
+            LOGGER.info("Driver webpage contents is: " + getBody());
             this.url = url;
         } else {
             LOGGER.warn("Already active, closing now...");
