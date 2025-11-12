@@ -355,20 +355,7 @@ public class FileUtils {
             setupPCRE(writer, PCREVersion);
             setupAPR(writer, srcLib, aprVersion, aprUtilVersion);
 
-            Console console = new Console();
-            console.directory(apacheDir);
-            console.runCommand("chmod +x ./configure");
-            console.runCommand("./configure --prefix=apache --with-included-apr");
-            console.runCommand("make");
-            console.runCommand("make install");
-            console.schedule((console1) -> {
-                File conf = new File(apacheDir, "conf/httpd.conf");
-                try {
-                    configureApacheHttpd(conf, apacheDir);
-                } catch (IOException e) {
-                    LOGGER.error("Encountered an error when configure Apache httpd.", e);
-                }
-            });
+            runSetupCommands();
 
             /*
             File config = new File(phpDir, "config");
@@ -424,9 +411,9 @@ public class FileUtils {
             if (Util.IS_WINDOWS) {
                 BrowserEmulator emulator = new BrowserEmulator();
                 emulator.connect(URI.create("https://www.apachelounge.com/download").toURL());
-                String windowsVer = "win32";
-                if (Util.IS_64_BIT) {
-                    windowsVer = "win64";
+                String windowsVer = "win64";
+                if (!Util.IS_64_BIT) {
+                    windowsVer = "win32";
                 }
                 Optional<File> optional = emulator.downloadFile("httpd", ".zip", apacheDir,
                         new String[]{windowsVer});
