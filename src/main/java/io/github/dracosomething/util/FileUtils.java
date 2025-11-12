@@ -541,9 +541,6 @@ public class FileUtils {
             File utilTarball = unGzip(utilGZipped, aprUtilDirectory);
             File util = unTar(utilTarball, aprUtilDirectory, latestUtilVersion);
         }
-        Console console = new Console();
-        console.directory(directory);
-        console.runCommand("chmod +x */build/*");
     }
 
     public static void setupPCRE(BufferedWriter writer, String version) throws IOException, ArchiveException {
@@ -572,15 +569,31 @@ public class FileUtils {
                     Optional<File> optional = emulator.downloadFile("pcre2-", ".tar.gz", pcreDir, null);
                     if (optional.isPresent()) {
                         File pcreGZipped = optional.get();
+                        String name = pcreGZipped.getName().replaceAll(".tar.gz", "");
                         File pcreTarBall = unGzip(pcreGZipped, pcreDir);
                         File pcre = unTar(pcreTarBall, pcreDir, version);
-                        Console console = new Console();
-                        console.directory(pcreDir);
-                        console.runCommand("./configure --prefix=/usr --docdir=/usr/share/doc/pcre2 --disable-static && make");
                     }
                 }
             }
         }
+    }
+
+    public static void runSetupCommands() {
+      final File pcre = new File(PROJECT, "pcre");
+      final File httpd = new File(PROJECT, "apache");
+      final File srclib = new File(httpd, "srclib")
+      Console console = new Console();
+      console.directory(pcre);
+      console.runCommand("chmod +x ./configure");
+      console.runCommand("./configure --prefix=" + pcre + " --docdir=/usr/share/doc/pcre2 --disable-static && make");
+      console.runCommand("cd " + httpd);
+      console.runCommand("chmod +x ./configure");
+      console.runCommand("cd " + srclib);
+      console.runCommand("chmod +x */build/*");
+      console.runCommand("cd ../");
+      console.runCommand("./configure --prefix=" + httpd + " --with-included-apr");
+      console.runCommand("make");
+      console.runCommand("make install");
     }
 
     public static boolean shouldUpdate(File directory, String currentVersion, String latestVersion) {
