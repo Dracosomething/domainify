@@ -132,10 +132,4 @@ public class Console extends Thread {
             }
         }
     }
-
-    @Override
-    public void run() {
-        super.run();
-        executeCommands();
-    }
 }

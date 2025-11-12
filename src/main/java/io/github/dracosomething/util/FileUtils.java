@@ -541,6 +541,9 @@ public class FileUtils {
             File utilTarball = unGzip(utilGZipped, aprUtilDirectory);
             File util = unTar(utilTarball, aprUtilDirectory, latestUtilVersion);
         }
+        Console console = new Console();
+        console.directory(directory);
+        console.runCommand("chmod +x */build/*");
     }
 
     public static void setupPCRE(BufferedWriter writer, String version) throws IOException, ArchiveException {
