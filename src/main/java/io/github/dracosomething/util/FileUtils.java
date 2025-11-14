@@ -554,6 +554,7 @@ public class FileUtils {
                 writer.append("PCRE version=").append(latest).append("\n");
 
                 if (shouldUpdate(pcreDir, version, latest)) {
+                    clearDirectory(pcreDir);
                     Optional<File> optional = emulator.downloadFile("pcre2-", ".tar.gz", pcreDir, null);
                     if (optional.isPresent()) {
                         File pcreGZipped = optional.get();

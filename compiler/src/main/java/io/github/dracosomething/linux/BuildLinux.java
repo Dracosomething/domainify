@@ -22,6 +22,7 @@ public class BuildLinux {
         File script = new File(buildDir, "domainify");
         try {
             Files.copy(jar.toPath(), buildJar.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
             Console console = new Console();
             console.directory(buildDir);
             console.runCommand("echo '#!/usr/bin/java -jar' > ./domainify");
@@ -39,8 +40,7 @@ public class BuildLinux {
 
                 Build.archive("tar", tarBall, buildJar, script);
             });
-            console.join();
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

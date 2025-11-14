@@ -11,10 +11,9 @@ import java.util.function.Consumer;
 import static io.github.dracosomething.Main.LOGGER;
 
 @SuppressWarnings("deprecated")
-public class Console extends Thread {
+public class Console {
     private static final AtomicInteger INDEX = new AtomicInteger(0);
     private boolean isActive = false;
-    private boolean onSeparateThread = false;
     private int exitCode = -1;
     private ProcessBuilder builder;
     private Process currentActive;
@@ -27,13 +26,10 @@ public class Console extends Thread {
     public Console() {
         this.builder = new ProcessBuilder();
         this.command = new ArrayList<>();
-        this.setDaemon(true);
         if (Util.IS_WINDOWS) {
             builder.command("cmd.exe", "/c");
-            this.setName("cmd-" + INDEX.get());
         } else {
             builder.command("sh", "-c");
-            this.setName("sh-" + INDEX.get());
         }
         command = builder.command();
         INDEX.getAndIncrement();
@@ -42,16 +38,9 @@ public class Console extends Thread {
     public Console(File exe, String commandMod) {
         this.builder = new ProcessBuilder();
         this.command = new ArrayList<>();
-        this.setDaemon(true);
         builder.command(exe.getPath(), commandMod);
-        this.setName(exe.getPath() + "-" + INDEX.get());
         command = builder.command();
         INDEX.getAndIncrement();
-    }
-
-    public void separateThread() {
-        LOGGER.info("Console: " + getName() + " will now run on a separate thread.");
-        onSeparateThread = true;
     }
 
     public void directory(File dir) {
@@ -85,11 +74,7 @@ public class Console extends Thread {
         try {
             currentActive = this.builder.start();
             isActive = true;
-            if (!onSeparateThread) {
-                this.start();
-            } else {
-                executeCommands();
-            }
+            executeCommands();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -105,22 +90,18 @@ public class Console extends Thread {
     protected void finalize() throws Throwable {
         super.finalize();
         this.currentActive.destroy();
-        if (this.isAlive()) {
-            this.interrupt();
-        }
     }
 
     private void executeCommands() {
         try {
-            exitCode = currentActive.waitFor(5, TimeUnit.MINUTES) ? currentActive.exitValue() : 0;
+            exitCode = currentActive.waitFor(90, TimeUnit.SECONDS) ? currentActive.exitValue() : 0;
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            LOGGER.error("Encountered error when running command", e);
         }
         if (!currentActive.isAlive() || !this.isActive) {
             LOGGER.info("Finished with exit code: " + exitCode);
             exitCode = -1;
             this.isActive = false;
-            this.interrupt();
             if (this.que.isEmpty()) {
                 if (this.scheduled != null) {
                     this.scheduled.accept(this);
@@ -133,9 +114,4 @@ public class Console extends Thread {
             }
         }
     }
-
-  public void run() {
-    super.run();
-    executeCommands();
-  }
 }
