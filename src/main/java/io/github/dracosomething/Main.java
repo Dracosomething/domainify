@@ -7,9 +7,7 @@ import org.apache.commons.compress.archivers.ArchiveException;
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 public class Main extends Thread {
     public static final Logger LOGGER = Logger.getLogger();
@@ -27,7 +25,7 @@ public class Main extends Thread {
         // use launch4j for windows
         try {
             FileUtils.downloadRequirements();
-        } catch (IOException | NoSuchMethodException | ArchiveException e) {
+        } catch (IOException | NoSuchMethodException | ArchiveException | ExecutionException | InterruptedException e) {
             LOGGER.error("Encountered error when downloading all requirements.", e);
         }
 

@@ -24,6 +24,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -283,7 +284,7 @@ public class FileUtils {
      * @throws IOException
      * @throws ArchiveException
      */
-    public static void downloadRequirements() throws IOException, ArchiveException, NoSuchMethodException {
+    public static void downloadRequirements() throws IOException, ArchiveException, NoSuchMethodException, ExecutionException, InterruptedException {
         Method downloadRequirements = FileUtils.class.getMethod("downloadRequirements", new Class[]{});
         LOGGER.entering(downloadRequirements);
 
@@ -335,7 +336,7 @@ public class FileUtils {
     }
 
     public static void setupUnix(BufferedWriter writer, String[] data, File apacheDir)
-            throws IOException, ArchiveException {
+            throws IOException, ArchiveException, ExecutionException, InterruptedException {
         if (SystemUtils.IS_OS_LINUX || SystemUtils.IS_OS_MAC) {
             final File srcLib = new File(apacheDir, "srclib");
 
@@ -355,7 +356,10 @@ public class FileUtils {
             setupPCRE(writer, PCREVersion);
             setupAPR(writer, srcLib, aprVersion, aprUtilVersion);
 
-            runSetupCommands();
+            Async.functionAsync((params, parent) -> {
+              runSetupCommands();
+              return null;
+            }, new Parameters(null), Optional.empty());
 
             /*
             File config = new File(phpDir, "config");
