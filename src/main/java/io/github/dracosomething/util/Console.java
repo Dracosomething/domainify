@@ -126,7 +126,7 @@ public class Console extends Thread {
                 }
             } else {
                 String command = que.getFirst();
-                que.remove(command);
+                que.removeFirst();
                 this.builder.directory(this.directory);
                 this.runCommand(command);
             }

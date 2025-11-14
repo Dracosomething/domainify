@@ -566,13 +566,15 @@ public class FileUtils {
     }
 
     public static void runSetupCommands() {
-      final File pcre = new File(PROJECT, "pcre");
+      final File pcre = new File(PROJECT, "PCRE");
       final File httpd = new File(PROJECT, "apache");
       final File srclib = new File(httpd, "srclib");
       Console console = new Console();
       console.directory(pcre);
       console.runCommand("chmod +x ./configure");
-      console.runCommand("./configure --prefix=" + pcre + " --docdir=/usr/share/doc/pcre2 --disable-static && make");
+      console.runCommand("./configure --prefix=" + pcre + " --docdir=/usr/share/doc/pcre2 --disable-static");
+      console.runCommand("make");
+      console.runCommand("make install");
       console.runCommand("cd " + httpd);
       console.runCommand("chmod +x ./configure");
       console.runCommand("cd " + srclib);
