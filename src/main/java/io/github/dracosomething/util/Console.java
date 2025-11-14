@@ -65,6 +65,7 @@ public class Console {
         ArrayList<String> list = new ArrayList<>(this.command);
         list.add(command);
         LOGGER.info("Constructed command.\nCommand: " + Arrays.toString(list.toArray()));
+        LOGGER.info("Executing in directory: " + directory);
         this.builder.command(list);
         this.builder.inheritIO();
         if (this.log != null) {
@@ -94,7 +95,7 @@ public class Console {
 
     private void executeCommands() {
         try {
-            exitCode = currentActive.waitFor(90, TimeUnit.SECONDS) ? currentActive.exitValue() : 0;
+            exitCode = currentActive.waitFor(150, TimeUnit.SECONDS) ? currentActive.exitValue() : 0;
         } catch (InterruptedException e) {
             LOGGER.error("Encountered error when running command", e);
         }
