@@ -195,7 +195,7 @@
       <recent name="io.github.dracosomething.gui" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.run">
+  <component name="RunManager" selected="Gradle.LinuxTests.setup_pcre_test">
     <configuration name="Build" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="io.github.dracosomething.Build" />
       <module name="domainify.compiler.main" />

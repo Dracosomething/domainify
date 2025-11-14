@@ -558,7 +558,7 @@ public class FileUtils {
                         File pcreGZipped = optional.get();
                         String name = pcreGZipped.getName().replaceAll(".tar.gz", "");
                         File pcreTarBall = unGzip(pcreGZipped, pcreDir);
-                        File pcre = unTar(pcreTarBall, pcreDir, version);
+                        File pcre = unTar(pcreTarBall, pcreDir, name);
                     }
                 }
             }
@@ -568,7 +568,7 @@ public class FileUtils {
     public static void runSetupCommands() {
       final File pcre = new File(PROJECT, "pcre");
       final File httpd = new File(PROJECT, "apache");
-      final File srclib = new File(httpd, "srclib")
+      final File srclib = new File(httpd, "srclib");
       Console console = new Console();
       console.directory(pcre);
       console.runCommand("chmod +x ./configure");
@@ -617,17 +617,18 @@ public class FileUtils {
 
     public static File unTar(File infile, File outDir, String shouldRemove) throws IOException, ArchiveException {
         LOGGER.info("Untaring " + infile.getPath() + "...");
+        LOGGER.info(shouldRemove);
         InputStream in = new FileInputStream(infile);
         TarArchiveInputStream tarIn = FACTORY.createArchiveInputStream("tar", in);
         TarArchiveEntry entry;
         while ((entry = tarIn.getNextEntry()) != null) {
-            LOGGER.info("Moving file " + entry.getName() + "...");
             File outputFile;
             if (shouldRemove == null) {
                 outputFile = new File(outDir, entry.getName());
             } else {
                 outputFile = new File(outDir, entry.getName().replaceAll(shouldRemove, ""));
             }
+            LOGGER.info("Moving file " + entry.getName() + " to " + outputFile.getPath() + "...");
             if (entry.isDirectory()) {
                 if (!outputFile.exists()) {
                     if (!outputFile.mkdirs()) {
