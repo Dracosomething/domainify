@@ -356,10 +356,7 @@ public class FileUtils {
             setupPCRE(writer, PCREVersion);
             setupAPR(writer, srcLib, aprVersion, aprUtilVersion);
 
-            Async.functionAsync((params, parent) -> {
-              runSetupCommands();
-              return null;
-            }, new Parameters(null), Optional.empty());
+            Async.runVoidAsync(FileUtils::runSetupCommands);
 
             /*
             File config = new File(phpDir, "config");

@@ -2,6 +2,7 @@ package io.github.dracosomething.util;
 
 import java.util.concurrent.*;
 import java.util.Optional;
+import java.lang.Runnable;
 
 public class Async {
   public static <R> R functionAsync(Function<R> func, Parameters params, Optional<Object> parent) throws InterruptedException, ExecutionException {
@@ -15,5 +16,14 @@ public class Async {
     pool.close();
 
     return returned;
+  }
+
+  public static void runVoidAsync(Runnable function) throws ExecutionException, InterruptedException {
+    ExecutorService pool = Executors.newCachedThreadPool();
+    Future<?> future = pool.submit(function);
+
+    future.get();
+
+    pool.close();
   }
 }
