@@ -112,7 +112,7 @@ public class Console extends Thread {
 
     private void executeCommands() {
         try {
-            exitCode = currentActive.waitFor(5, TimeUnit.MINUTES) ? 1 : 0;
+            exitCode = currentActive.waitFor(5, TimeUnit.MINUTES) ? currentActive.exitValue() : 0;
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
