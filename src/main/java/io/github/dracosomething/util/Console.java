@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
@@ -111,7 +112,7 @@ public class Console extends Thread {
 
     private void executeCommands() {
         try {
-            exitCode = currentActive.waitFor();
+            exitCode = currentActive.waitFor(5, TimeUnit.MINUTES) ? 1 : 0;
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
