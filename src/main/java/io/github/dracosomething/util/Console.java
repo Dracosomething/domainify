@@ -132,4 +132,9 @@ public class Console extends Thread {
             }
         }
     }
+
+  public void run() {
+    super.run();
+    executeCommands();
+  }
 }
