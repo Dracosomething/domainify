@@ -58,12 +58,12 @@ public class Console {
     }
 
     public void runCommand(String command) {
+        this.currentCommand = command;
         if (isActive) {
             LOGGER.info("Adding command to que.");
             que.add(command);
             return;
         }
-        this.currentCommand = command;
         ArrayList<String> list = new ArrayList<>(this.command);
         list.add(command);
         LOGGER.info("Constructed command.\nCommand: " + Arrays.toString(list.toArray()));
