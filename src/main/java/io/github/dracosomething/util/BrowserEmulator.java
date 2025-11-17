@@ -114,7 +114,7 @@ public class BrowserEmulator {
                 if (shouldFilter) {
                     elements = elements.stream().sorted(new VersionWebElementComparator(fileName, fileExtension)).toList();
                 }
-                return Optional.of(elements.getFirst());
+                return Optional.of(elements.getLast());
             }
         }
         return Optional.empty();

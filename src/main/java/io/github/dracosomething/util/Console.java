@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -75,9 +76,9 @@ public class Console {
         try {
             currentActive = this.builder.start();
             isActive = true;
-            executeCommands();
-        } catch (IOException e) {
-            e.printStackTrace();
+            Async.runVoidAsync(this::executeCommands);
+        } catch (IOException | ExecutionException | InterruptedException e) {
+            LOGGER.error("Encountered error when trying to activate console", e);
         } finally {
             this.builder = new ProcessBuilder(this.command);
         }
@@ -99,7 +100,7 @@ public class Console {
         } catch (InterruptedException e) {
             LOGGER.error("Encountered error when running command", e);
         }
-        if (!currentActive.isAlive() || !this.isActive) {
+        if (!currentActive.hasExited() || !this.isActive) {
             LOGGER.info("Finished with exit code: " + exitCode);
             exitCode = -1;
             this.isActive = false;

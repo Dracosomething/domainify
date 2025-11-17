@@ -493,8 +493,9 @@ public class FileUtils {
                 File mariadbGzipped = downloadFileFromWeb(finalLocation, serverDir,
                         latestVersion.replace("/", ""), ".tar.gz", new String[]{"linux"},
                         false);
+                String mariadbFileName = mariadbGzipped.getName().replace(".tar.gz", "");
                 File mariadbTar = unGzip(mariadbGzipped, serverDir);
-                File mariadb = unTar(mariadbTar, serverDir, mariadbDownloadLocation);
+                File mariadb = unTar(mariadbTar, serverDir, mariadbFileName);
             }
             LOGGER.info("MySQL installed...");
         }
