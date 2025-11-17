@@ -21,8 +21,7 @@ public class Console {
     private List<String> command;
     private List<String> que = new ArrayList<>();
     private File directory;
-    private File log = null;
-    private Map<String, Consumer<Console>> scheduled = new HashMap<>();
+    private Map<Integer, Consumer<Console>> scheduled = new HashMap<>();
 
     public Console() {
         this.builder = new ProcessBuilder();
@@ -36,25 +35,9 @@ public class Console {
         INDEX.getAndIncrement();
     }
 
-    public Console(File exe, String commandMod) {
-        this.builder = new ProcessBuilder();
-        this.command = new ArrayList<>();
-        builder.command(exe.getPath(), commandMod);
-        command = builder.command();
-        INDEX.getAndIncrement();
-    }
-
     public void directory(File dir) {
         this.directory = dir;
         this.builder.directory(dir);
-    }
-
-    public File directory() {
-        return this.builder.directory();
-    }
-
-    public void log(File log) {
-        this.log = log;
     }
 
     public void runCommand(String command) {
@@ -70,10 +53,6 @@ public class Console {
         LOGGER.info("Executing in directory: " + directory);
         this.builder.command(list);
         this.builder.inheritIO();
-        if (this.log != null) {
-            LOGGER.info("Redirected console output to log file.");
-            this.builder.redirectOutput(this.log);
-        }
         try {
             currentActive = this.builder.start();
             isActive = true;
@@ -87,17 +66,23 @@ public class Console {
 
     public void schedule(Consumer<Console> consumer) {
         String next = que.getFirst();
-        this.scheduled.put(next, consumer);
-    }
-
-    public void schedule(String command, Consumer<Console> consumer) {
-      this.scheduled.put(command, consumer);
+        int index = this.que.indexOf(next);
+        this.scheduled.put(0, consumer);
     }
 
     @Override
     protected void finalize() throws Throwable {
         super.finalize();
         this.currentActive.destroy();
+    }
+
+    private void updateReferences() {
+        for (Pair<Integer, Consumer<Console>> pair : Util.mapToPairList(this.scheduled)) {
+            int key = pair.getKey();
+            this.scheduled.remove(key);
+            if (key-1 < 0) continue;
+            this.scheduled.put(key-1, pair.getValue());
+        }
     }
 
     private void executeCommands() {
@@ -110,15 +95,16 @@ public class Console {
             LOGGER.info("Finished with exit code: " + exitCode);
             exitCode = -1;
             this.isActive = false;
-            if (this.scheduled.containsKey(this.currentCommand)) {
-                Consumer<Console> consumer = this.scheduled.get(this.currentCommand);
+            String command = que.getFirst();
+            que.removeFirst();
+            updateReferences();
+            this.builder.directory(this.directory);
+            if (this.scheduled.containsKey(0)) {
+                Consumer<Console> consumer = this.scheduled.get(0);
                 if (consumer != null) {
                     consumer.accept(this);
                 }
             }
-            String command = que.getFirst();
-            que.removeFirst();
-            this.builder.directory(this.directory);
             this.runCommand(command);
         }
     }

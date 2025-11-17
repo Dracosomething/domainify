@@ -14,10 +14,12 @@ import java.util.zip.ZipOutputStream;
 
 public class Build {
     public static void main(String[] args) {
+        String fileName = args[0];
+
         File project = new File("./");
-        File out = new File(project, "out");
-        File jar = new File(out, "artifacts/domainify_jar/domainify.jar");
-        File buildDir = new File(out, "build");
+        File out = new File(project, "build");
+        File jar = new File(out, "libs/" + fileName);
+        File buildDir = new File(out, "compile");
         FileUtils.makeDir(buildDir);
         BuildLinux.build(jar, buildDir);
         BuildWindows.build(jar, buildDir);
