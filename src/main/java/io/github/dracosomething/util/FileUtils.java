@@ -578,14 +578,20 @@ public class FileUtils {
       console.runCommand("./configure --prefix=" + pcre + " --docdir=/usr/share/doc/pcre2 --disable-static");
       console.runCommand("make");
       console.runCommand("make install");
+      console.schedule((shell) -> {
+          shell.directory(httpd);
+      });
 
-      // run in apache
       console.runCommand("chmod +x ./configure");
+      console.schedule((shell) -> {
+          shell.directory(srclib);
+      });
 
-      // run in scrlib
       console.runCommand("chmod +x */build/*");
+      console.schedule((shell) -> {
+          shell.directory(httpd);
+      });
 
-      // run in apache
       console.runCommand("./configure --prefix=" + httpd + " --with-included-apr");
       console.runCommand("make");
       console.runCommand("make install");
