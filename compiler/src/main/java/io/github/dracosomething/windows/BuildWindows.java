@@ -51,8 +51,7 @@ public class BuildWindows {
             Console console = new Console();
             console.directory(launch4jDir);
             console.runCommand("launch4jc.exe " + config.getAbsolutePath());
-            console.join();
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

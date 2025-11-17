@@ -35,3 +35,14 @@ subprojects {
         implementation(project(":"))
     }
 }
+
+tasks.jar {
+    manifest {
+        attributes(
+            "Main-Class" to "io.github.dracosomething.Main",
+        )
+    }
+
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from(configurations.compileClasspath.get().map { if (it.isDirectory()) it else zipTree(it) })
+}
