@@ -110,17 +110,16 @@ public class Console {
             LOGGER.info("Finished with exit code: " + exitCode);
             exitCode = -1;
             this.isActive = false;
-            if (this.que.isEmpty()) {
+            if (this.scheduled.containsKey(this.currentCommand)) {
                 Consumer<Console> consumer = this.scheduled.get(this.currentCommand);
                 if (consumer != null) {
                     consumer.accept(this);
                 }
-            } else {
-                String command = que.getFirst();
-                que.removeFirst();
-                this.builder.directory(this.directory);
-                this.runCommand(command);
             }
+            String command = que.getFirst();
+            que.removeFirst();
+            this.builder.directory(this.directory);
+            this.runCommand(command);
         }
     }
 }
