@@ -1,13 +1,12 @@
 package io.github.dracosomething.util;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
+
 
 import static io.github.dracosomething.Main.LOGGER;
 
@@ -16,13 +15,14 @@ public class Console {
     private static final AtomicInteger INDEX = new AtomicInteger(0);
     private boolean isActive = false;
     private int exitCode = -1;
+    private String currentCommand = null;
     private ProcessBuilder builder;
     private Process currentActive;
     private List<String> command;
     private List<String> que = new ArrayList<>();
     private File directory;
     private File log = null;
-    private Consumer<Console> scheduled = null;
+    private Map<String, Consumer<Console>> scheduled = new HashMap<>();
 
     public Console() {
         this.builder = new ProcessBuilder();
@@ -63,6 +63,7 @@ public class Console {
             que.add(command);
             return;
         }
+        this.currentCommand = command;
         ArrayList<String> list = new ArrayList<>(this.command);
         list.add(command);
         LOGGER.info("Constructed command.\nCommand: " + Arrays.toString(list.toArray()));
@@ -85,7 +86,12 @@ public class Console {
     }
 
     public void schedule(Consumer<Console> consumer) {
-        this.scheduled = consumer;
+        String next = que.getFirst();
+        this.scheduled.put(next, consumer);
+    }
+
+    public void schedule(String command, Consumer<Console> consumer) {
+      this.scheduled.put(command, consumer);
     }
 
     @Override
@@ -105,8 +111,9 @@ public class Console {
             exitCode = -1;
             this.isActive = false;
             if (this.que.isEmpty()) {
-                if (this.scheduled != null) {
-                    this.scheduled.accept(this);
+                Consumer<Console> consumer = this.scheduled.get(this.currentCommand);
+                if (consumer != null) {
+                    consumer.accept(this);
                 }
             } else {
                 String command = que.getFirst();
