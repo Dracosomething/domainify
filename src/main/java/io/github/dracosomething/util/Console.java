@@ -100,7 +100,7 @@ public class Console {
         } catch (InterruptedException e) {
             LOGGER.error("Encountered error when running command", e);
         }
-        if (!currentActive.hasExited() || !this.isActive) {
+        if (!currentActive.isAlive() || !this.isActive) {
             LOGGER.info("Finished with exit code: " + exitCode);
             exitCode = -1;
             this.isActive = false;
