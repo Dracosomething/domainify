@@ -13,4 +13,9 @@ public class LinuxTests {
         String version = "322r34";
         FileUtils.setupPCRE(writer, version);
     }
+
+    @Test
+    public void run_commands() {
+        FileUtils.runSetupCommands();
+    }
 }

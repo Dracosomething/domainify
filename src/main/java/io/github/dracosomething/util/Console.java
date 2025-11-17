@@ -40,6 +40,12 @@ public class Console {
         this.builder.directory(dir);
     }
 
+    public void runCommandAndSchedule(String command, Consumer<Console> task) {
+      int size = que.size()+1;
+      this.scheduled.put(size, task);
+      this.runCommand(command);
+    }
+
     public void runCommand(String command) {
         this.currentCommand = command;
         if (isActive) {

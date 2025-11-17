@@ -577,18 +577,15 @@ public class FileUtils {
       console.runCommand("chmod +x ./configure");
       console.runCommand("./configure --prefix=" + pcre + " --docdir=/usr/share/doc/pcre2 --disable-static");
       console.runCommand("make");
-      console.runCommand("make install");
-      console.schedule((shell) -> {
+      console.runCommandAndSchedule("make install", (shell) -> {
           shell.directory(httpd);
       });
 
-      console.runCommand("chmod +x ./configure");
-      console.schedule((shell) -> {
+      console.runCommandAndSchedule("chmod +x ./configure", (shell) -> {
           shell.directory(srclib);
       });
 
-      console.runCommand("chmod +x */build/*");
-      console.schedule((shell) -> {
+      console.runCommandAndSchedule("chmod +x */build/*", (shell) -> {
           shell.directory(httpd);
       });
 
