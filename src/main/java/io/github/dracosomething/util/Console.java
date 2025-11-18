@@ -19,7 +19,7 @@ public class Console {
     private ProcessBuilder builder;
     private Process currentActive;
     private List<String> command;
-    private List<String> que = new ArrayList<>();
+    private Map<Integer, String> que = new HashMap<>();
     private File directory;
     private Map<Integer, Consumer<Console>> scheduled = new HashMap<>();
 
@@ -40,17 +40,17 @@ public class Console {
         this.builder.directory(dir);
     }
 
+    // check if index is correct.
     public void runCommandAndSchedule(String command, Consumer<Console> task) {
-      int size = que.size()+1;
-      this.scheduled.put(size, task);
       this.runCommand(command);
+      this.scheduled.put(que.size(), task);
     }
 
     public void runCommand(String command) {
         this.currentCommand = command;
         if (isActive) {
             LOGGER.info("Adding command to que.");
-            que.add(command);
+            que.put(que.size(), command);
             return;
         }
         ArrayList<String> list = new ArrayList<>(this.command);
@@ -71,8 +71,6 @@ public class Console {
     }
 
     public void schedule(Consumer<Console> consumer) {
-        String next = que.getFirst();
-        int index = this.que.indexOf(next);
         this.scheduled.put(0, consumer);
     }
 
@@ -83,12 +81,24 @@ public class Console {
     }
 
     private void updateReferences() {
-        for (Pair<Integer, Consumer<Console>> pair : Util.mapToPairList(this.scheduled)) {
-            int key = pair.getKey();
-            this.scheduled.remove(key);
-            if (key-1 < 0) continue;
-            this.scheduled.put(key-1, pair.getValue());
+        int previous = 0;
+        for (Pair<Integer, String> pair : Util.mapToPairList(this.que)) {
+            int index = pair.getKey();
+            if (index-1 != previous) {
+                Consumer<Console> consumer = this.scheduled.get(index);
+                index--;
+                if (consumer != null) {
+                    
+                }
+            }
+            previous = index;
         }
+//        for (Pair<Integer, Consumer<Console>> pair : Util.mapToPairList(this.scheduled)) {
+//            int key = pair.getKey();
+//            this.scheduled.remove(key);
+//            if (key-1 < 0) continue;
+//            this.scheduled.put(key-1, pair.getValue());
+//        }
     }
 
     private void executeCommands() {
@@ -101,8 +111,8 @@ public class Console {
             LOGGER.info("Finished with exit code: " + exitCode);
             exitCode = -1;
             this.isActive = false;
-            String command = que.getFirst();
-            que.removeFirst();
+            String command = que.get(0);
+            que.remove(0);
             updateReferences();
             this.builder.directory(this.directory);
             if (this.scheduled.containsKey(0)) {
