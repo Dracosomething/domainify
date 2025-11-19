@@ -282,9 +282,9 @@
       <item itemvalue="Application.run" />
       <item itemvalue="Gradle.domainify [compile]" />
       <item itemvalue="Gradle.domainify [jar]" />
-      <item itemvalue="JAR Application.domainify-1.0-SNAPSHOT.jar" />
-      <item itemvalue="JUnit.Whole project" />
       <item itemvalue="JUnit.Whole project (1)" />
+      <item itemvalue="JUnit.Whole project" />
+      <item itemvalue="JAR Application.domainify-1.0-SNAPSHOT.jar" />
     </list>
     <recent_temporary>
       <list>

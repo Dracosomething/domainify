@@ -98,7 +98,7 @@ public class Console {
                 if (this.que.get(index) != null) {
                     this.que.put(index, command);
                 }
-                if (this.consumer != null && this.scheduled.get(index) != null) {
+                if (consumer != null && this.scheduled.get(index) != null) {
                     this.scheduled.put(index, scheduled);
                 }
             }
