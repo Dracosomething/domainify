@@ -75,6 +75,14 @@ public class Console {
         this.queue.addFirst(pair);
     }
 
+    public void queue(String command) {
+      this.queue.add(new Pair<>(command, null));
+    }
+
+    public void queueAndSchedule(String command, Consumer<Console> consumer) {
+      this.queue.add(new Pair<>(command, consumer));
+    }
+
     @Override
     protected void finalize() throws Throwable {
         super.finalize();

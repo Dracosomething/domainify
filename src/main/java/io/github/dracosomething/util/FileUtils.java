@@ -39,6 +39,8 @@ public class FileUtils {
     public static final File PROJECT;
     public static final File DATA;
     public static String SRVROOT = "";
+    private static boolean UPDATE_HTTPD = false;
+    private static boolean UPDATE_PHP = false;
 
     public static BufferedReader getUrlReader(URL url) throws IOException {
         return new BufferedReader(new InputStreamReader(url.openStream()));
@@ -356,7 +358,7 @@ public class FileUtils {
             setupPCRE(writer, PCREVersion);
             setupAPR(writer, srcLib, aprVersion, aprUtilVersion);
 
-            Async.runVoidAsync(FileUtils::runSetupCommands);
+            runSetupCommands();
 
             /*
             File config = new File(phpDir, "config");
@@ -431,6 +433,7 @@ public class FileUtils {
 
                 File apacheTar = unGzip(apacheZipped, apacheDir);
                 File httpd = unTar(apacheTar, apacheDir, fileName);
+                UPDATE_HTTPD = true;
             }
 
             LOGGER.info("Apache installed.");
@@ -462,6 +465,7 @@ public class FileUtils {
                     File phpGzipped = optional.get();
                     File phpTar = unGzip(phpGzipped, phpDir);
                     File php = unTar(phpTar, phpDir);
+                    UPDATE_PHP = true;
                 }
             }
             LOGGER.info("PHP installed...");
@@ -571,29 +575,33 @@ public class FileUtils {
     }
 
     public static void runSetupCommands() {
-      final File pcre = new File(PROJECT, "PCRE");
-      final File httpd = new File(PROJECT, "apache");
-      final File srclib = new File(httpd, "srclib");
-      Console console = new Console();
-      console.directory(pcre);
-      console.runCommand("chmod +x ./configure");
-      console.runCommand("./configure --prefix=" + pcre + " --docdir=/usr/share/doc/pcre2 --disable-static");
-      console.runCommand("make");
-      console.runCommandAndSchedule("make install", (shell) -> {
-          shell.directory(httpd);
-      });
+      if (UPDATE_HTTPD) {
+        final File pcre = new File(PROJECT, "PCRE");
+        final File docs = new File(pcre, "/doc");
+        makeDir(docs);
+        final File httpd = new File(PROJECT, "apache");
+        final File srclib = new File(httpd, "srclib");
+        Console console = new Console();
+        console.directory(pcre);
+        console.runCommand("chmod +x ./configure");
+        console.queue("./configure --prefix=" + pcre + " --docdir=" + docs + " --disable-static");
+        console.queue("make");
+        console.queue("make install");
 
-      console.runCommandAndSchedule("chmod +x ./configure", (shell) -> {
-          shell.directory(srclib);
-      });
+        console.queueAndSchedule("chmod +x ./configure", (shell) -> {
+            shell.directory(httpd);
+        });
 
-      console.runCommandAndSchedule("chmod +x */build/*", (shell) -> {
-          shell.directory(httpd);
-      });
+        console.queueAndSchedule("chmod +x */build/*", (shell) -> {
+            shell.directory(srclib);
+        });
 
-      console.runCommand("./configure --prefix=" + httpd + " --with-included-apr");
-      console.runCommand("make");
-      console.runCommand("make install");
+        console.queueAndSchedule("./configure --prefix=" + httpd + " --with-included-apr", (shell) -> {
+            shell.directory(htppd)
+        });
+        console.queue("make");
+        console.queue("make install");
+      }
     }
 
     public static boolean shouldUpdate(File directory, String currentVersion, String latestVersion) {
