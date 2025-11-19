@@ -80,15 +80,26 @@ public class Console {
         this.currentActive.destroy();
     }
 
+    /**
+     * loop door que
+     * als de index niet meer klopt(de vorige index is niet gelijk aan de huidige index-1) doorgaan
+     * pak de consumer en de command die bij de index hooren
+     * doe index 1 omlaag
+     *
+    */
     private void updateReferences() {
         int previous = 0;
         for (Pair<Integer, String> pair : Util.mapToPairList(this.que)) {
             int index = pair.getKey();
             if (index-1 != previous) {
                 Consumer<Console> consumer = this.scheduled.get(index);
+                String command = this.que.get(index);
                 index--;
-                if (consumer != null) {
-                    
+                if (this.que.get(index) != null) {
+                    this.que.put(index, command);
+                }
+                if (this.consumer != null && this.scheduled.get(index) != null) {
+                    this.scheduled.put(index, scheduled);
                 }
             }
             previous = index;
