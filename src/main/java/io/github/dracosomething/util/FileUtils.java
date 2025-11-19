@@ -489,11 +489,13 @@ public class FileUtils {
                 String mariadbDownloadLocation = getFileNameFromWeb(url, "bintar-linux-systemd", "/",
                         null, false);
                 String finalLocation = url.toString() + mariadbDownloadLocation;
+                String mariadbFileName = getFileNameFromWeb(URI.create(finalLocation).toURL(),
+                        latestVersion.replace("/", ""), ".tar.gz",
+                        new String[]{"linux"}, false);
                 // do not set shouldFilter to true otherwise it crashes
                 File mariadbGzipped = downloadFileFromWeb(finalLocation, serverDir,
                         latestVersion.replace("/", ""), ".tar.gz", new String[]{"linux"},
                         false);
-                String mariadbFileName = mariadbGzipped.getName().replace(".tar.gz", "");
                 File mariadbTar = unGzip(mariadbGzipped, serverDir);
                 File mariadb = unTar(mariadbTar, serverDir, mariadbFileName);
             }

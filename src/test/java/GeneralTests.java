@@ -1,6 +1,4 @@
-import io.github.dracosomething.util.FileUtils;
-import io.github.dracosomething.util.HTMLObject;
-import io.github.dracosomething.util.Logger;
+import io.github.dracosomething.util.*;
 import io.github.dracosomething.util.comparator.VersionStringComparator;
 import org.junit.jupiter.api.Test;
 
@@ -8,6 +6,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 public class GeneralTests {
@@ -31,5 +30,16 @@ public class GeneralTests {
         String[] versions = new String[]{"2.54.2.3", "2.54.3.3", "1.4.9", "1.5.5"};
         Stream<String> sorted = Arrays.stream(versions).sorted(new VersionStringComparator("e", "e"));
         sorted.forEach(System.out::println);
+    }
+
+    @Test
+    public void console_scheduled_test() {
+      Console console = new Console();
+      console.runCommand("echo \"werewrw\"");
+      console.runCommand("echo e");
+      console.runCommandAndSchedule("echo test", (term) -> {
+        System.out.println("success");
+      });
+      console.runCommand("echo eeeeeeeeeeeee");
     }
 }

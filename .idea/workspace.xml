@@ -10,7 +10,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d7ab1385-168d-4e32-98b0-5e9c3c72e3a0" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/Console.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/Console.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/FileUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/dracosomething/util/FileUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/GeneralTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/GeneralTests.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -136,46 +139,47 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.run.executor&quot;: &quot;Run&quot;,
-    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
-    &quot;Gradle.Build domainify.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.GeneralTests.version_comparator_test.executor&quot;: &quot;Debug&quot;,
-    &quot;Gradle.HTMLObjectParseTest.HTMLObject_parse_test.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.HTMLObjectParseTest.logger_test.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.LinuxTests.setup_pcre_test.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.SourceForgeTest.parse_test.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.domainify [:HTMLObjectParseTest.main()].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.domainify [:io.github.dracosomething.Main.main()].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.domainify [:io.github.dracosomething.build.BuildLinux.main()].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.domainify [assemble].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.domainify [buildDependents].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.domainify [buildSources].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.domainify [build].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.domainify [compile].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.domainify [init].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.domainify [jar].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.domainify [run].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.domainify [sourcesJar].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.domainify [tasks].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.domainify:compiler [:compiler:io.github.dracosomething.Build.main()].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.regexTest.string_matches_regex_version.executor&quot;: &quot;Run&quot;,
-    &quot;JAR Application.domainify-1.0-SNAPSHOT.jar.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.Whole project (1).executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.Whole project.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/alias/Documents/school/schooljaar2025-2026/periode1/XPerience/profielen/fullstack/domainify/src&quot;,
-    &quot;onboarding.tips.debug.path&quot;: &quot;C:/Users/alias/Documents/school/schooljaar2025-2026/periode1/XPerience/profielen/fullstack/domainify/project/src/main/java/io/github/dracosomething/Main.java&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Artifacts&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.intentionPowerPack&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.run.executor": "Run",
+    "DefaultHtmlFileTemplate": "HTML File",
+    "Gradle.Build domainify.executor": "Run",
+    "Gradle.GeneralTests.console_scheduled_test.executor": "Debug",
+    "Gradle.GeneralTests.version_comparator_test.executor": "Debug",
+    "Gradle.HTMLObjectParseTest.HTMLObject_parse_test.executor": "Run",
+    "Gradle.HTMLObjectParseTest.logger_test.executor": "Run",
+    "Gradle.LinuxTests.setup_pcre_test.executor": "Run",
+    "Gradle.SourceForgeTest.parse_test.executor": "Run",
+    "Gradle.domainify [:HTMLObjectParseTest.main()].executor": "Run",
+    "Gradle.domainify [:io.github.dracosomething.Main.main()].executor": "Run",
+    "Gradle.domainify [:io.github.dracosomething.build.BuildLinux.main()].executor": "Run",
+    "Gradle.domainify [assemble].executor": "Run",
+    "Gradle.domainify [buildDependents].executor": "Run",
+    "Gradle.domainify [buildSources].executor": "Run",
+    "Gradle.domainify [build].executor": "Run",
+    "Gradle.domainify [compile].executor": "Run",
+    "Gradle.domainify [init].executor": "Run",
+    "Gradle.domainify [jar].executor": "Run",
+    "Gradle.domainify [run].executor": "Run",
+    "Gradle.domainify [sourcesJar].executor": "Run",
+    "Gradle.domainify [tasks].executor": "Run",
+    "Gradle.domainify:compiler [:compiler:io.github.dracosomething.Build.main()].executor": "Run",
+    "Gradle.regexTest.string_matches_regex_version.executor": "Run",
+    "JAR Application.domainify-1.0-SNAPSHOT.jar.executor": "Run",
+    "JUnit.Whole project (1).executor": "Run",
+    "JUnit.Whole project.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "master",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/alias/Documents/school/schooljaar2025-2026/periode1/XPerience/profielen/fullstack/domainify/src",
+    "onboarding.tips.debug.path": "C:/Users/alias/Documents/school/schooljaar2025-2026/periode1/XPerience/profielen/fullstack/domainify/project/src/main/java/io/github/dracosomething/Main.java",
+    "project.structure.last.edited": "Artifacts",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "preferences.intentionPowerPack"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\alias\Documents\school\schooljaar2025-2026\periode1\XPerience\profielen\fullstack\domainify\src" />
@@ -202,13 +206,37 @@
       <recent name="io.github.dracosomething.gui" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.domainify [compile]">
+  <component name="RunManager" selected="Gradle.GeneralTests.console_scheduled_test">
     <configuration name="run" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="io.github.dracosomething.Main" />
       <module name="domainify.main" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
+    </configuration>
+    <configuration name="GeneralTests.console_scheduled_test" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+            <option value="--tests" />
+            <option value="&quot;GeneralTests.console_scheduled_test&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
     </configuration>
     <configuration name="domainify [compile]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
@@ -264,35 +292,25 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Whole project" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <option name="PACKAGE_NAME" value="" />
-      <option name="TEST_OBJECT" value="package" />
-      <option name="TEST_SEARCH_SCOPE">
-        <value defaultName="wholeProject" />
-      </option>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="domainify-1.0-SNAPSHOT.jar" type="JarApplication" temporary="true">
       <option name="JAR_PATH" value="$PROJECT_DIR$/build/libs/domainify-1.0-SNAPSHOT.jar" />
       <method v="2" />
     </configuration>
     <list>
       <item itemvalue="Application.run" />
+      <item itemvalue="Gradle.GeneralTests.console_scheduled_test" />
       <item itemvalue="Gradle.domainify [compile]" />
       <item itemvalue="Gradle.domainify [jar]" />
-      <item itemvalue="JUnit.Whole project (1)" />
-      <item itemvalue="JUnit.Whole project" />
       <item itemvalue="JAR Application.domainify-1.0-SNAPSHOT.jar" />
+      <item itemvalue="JUnit.Whole project (1)" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.GeneralTests.console_scheduled_test" />
         <item itemvalue="Gradle.domainify [compile]" />
         <item itemvalue="Gradle.domainify [jar]" />
         <item itemvalue="JAR Application.domainify-1.0-SNAPSHOT.jar" />
         <item itemvalue="JUnit.Whole project (1)" />
-        <item itemvalue="JUnit.Whole project" />
       </list>
     </recent_temporary>
   </component>

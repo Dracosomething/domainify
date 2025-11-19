@@ -19,9 +19,9 @@ public class Console {
     private ProcessBuilder builder;
     private Process currentActive;
     private List<String> command;
-    private Map<Integer, String> que = new HashMap<>();
+    private List<Pair<String, Consumer<Console>>> queue = new ArrayList<>();
     private File directory;
-    private Map<Integer, Consumer<Console>> scheduled = new HashMap<>();
+//    private Map<Integer, Consumer<Console>> scheduled = new HashMap<>();
 
     public Console() {
         this.builder = new ProcessBuilder();
@@ -41,16 +41,15 @@ public class Console {
     }
 
     // check if index is correct.
-    public void runCommandAndSchedule(String command, Consumer<Console> task) {
-      this.runCommand(command);
-      this.scheduled.put(que.size(), task);
+    public void runCommand(String command) {
+      this.runCommandAndSchedule(command, null);
     }
 
-    public void runCommand(String command) {
+    public void runCommandAndSchedule(String command, Consumer<Console> task) {
         this.currentCommand = command;
-        if (isActive) {
+        if (isActive || (currentActive != null && !currentActive.isAlive())) {
             LOGGER.info("Adding command to que.");
-            que.put(que.size(), command);
+            queue.add(new Pair<>(command, task));
             return;
         }
         ArrayList<String> list = new ArrayList<>(this.command);
@@ -71,45 +70,15 @@ public class Console {
     }
 
     public void schedule(Consumer<Console> consumer) {
-        this.scheduled.put(0, consumer);
+        Pair<String, Consumer<Console>> pair = this.queue.getFirst();
+        pair.setValue(consumer);
+        this.queue.addFirst(pair);
     }
 
     @Override
     protected void finalize() throws Throwable {
         super.finalize();
         this.currentActive.destroy();
-    }
-
-    /**
-     * loop door que
-     * als de index niet meer klopt(de vorige index is niet gelijk aan de huidige index-1) doorgaan
-     * pak de consumer en de command die bij de index hooren
-     * doe index 1 omlaag
-     *
-    */
-    private void updateReferences() {
-        int previous = 0;
-        for (Pair<Integer, String> pair : Util.mapToPairList(this.que)) {
-            int index = pair.getKey();
-            if (index-1 != previous) {
-                Consumer<Console> consumer = this.scheduled.get(index);
-                String command = this.que.get(index);
-                index--;
-                if (this.que.get(index) != null) {
-                    this.que.put(index, command);
-                }
-                if (consumer != null && this.scheduled.get(index) != null) {
-                    this.scheduled.put(index, scheduled);
-                }
-            }
-            previous = index;
-        }
-//        for (Pair<Integer, Consumer<Console>> pair : Util.mapToPairList(this.scheduled)) {
-//            int key = pair.getKey();
-//            this.scheduled.remove(key);
-//            if (key-1 < 0) continue;
-//            this.scheduled.put(key-1, pair.getValue());
-//        }
     }
 
     private void executeCommands() {
@@ -122,16 +91,13 @@ public class Console {
             LOGGER.info("Finished with exit code: " + exitCode);
             exitCode = -1;
             this.isActive = false;
-            String command = que.get(0);
-            que.remove(0);
-            updateReferences();
             this.builder.directory(this.directory);
-            if (this.scheduled.containsKey(0)) {
-                Consumer<Console> consumer = this.scheduled.get(0);
-                if (consumer != null) {
-                    consumer.accept(this);
-                }
-            }
+            Pair<String, Consumer<Console>> pair = this.queue.getFirst();
+            Consumer<Console> action = pair.getValue();
+            if (action != null)
+                action.accept(this);
+            String command = pair.getKey();
+            this.queue.removeFirst();
             this.runCommand(command);
         }
     }
