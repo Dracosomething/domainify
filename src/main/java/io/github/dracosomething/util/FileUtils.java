@@ -597,7 +597,7 @@ public class FileUtils {
         });
 
         console.queueAndSchedule("./configure --prefix=" + httpd + " --with-included-apr", (shell) -> {
-            shell.directory(htppd)
+            shell.directory(httpd);
         });
         console.queue("make");
         console.queue("make install");
