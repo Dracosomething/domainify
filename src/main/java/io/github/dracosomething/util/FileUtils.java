@@ -583,7 +583,7 @@ public class FileUtils {
         final File srclib = new File(httpd, "srclib");
         Console console = new Console();
         console.directory(pcre);
-        console.runCommand("chmod +x ./configure");
+        console.queue("chmod +x ./configure");
         console.queue("./configure --prefix=" + pcre + " --docdir=" + docs + " --disable-static");
         console.queue("make");
         console.queue("make install");
@@ -601,6 +601,7 @@ public class FileUtils {
         });
         console.queue("make");
         console.queue("make install");
+        console.start();
       }
     }
 
