@@ -596,7 +596,7 @@ public class FileUtils {
             shell.directory(srclib);
         });
 
-        console.queueAndSchedule("./configure --prefix=" + httpd + " --with-included-apr", (shell) -> {
+        console.queueAndSchedule("./configure --prefix=" + httpd + " --with-included-apr --with-pcre=" + pcre + "/lib", (shell) -> {
             shell.directory(httpd);
         });
         console.queue("make");
