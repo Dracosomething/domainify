@@ -46,27 +46,11 @@ public class Console {
     }
 
     public void runCommandAndSchedule(String command, Consumer<Console> task) {
-        this.currentCommand = command;
+        this.queueAndSchedule(command, task);
         if (isActive || (currentActive != null && !currentActive.isAlive())) {
-            LOGGER.info("Adding command to que.");
-            queue.add(new Pair<>(command, task));
-            return;
+          return;
         }
-        ArrayList<String> list = new ArrayList<>(this.command);
-        list.add(command);
-        LOGGER.info("Constructed command.\nCommand: " + Arrays.toString(list.toArray()));
-        LOGGER.info("Executing in directory: " + directory);
-        this.builder.command(list);
-        this.builder.inheritIO();
-        try {
-            currentActive = this.builder.start();
-            isActive = true;
-            Async.runVoidAsync(this::executeCommands);
-        } catch (IOException | ExecutionException | InterruptedException e) {
-            LOGGER.error("Encountered error when trying to activate console", e);
-        } finally {
-            this.builder = new ProcessBuilder(this.command);
-        }
+        this.start();
     }
 
     public void schedule(Consumer<Console> consumer) {
@@ -81,6 +65,30 @@ public class Console {
 
     public void queueAndSchedule(String command, Consumer<Console> consumer) {
       this.queue.add(new Pair<>(command, consumer));
+    }
+
+    public void start() {
+      Pair<String, Consumer<Console>> pair = this.queue.getFirst();
+      Consumer<Console> action = pair.getValue();
+      if (action != null)
+        action.accept(this);
+      String command = pair.getKey();
+      this.queue.removeFirst();
+      ArrayList<String> list = new ArrayList<>(this.command);
+      list.add(command);
+      LOGGER.info("Constructed command.\nCommand: " + Arrays.toString(list.toArray()));
+      LOGGER.info("Executing in directory: " + directory);
+      this.builder.command(list);
+      this.builder.inheritIO();
+      try {
+          currentActive = this.builder.start();
+          isActive = true;
+          Async.runVoidAsync(this::executeCommands);
+      } catch (IOException | ExecutionException | InterruptedException e) {
+          LOGGER.error("Encountered error when trying to activate console", e);
+      } finally {
+          this.builder = new ProcessBuilder(this.command);
+      }
     }
 
     @Override
@@ -100,13 +108,7 @@ public class Console {
             exitCode = -1;
             this.isActive = false;
             this.builder.directory(this.directory);
-            Pair<String, Consumer<Console>> pair = this.queue.getFirst();
-            Consumer<Console> action = pair.getValue();
-            if (action != null)
-                action.accept(this);
-            String command = pair.getKey();
-            this.queue.removeFirst();
-            this.runCommand(command);
+            this.start();
         }
     }
 }
